@@ -4,8 +4,16 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
   describe "#authenticate" do
     context "with the proper email and password" do
       let(:email) { Faker::Internet.email }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
 
-      let!(:user) { User.create(email: email, password: "password", approved: true) }
+      let!(:user) {
+        User.create(email: email,
+          password: "password",
+          firstName: first_name,
+          lastName: last_name,
+          approved: true)
+      }
 
       let(:params) { { credentials: { email: email, password: "password" } } }
 
@@ -49,8 +57,13 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
     context "with an uppercase email" do
       let(:email) { Faker::Internet.email }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+
       let!(:user) { User.create(email: email,
                                 password: "password",
+                                firstName: first_name,
+                                lastName: last_name,
                                 approved: true) }
 
       let(:params) { { credentials: { email: email.upcase,
@@ -61,6 +74,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
 
         expect(response.status).to eq 201
         expect(JSON.parse(response.body)["data"]["attributes"]["hashed_email"]).to eq user.hash_email
+        expect(JSON.parse(response.body)["data"]["attributes"]["firstName"]).to eq first_name
+        expect(JSON.parse(response.body)["data"]["attributes"]["lastName"]).to eq last_name
         expect(JSON.parse(response.body)["data"]["attributes"]["token"]).to be_present
       end
     end

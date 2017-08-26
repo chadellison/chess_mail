@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
-  validates_presence_of :email
+  validates_presence_of :email, :firstName, :lastName
   validates_uniqueness_of :email
 
   before_save :hash_email
@@ -12,7 +12,9 @@ class User < ApplicationRecord
         id: id,
         attributes: {
           hashed_email: hashed_email,
-          token: token
+          token: token,
+          firstName: firstName,
+          lastName: lastName
         }
       }
     }
