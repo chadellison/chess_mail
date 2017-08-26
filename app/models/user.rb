@@ -6,8 +6,8 @@ class User < ApplicationRecord
   before_save :hash_email
 
   def serialize_user
-    { data:
-      {
+    {
+      data: {
         type: 'user',
         id: id,
         attributes: {

@@ -38,6 +38,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         }.to change { User.count }.by(1)
 
         expect(response.status).to eq 201
+        expect(JSON.parse(response.body)["data"]["attributes"]["hashed_email"]).to be_present
       end
     end
   end

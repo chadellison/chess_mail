@@ -7,7 +7,7 @@ module Api
         user = User.new(user_params)
 
         if user.save
-          render nothing: true, status: 201, location: nil
+          render json: user.serialize_user, status: 201, location: nil
         else
           errors = user.errors.map { |key, value| "#{key} #{value}" }.join("\n")
           render json: { errors: errors }, status: 400
