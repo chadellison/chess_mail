@@ -13,10 +13,10 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :create, params: params, format: :json
 
         expect(response.status).to eq 201
-        expect(JSON.parse(response.body)["attributes"]["hashed_email"]).to eq user.hashed_email
-        expect(JSON.parse(response.body)["attributes"]["token"]).to be_present
-        expect(JSON.parse(response.body)["attributes"]["email"]).not_to be_present
-        expect(JSON.parse(response.body)["attributes"]["password"]).not_to be_present
+        expect(JSON.parse(response.body)["data"]["attributes"]["hashed_email"]).to eq user.hashed_email
+        expect(JSON.parse(response.body)["data"]["attributes"]["token"]).to be_present
+        expect(JSON.parse(response.body)["data"]["attributes"]["email"]).not_to be_present
+        expect(JSON.parse(response.body)["data"]["attributes"]["password"]).not_to be_present
       end
     end
 
@@ -60,8 +60,8 @@ RSpec.describe Api::V1::AuthenticationController, type: :controller do
         post :create, params: params, format: :json
 
         expect(response.status).to eq 201
-        expect(JSON.parse(response.body)["attributes"]["hashed_email"]).to eq user.hash_email
-        expect(JSON.parse(response.body)["attributes"]["token"]).to be_present
+        expect(JSON.parse(response.body)["data"]["attributes"]["hashed_email"]).to eq user.hash_email
+        expect(JSON.parse(response.body)["data"]["attributes"]["token"]).to be_present
       end
     end
   end

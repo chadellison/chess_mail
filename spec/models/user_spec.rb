@@ -40,8 +40,8 @@ RSpec.describe User, type: :model do
                       token: token,
                       hashed_email: hashed_email)
 
-      expect(user.serialize_user[:attributes][:hashed_email]).to eq hashed_email
-      expect(user.serialize_user[:attributes][:token]).to eq token
+      expect(user.serialize_user[:data][:attributes][:hashed_email]).to eq hashed_email
+      expect(user.serialize_user[:data][:attributes][:token]).to eq token
     end
   end
 

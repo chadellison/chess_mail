@@ -8,11 +8,11 @@ module Api
 
         if user && user.authenticate(login_params[:password]) && user.approved
           user.update(token: SecureRandom.hex)
-          respond_with user.serialize_user, location: nil, status: 201
+          render json: user.serialize_user, status: 201
         else
           error = ActiveRecord::RecordNotFound
           message = { errors: "Invalid Credentials" }
-          respond_with message, location: nil, status: 404
+          render json: message, location: nil, status: 404
         end
       end
 
