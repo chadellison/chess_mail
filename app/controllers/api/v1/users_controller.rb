@@ -7,12 +7,27 @@ module Api
         user = User.new(user_params)
 
         if user.save
-          # url = "#{ENV['host']}/approved_users?token=#{user.password_digest}"
-          ConfirmationMailer.confirmation(user).deliver_later
+          user.update(token: SecureRandom.hex)
+          url = "#{ENV['api_host']}/api/v1/users?token=#{user.token}"
+
+          ConfirmationMailer.confirmation(user, url).deliver_later
+
           render json: user.serialize_user, status: 201, location: nil
         else
           errors = user.errors.map { |key, value| "#{key} #{value}" }.join("\n")
           render json: { errors: errors }, status: 400
+        end
+      end
+
+      def approve
+        user = User.find_by(token: params[:token])
+
+        if user
+          user.update(approved: true)
+          redirect_to ENV['host']
+        else
+          errors = 'Not Found'
+          render json: { errors: errors }, status: 404
         end
       end
 

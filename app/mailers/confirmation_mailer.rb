@@ -1,9 +1,9 @@
 class ConfirmationMailer < ApplicationMailer
   default from: "no-reply@beerproject.com"
 
-  def confirmation(new_user)
+  def confirmation(new_user, url)
     @new_user = new_user
-    # @url = url
+    @url = url
     mail(to: new_user.email, subject: "confirm your account")
   end
 end
