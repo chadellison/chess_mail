@@ -7,6 +7,8 @@ module Api
         user = User.new(user_params)
 
         if user.save
+          # url = "#{ENV['host']}/approved_users?token=#{user.password_digest}"
+          ConfirmationMailer.confirmation(user).deliver_later
           render json: user.serialize_user, status: 201, location: nil
         else
           errors = user.errors.map { |key, value| "#{key} #{value}" }.join("\n")
