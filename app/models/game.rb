@@ -6,7 +6,15 @@ class Game < ApplicationRecord
 
   class << self
     def serialize_games(games)
-      { data: games, meta: { count: games.count } }
+      { data: games.map(&:serialize_game), meta: { count: games.count } }
     end
+  end
+
+  def serialize_game
+    {
+      type: 'game',
+      id: id,
+      attributes: nil,
+    }
   end
 end

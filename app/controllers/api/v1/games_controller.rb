@@ -6,9 +6,14 @@ module Api
       before_action :authenticate_with_token
 
       def index
-        user = User.find(params[:user_id])
+        respond_with Game.serialize_games(@user.games)
+      end
 
-        respond_with Game.serialize_games(user.games)
+      def show
+        game = @user.games.find(params[:id])
+        serialized_game = { data: game.serialize_game }
+
+        respond_with serialized_game
       end
     end
   end

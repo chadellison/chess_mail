@@ -3,9 +3,7 @@ Rails.application.routes.draw do
     namespace :v1, format: :json do
       resources :authentication, only: [:create]
       resources :users, only: [:create]
-
-      get 'users/:user_id/games', to: 'games#index'
-
+      resources  :games, only: [:index, :show]
       get 'users', to: 'users#approve'
     end
   end
