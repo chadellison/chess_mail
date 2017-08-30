@@ -19,13 +19,6 @@ RSpec.describe UserGame, type: :model do
   end
 
   it 'belongs_to a user' do
-    user = User.create(
-      email: email,
-      password: password,
-      firstName: first_name,
-      lastName: last_name
-    )
-
     game = Game.create
 
     user_game = UserGame.create(game_id: game.id)
