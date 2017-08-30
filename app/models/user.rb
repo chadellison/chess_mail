@@ -3,6 +3,9 @@ class User < ApplicationRecord
   validates_presence_of :email, :firstName, :lastName
   validates_uniqueness_of :email
 
+  has_many :user_games
+  has_many :games, through: :user_games
+
   before_save :hash_email
 
   def serialize_user

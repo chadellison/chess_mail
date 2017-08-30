@@ -6,6 +6,20 @@ RSpec.describe User, type: :model do
   let(:first_name) { Faker::Name.first_name }
   let(:last_name) { Faker::Name.last_name }
 
+  it "has many games" do
+    user = User.create(
+      email: email,
+      password: password,
+      firstName: first_name,
+      lastName: last_name
+    )
+
+    game = Game.create
+    user.games << game
+
+    expect(user.games).to eq [game]
+  end
+
   it "validates the presence of an email" do
     user = User.create(password: password,
       firstName: first_name,
