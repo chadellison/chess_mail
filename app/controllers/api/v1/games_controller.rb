@@ -10,10 +10,26 @@ module Api
       end
 
       def show
-        game = @user.games.find(params[:id])
-        serialized_game = { data: game.serialize_game }
+        serialized_game = { data: find_game.serialize_game }
 
         respond_with serialized_game
+      end
+
+      def update
+        piece = Piece.find_or_create_by(piece_params)
+        find_game.pieces << piece
+
+        render status: 204
+      end
+
+      private
+
+      def find_game
+        @user.games.find(params[:id])
+      end
+
+      def piece_params
+        params.require(:piece).permit(:id, :pieceType, :color, :currentPosition)
       end
     end
   end

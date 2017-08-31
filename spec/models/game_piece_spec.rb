@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe GamePiece, type: :model do
   it 'belongs_to a piece' do
     piece = Piece.create(
-      piece_type: 'queen',
+      pieceType: 'queen',
       color: 'white',
       currentPosition: 'b7'
     )

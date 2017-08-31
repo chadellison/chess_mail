@@ -22,7 +22,7 @@ RSpec.describe Game, type: :model do
 
   it 'has many pieces' do
     piece = Piece.create(
-      piece_type: 'rook',
+      pieceType: 'rook',
       color: 'black',
       currentPosition: 'a2',
     )
@@ -31,5 +31,15 @@ RSpec.describe Game, type: :model do
     game.pieces << piece
 
     expect(game.pieces).to eq [piece]
+  end
+
+  describe '#serialize_games' do
+    xit 'serializes the passed in games' do
+    end
+  end
+
+  describe '#serialize_game' do
+    xit 'serializes a game instance' do
+    end
   end
 end
