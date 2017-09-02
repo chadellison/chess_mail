@@ -16,11 +16,14 @@ module Api
       end
 
       def create
+        # check if game vs oppoenent has been created already
+        # check if proper game params have been given
+        # handle errors
         game = @user.games.create
         game.setup(@user, game_params)
         serialized_game = { data: game.serialize_game }
 
-        respond_with serialized_game, location: nil
+        render json: serialized_game, status: 201
       end
 
       def update

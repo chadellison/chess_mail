@@ -219,9 +219,13 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
         context 'when the challenged player has an account' do
           it 'adds both players to the game' do
+
             post :create, params: game_params, format: :json
             game_id = JSON.parse(response.body)['data']['id']
-            expect(Game.find(game_id).users).to eq [user, challengedUser]
+
+            expect(Game.find(game_id).users.count).to eq 2
+            expect(Game.find(game_id).users.first.id).to eq user.id
+            expect(Game.find(game_id).users.last.id).to eq challengedUser.id
           end
         end
 

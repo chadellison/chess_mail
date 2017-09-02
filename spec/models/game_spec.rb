@@ -44,7 +44,7 @@ RSpec.describe Game, type: :model do
         )
 
         game_params = {
-          challengePlayer: 'true',
+          challengePlayer: true,
           challengedEmail: Faker::Internet.email
         }
 
@@ -63,7 +63,7 @@ RSpec.describe Game, type: :model do
         )
 
         game_params = {
-          challengePlayer: 'true',
+          challengePlayer: true,
           challengedEmail: Faker::Internet.email
         }
 

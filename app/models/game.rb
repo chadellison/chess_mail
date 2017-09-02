@@ -21,7 +21,7 @@ class Game < ApplicationRecord
   end
 
   def setup(user, game_params)
-    if game_params[:challengePlayer] == 'true'
+    if game_params[:challengePlayer].to_s == 'true'
       add_challenged_player(game_params[:challengedEmail])
       send_challenge_email(user, game_params)
     end
