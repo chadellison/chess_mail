@@ -270,13 +270,151 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         end
       end
 
-      context 'with invalid parameters' do
-        xit 'test' do
+      context 'when no name is passed in' do
+        let(:challenged_email) { Faker::Internet.email }
+
+        let(:email) { Faker::Internet.email }
+        let(:password) { 'password' }
+        let(:first_name) { Faker::Name.first_name }
+        let(:last_name) { Faker::Name.last_name }
+        let(:token) { 'token' }
+
+        let!(:user) {
+          User.create(email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token)
+        }
+
+        let(:game_params) {
+          {
+            game: {
+              challengedName: '',
+              challengedEmail: challenged_email,
+              playerColor: 'white',
+              challengePlayer: true,
+              challengeRobot: false
+            },
+            token: user.token
+          }
+        }
+
+        it 'does not create a game' do
+          expect{
+            post :create, params: game_params, format: :json
+          }.not_to change{ Game.count }
+        end
+
+        it 'returns a json api error message' do
+          error = 'Player name and player email must be filled.'
+          post :create, params: game_params, format: :json
+
+          expect(response.status).to eq 400
+          expect(JSON.parse(response.body)['error']).to eq error
         end
       end
 
-      context 'when a player has already submitted a challenge to the other person' do
-        xit 'test' do
+      context 'when no email is passed in' do
+        let(:challenged_name) { Faker::Name.first_name }
+
+        let(:email) { Faker::Internet.email }
+        let(:password) { 'password' }
+        let(:first_name) { Faker::Name.first_name }
+        let(:last_name) { Faker::Name.last_name }
+        let(:token) { 'token' }
+
+        let!(:user) {
+          User.create(email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token)
+        }
+
+        let(:game_params) {
+          {
+            game: {
+              challengedName: challenged_name,
+              challengedEmail: '',
+              playerColor: 'white',
+              challengePlayer: true,
+              challengeRobot: false
+            },
+            token: user.token
+          }
+        }
+
+        it 'does not create a game' do
+          expect{
+            post :create, params: game_params, format: :json
+          }.not_to change{ Game.count }
+        end
+
+        it 'returns a json api error message' do
+          error = 'Player name and player email must be filled.'
+          post :create, params: game_params, format: :json
+
+          expect(response.status).to eq 400
+          expect(JSON.parse(response.body)['error']).to eq error
+        end
+      end
+
+      context 'when the player has already submitted a challenge to the that person' do
+        let(:email) { Faker::Internet.email }
+        let(:password) { 'password' }
+        let(:first_name) { Faker::Name.first_name }
+        let(:last_name) { Faker::Name.last_name }
+        let(:token) { 'token' }
+
+        let!(:user) do
+          User.create(email: email,
+                      password: password,
+                      firstName: first_name,
+                      lastName: last_name,
+                      approved: true,
+                      token: token)
+        end
+
+        let!(:challengedUser) do
+          User.create(email: 'bob@example.com',
+                      password: 'password',
+                      firstName: 'bob',
+                      lastName: 'jones',
+                      approved: true,
+                      token: 'other_token')
+        end
+
+        let(:game_params) do
+          {
+            game: {
+              challengedName: challengedUser.firstName,
+              challengedEmail: challengedUser.email,
+              playerColor: 'white',
+              challengePlayer: true,
+              challengeRobot: false
+            },
+            token: user.token
+          }
+        end
+
+        it 'does not create a game' do
+          user.games.create(challenged_email: challengedUser.email)
+
+          expect{
+            post :create, params: game_params, format: :json
+          }.not_to change{ Game.count }
+        end
+
+        it 'returns a json api error message' do
+          user.games.create(challenged_email: challengedUser.email)
+          
+          error = 'A game or challenge is already in progress for this person'
+          post :create, params: game_params, format: :json
+          expect(response.status).to eq 400
+          expect(JSON.parse(response.body)['error']).to eq error
         end
       end
 

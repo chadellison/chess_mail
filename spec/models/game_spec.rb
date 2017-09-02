@@ -140,4 +140,14 @@ RSpec.describe Game, type: :model do
     xit 'serializes a game instance' do
     end
   end
+
+  describe '#handle_game_creation' do
+    xit 'test' do
+    end
+  end
+
+  describe '#handle_challenge' do
+    xit 'test' do
+    end
+  end
 end

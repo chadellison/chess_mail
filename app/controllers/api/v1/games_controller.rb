@@ -16,14 +16,14 @@ module Api
       end
 
       def create
-        # check if game vs oppoenent has been created already
-        # check if proper game params have been given
-        # handle errors
-        game = @user.games.create
-        game.setup(@user, game_params)
-        serialized_game = { data: game.serialize_game }
+        game = Game.handle_game_creation(@user, game_params)
 
-        render json: serialized_game, status: 201
+        if game[:error].blank?
+          serialized_game = { data: game.serialize_game }
+          render json: serialized_game, status: 201
+        else
+          render json: game, status: 400
+        end
       end
 
       def update
@@ -50,14 +50,14 @@ module Api
         @user.games.find(params[:id])
       end
 
+      def piece_params
+        params.require(:piece).permit(:id, :pieceType, :color, :currentPosition)
+      end
+
       def game_params
         params.require(:game).permit(:challengedName, :challengedEmail,
                                      :playerColor, :challengePlayer,
                                      :challengeRobot)
-      end
-
-      def piece_params
-        params.require(:piece).permit(:id, :pieceType, :color, :currentPosition)
       end
     end
   end

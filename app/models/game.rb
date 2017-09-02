@@ -5,6 +5,24 @@ class Game < ApplicationRecord
   has_many :pieces, through: :game_pieces
 
   class << self
+    def handle_game_creation(user, game_params)
+      if game_params[:challengedName].present? && game_params[:challengedEmail].present?
+        handle_challenge(user, game_params)
+      else
+        { error: 'Player name and player email must be filled.' }
+      end
+    end
+
+    def handle_challenge(user, game_params)
+      if user.games.find_by(challenged_email: game_params[:challengedEmail]).present?
+        { error: 'A game or challenge is already in progress for this person' }
+      else
+        game = user.games.create
+        game.setup(user, game_params)
+        game
+      end
+    end
+
     def serialize_games(games)
       { data: games.map(&:serialize_game), meta: { count: games.count } }
     end
