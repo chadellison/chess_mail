@@ -28,11 +28,10 @@ class Game < ApplicationRecord
   end
 
   def add_challenged_player(challenged_email)
+    update(challenged_email: challenged_email)
+
     user = User.find_by(email: challenged_email)
-    if user
-      users << user
-      update(challenged_id: user.id)
-    end
+    users << user if user
   end
 
   def send_challenge_email(user, game_params)

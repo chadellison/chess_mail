@@ -107,7 +107,7 @@ RSpec.describe Game, type: :model do
         game = Game.create
         game.add_challenged_player(user.email)
 
-        expect(game.challenged_id).to eq user.id
+        expect(game.challenged_email).to eq user.email
       end
     end
 

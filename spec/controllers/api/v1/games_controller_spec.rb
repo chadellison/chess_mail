@@ -227,13 +227,60 @@ RSpec.describe Api::V1::GamesController, type: :controller do
             expect(Game.find(game_id).users.first.id).to eq user.id
             expect(Game.find(game_id).users.last.id).to eq challengedUser.id
           end
+
+          it 'sets the challenged user\'s email on the game' do
+            post :create, params: game_params, format: :json
+            game_id = JSON.parse(response.body)['data']['id']
+
+            expect(Game.find(game_id).challenged_email).to eq challengedUser.email
+          end
         end
 
         context 'when the challenged player does not have an account' do
+          let(:challenged_email) { Faker::Internet.email }
+          let(:challenged_name) { Faker::Name.first_name }
+
+          let(:params) {
+            {
+              game: {
+                challengedName: challenged_name,
+                challengedEmail: challenged_email,
+                playerColor: 'white',
+                challengePlayer: true,
+                challengeRobot: false
+              },
+              token: user.token
+            }
+          }
+
+          it 'sets the challenged user\'s email on the game' do
+            post :create, params: params, format: :json
+            game_id = JSON.parse(response.body)['data']['id']
+
+            expect(Game.find(game_id).challenged_email).to eq challenged_email
+          end
+
+          it 'adds only the user who initiated the challenge to the game' do
+            post :create, params: params, format: :json
+            game_id = JSON.parse(response.body)['data']['id']
+
+            expect(Game.find(game_id).users.count).to eq 1
+            expect(Game.find(game_id).users.first.id).to eq user.id
+          end
         end
       end
 
       context 'with invalid parameters' do
+        xit 'test' do
+        end
+      end
+
+      context 'when a player has already submitted a challenge to the other person' do
+        xit 'test' do
+        end
+      end
+
+      context 'when a player is already in a game with the person they want to challenge' do
         xit 'test' do
         end
       end
@@ -298,8 +345,8 @@ RSpec.describe Api::V1::GamesController, type: :controller do
                     token: 'other_token')
       end
 
-      context 'when the player\'s id matches the game\'s challenged_id' do
-        let(:game) { user.games.create(challenged_id: challengedUser.id) }
+      context 'when the player\'s email matches the game\'s challenged_email' do
+        let(:game) { user.games.create(challenged_email: challengedUser.email) }
 
         it 'sets the pending attribute on the game to false' do
           game.users << challengedUser
@@ -308,10 +355,11 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           get :accept, params: params, format: :json
           expect(response.status).to eq 204
           expect(game.reload.pending).to be false
+          expect(game.challenged_email).to eq challengedUser.email
         end
       end
 
-      context 'when the player\'s id does not match the game\'s challenged_id' do
+      context 'when the player\'s email does not match the game\'s challenged_email' do
         let(:game) { user.games.create }
 
         it 'raises a not found exception' do
