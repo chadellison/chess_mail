@@ -166,4 +166,160 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       end
     end
   end
+
+  describe '#create' do
+    context 'against a human player' do
+      context 'with valid parameters' do
+        let(:email) { Faker::Internet.email }
+        let(:password) { 'password' }
+        let(:first_name) { Faker::Name.first_name }
+        let(:last_name) { Faker::Name.last_name }
+        let(:token) { 'token' }
+
+        let!(:user) {
+          User.create(email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token)
+        }
+
+        let!(:challengedUser) {
+          User.create(email: 'bob@example.com',
+          password: 'password',
+          firstName: 'bob',
+          lastName: 'jones',
+          approved: true,
+          token: 'other_token')
+        }
+
+        let(:game_params) {
+          {
+            game: {
+              challengedName: challengedUser.firstName,
+              challengedEmail: challengedUser.email,
+              playerColor: 'white',
+              challengePlayer: true,
+              challengeRobot: false
+            },
+            token: user.token
+          }
+        }
+
+        it 'creates and returns the game' do
+          expect{
+            post :create, params: game_params, format: :json
+          }.to change{ user.games.count }.by(1)
+
+          expect(response.status).to eq 201
+          expect(JSON.parse(response.body)['data']['type']).to eq 'game'
+          expect(JSON.parse(response.body)['data']['attributes']['pending']).to be true
+        end
+
+        context 'when the challenged player has an account' do
+          it 'adds both players to the game' do
+            post :create, params: game_params, format: :json
+            game_id = JSON.parse(response.body)['data']['id']
+            expect(Game.find(game_id).users).to eq [user, challengedUser]
+          end
+        end
+
+        context 'when the challenged player does not have an account' do
+        end
+      end
+
+      context 'with invalid parameters' do
+        xit 'test' do
+        end
+      end
+    end
+
+    context 'against an AI player' do
+      xit 'test' do
+      end
+    end
+  end
+
+  describe '#accept' do
+    context 'when the player does not have an account' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(email: email,
+                    password: password,
+                    firstName: first_name,
+                    lastName: last_name,
+                    approved: true,
+                    token: token)
+      end
+
+      let(:game) { user.games.create }
+
+      it 'does not set the pending attribute on the game to false' do
+        bad_token = 'bad_token'
+        params = { game_id: game.id, token: bad_token }
+
+        get :accept, params: params, format: :json
+        expect(game.reload.pending).to be true
+      end
+    end
+
+    context 'when the player has an account' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(email: email,
+                    password: password,
+                    firstName: first_name,
+                    lastName: last_name,
+                    approved: true,
+                    token: token)
+      end
+
+      let!(:challengedUser) do
+        User.create(email: 'bob@example.com',
+                    password: 'password',
+                    firstName: 'bob',
+                    lastName: 'jones',
+                    approved: true,
+                    token: 'other_token')
+      end
+
+      context 'when the player\'s id matches the game\'s challenged_id' do
+        let(:game) { user.games.create(challenged_id: challengedUser.id) }
+
+        it 'sets the pending attribute on the game to false' do
+          game.users << challengedUser
+          params = { game_id: game.id, token: challengedUser.token }
+
+          get :accept, params: params, format: :json
+          expect(response.status).to eq 204
+          expect(game.reload.pending).to be false
+        end
+      end
+
+      context 'when the player\'s id does not match the game\'s challenged_id' do
+        let(:game) { user.games.create }
+
+        it 'raises a not found exception' do
+          params = { game_id: game.id, token: challengedUser.token }
+
+          expect{
+            get :accept, params: params, format: :json
+          }.to raise_exception(ActiveRecord::RecordNotFound)
+
+          expect(game.reload.pending).to be true
+        end
+      end
+    end
+  end
 end

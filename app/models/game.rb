@@ -14,7 +14,43 @@ class Game < ApplicationRecord
     {
       type: 'game',
       id: id,
-      attributes: nil,
+      attributes: {
+        pending: pending
+      }
     }
+  end
+
+  def setup(user, game_params)
+    if game_params[:challengePlayer] == 'true'
+      add_challenged_player(game_params[:challengedEmail])
+      send_challenge_email(user, game_params)
+    end
+  end
+
+  def add_challenged_player(challenged_email)
+    user = User.find_by(email: challenged_email)
+    if user
+      users << user
+      update(challenged_id: user.id)
+    end
+  end
+
+  def send_challenge_email(user, game_params)
+    full_name = "#{user.firstName.capitalize} #{user.lastName.capitalize}"
+    challenged_player = User.find_by(email: game_params[:challengedEmail])
+
+    if challenged_player
+      token = challenged_player.token
+    else
+      token = ''
+    end
+
+    ChallengeMailer.challenge_player(
+      full_name,
+      game_params[:challengedName],
+      game_params[:challengedEmail],
+      "#{ENV['api_host']}/api/v1/games/accept/#{id}?token=#{token}",
+      ENV['host']
+    )
   end
 end

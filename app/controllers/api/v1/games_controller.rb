@@ -3,7 +3,7 @@ module Api
     class GamesController < Api::V1::BaseController
       respond_to :json
 
-      before_action :authenticate_with_token
+      before_action :authenticate_with_token, except: :accept
 
       def index
         respond_with Game.serialize_games(@user.games)
@@ -15,6 +15,14 @@ module Api
         respond_with serialized_game
       end
 
+      def create
+        game = @user.games.create
+        game.setup(@user, game_params)
+        serialized_game = { data: game.serialize_game }
+
+        respond_with serialized_game, location: nil
+      end
+
       def update
         piece = Piece.find_or_create_by(piece_params)
         find_game.pieces << piece
@@ -22,10 +30,27 @@ module Api
         render status: 204
       end
 
+      def accept
+        challenged_user = User.find_by(token: params[:token])
+
+        if challenged_user
+          game = challenged_user.games.find(params[:game_id])
+          game.update(pending: false) if challenged_user.id == game.challenged_id
+        else
+          redirect_to ENV['host']
+        end
+      end
+
       private
 
       def find_game
         @user.games.find(params[:id])
+      end
+
+      def game_params
+        params.require(:game).permit(:challengedName, :challengedEmail,
+                                     :playerColor, :challengePlayer,
+                                     :challengeRobot)
       end
 
       def piece_params

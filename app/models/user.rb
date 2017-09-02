@@ -8,6 +8,10 @@ class User < ApplicationRecord
 
   before_save :hash_email
 
+  def hash_email
+    self.hashed_email = Digest::MD5.hexdigest(email.downcase.strip)
+  end
+
   def serialize_user
     {
       data: {
@@ -23,7 +27,8 @@ class User < ApplicationRecord
     }
   end
 
-  def hash_email
-    self.hashed_email = Digest::MD5.hexdigest(email.downcase.strip)
+  def send_confirmation_email
+    url = "#{ENV['api_host']}/api/v1/users?token=#{token}"
+    ConfirmationMailer.confirmation(self, url).deliver_later
   end
 end

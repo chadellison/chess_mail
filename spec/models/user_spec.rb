@@ -107,4 +107,9 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe '#send_confirmation_email' do
+    xit 'test' do
+    end
+  end
 end

@@ -8,9 +8,7 @@ module Api
 
         if user.save
           user.update(token: SecureRandom.hex)
-          url = "#{ENV['api_host']}/api/v1/users?token=#{user.token}"
-
-          ConfirmationMailer.confirmation(user, url).deliver_later
+          user.send_confirmation_email
 
           render json: user.serialize_user, status: 201, location: nil
         else
