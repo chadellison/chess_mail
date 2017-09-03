@@ -410,16 +410,11 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
         it 'returns a json api error message' do
           user.games.create(challenged_email: challengedUser.email)
-          
+
           error = 'A game or challenge is already in progress for this person'
           post :create, params: game_params, format: :json
           expect(response.status).to eq 400
           expect(JSON.parse(response.body)['error']).to eq error
-        end
-      end
-
-      context 'when a player is already in a game with the person they want to challenge' do
-        xit 'test' do
         end
       end
     end
