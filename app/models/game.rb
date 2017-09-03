@@ -34,7 +34,8 @@ class Game < ApplicationRecord
       id: id,
       attributes: {
         pending: pending
-      }
+      },
+      included: pieces.map(&:serialize_piece)
     }
   end
 
