@@ -1,82 +1,94 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::AuthenticationController, type: :controller do
-  describe "#authenticate" do
-    context "with the proper email and password" do
+  describe '#authenticate' do
+    context 'with the proper email and password' do
       let(:email) { Faker::Internet.email }
       let(:first_name) { Faker::Name.first_name }
       let(:last_name) { Faker::Name.last_name }
 
       let!(:user) {
         User.create(email: email,
-          password: "password",
-          firstName: first_name,
-          lastName: last_name,
-          approved: true)
+                    password: 'password',
+                    firstName: first_name,
+                    lastName: last_name,
+                    approved: true)
       }
 
-      let(:params) { { credentials: { email: email, password: "password" } } }
+      let(:params) { { credentials: { email: email, password: 'password' } } }
 
-      it "returns the user's token and hashed_email, but not the email or password" do
+      it 'returns the user\'s token and hashed_email, but not the email or password' do
         post :create, params: params, format: :json
 
         expect(response.status).to eq 201
-        expect(JSON.parse(response.body)["data"]["attributes"]["hashed_email"]).to eq user.hashed_email
-        expect(JSON.parse(response.body)["data"]["attributes"]["token"]).to be_present
-        expect(JSON.parse(response.body)["data"]["attributes"]["email"]).not_to be_present
-        expect(JSON.parse(response.body)["data"]["attributes"]["password"]).not_to be_present
+        expect(JSON.parse(response.body)['data']['attributes']['hashed_email'])
+          .to eq user.hashed_email
+        expect(JSON.parse(response.body)['data']['attributes']['token'])
+          .to be_present
+        expect(JSON.parse(response.body)['data']['attributes']['email'])
+          .not_to be_present
+        expect(JSON.parse(response.body)['data']['attributes']['password'])
+          .not_to be_present
       end
     end
 
-    context "with improper credentials" do
+    context 'with improper credentials' do
       let(:email) { Faker::Internet.email }
-      let!(:user) { User.create(email: email, password: "password") }
+      let!(:user) { User.create(email: email, password: 'password') }
       let(:bad_password) { Faker::Name.name }
       let(:params) { { credentials: { email: email, password: bad_password } } }
 
-      it "returns a 404 status and an error" do
+      it 'returns a 404 status and an error' do
         get :create, params: params, format: :json
 
         expect(response.status).to eq 404
-        expect(JSON.parse(response.body)["errors"]).to eq "Invalid Credentials"
+        expect(JSON.parse(response.body)['errors']).to eq 'Invalid Credentials'
       end
     end
 
-    context "when the user is not approved" do
+    context 'when the user is not approved' do
       let(:email) { Faker::Internet.email }
-      let!(:user) { User.create(email: email, password: "password") }
-      let(:params) { { credentials: { email: email, password: "password" } } }
+      let!(:user) { User.create(email: email, password: 'password') }
+      let(:params) { { credentials: { email: email, password: 'password' } } }
 
-      it "returns a 404 status and an error" do
+      it 'returns a 404 status and an error' do
         get :create, params: params, format: :json
 
         expect(response.status).to eq 404
-        expect(JSON.parse(response.body)["errors"]).to eq "Invalid Credentials"
+        expect(JSON.parse(response.body)['errors']).to eq 'Invalid Credentials'
       end
     end
 
-    context "with an uppercase email" do
+    context 'with an uppercase email' do
       let(:email) { Faker::Internet.email }
       let(:first_name) { Faker::Name.first_name }
       let(:last_name) { Faker::Name.last_name }
 
-      let!(:user) { User.create(email: email,
-                                password: "password",
-                                firstName: first_name,
-                                lastName: last_name,
-                                approved: true) }
+      let!(:user) do
+        User.create(email: email,
+                    password: 'password',
+                    firstName: first_name,
+                    lastName: last_name,
+                    approved: true)
+      end
 
-      let(:params) { { credentials: { email: email.upcase,
-                                      password: "password" } } }
+      let(:params) do
+        { credentials: { email: email.upcase,
+                         password: 'password' } }
+      end
 
-      it "finds the email" do
+      it 'finds the email' do
         post :create, params: params, format: :json
 
         expect(response.status).to eq 201
-        expect(JSON.parse(response.body)["data"]["attributes"]["hashed_email"]).to eq user.hash_email
-        expect(JSON.parse(response.body)["data"]["attributes"]["firstName"]).to eq first_name
-        expect(JSON.parse(response.body)["data"]["attributes"]["lastName"]).to eq last_name
-        expect(JSON.parse(response.body)["data"]["attributes"]["token"]).to be_present
+        expect(JSON.parse(response.body)['data']['attributes']['hashed_email'])
+          .to eq user.hash_email
+        expect(JSON.parse(response.body)['data']['attributes']['firstName'])
+          .to eq first_name
+        expect(JSON.parse(response.body)['data']['attributes']['lastName'])
+          .to eq last_name
+        expect(JSON.parse(response.body)['data']['attributes']['token'])
+          .to be_present
       end
     end
   end
