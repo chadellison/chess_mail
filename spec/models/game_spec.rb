@@ -193,7 +193,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#opponentName' do
+  describe '#current_opponent_name' do
     context 'when the player is the challenger' do
       let(:firstName) { Faker::Name.first_name }
       let(:lastName) { Faker::Name.last_name }
@@ -251,6 +251,11 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#current_opponent_email' do
+    xit 'test' do
+    end
+  end
+
   describe '#serialize_games' do
     it 'calls serialize game on each game' do
       user_email = Faker::Internet.email
@@ -291,7 +296,8 @@ RSpec.describe Game, type: :model do
         attributes: {
           pending: game.pending,
           playerColor: 'black',
-          opponentName: challenged_name
+          opponentName: challenged_name,
+          opponentGravatar: Digest::MD5.hexdigest(challenged_email.downcase.strip)
         },
         included: [game.pieces.first.serialize_piece]
       }

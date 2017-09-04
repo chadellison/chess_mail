@@ -32,13 +32,17 @@ class Game < ApplicationRecord
   end
 
   def serialize_game(user_email)
+    opponent_email = current_opponent_email(user_email).downcase.strip
+    opponent_gravatar = Digest::MD5.hexdigest(opponent_email)
+
     {
       type: 'game',
       id: id,
       attributes: {
         pending: pending,
         playerColor: current_player_color(user_email),
-        opponentName: current_opponent_name(user_email)
+        opponentName: current_opponent_name(user_email),
+        opponentGravatar: opponent_gravatar
       },
       included: pieces.map(&:serialize_piece)
     }
@@ -57,6 +61,14 @@ class Game < ApplicationRecord
       users.where.not(email: email).first.firstName
     else
       challenged_name
+    end
+  end
+
+  def current_opponent_email(email)
+    if challenged_email == email
+      users.where.not(email: email).first.email
+    else
+      challenged_email
     end
   end
 

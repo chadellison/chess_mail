@@ -18,24 +18,28 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     let(:last_name) { Faker::Name.last_name }
     let(:token) { 'token' }
 
-    let!(:user) {
-      User.create(email: email,
-      password: password,
-      firstName: first_name,
-      lastName: last_name,
-      approved: true,
-      token: token)
-    }
+    let!(:user) do
+      User.create(
+        email: email,
+        password: password,
+        firstName: first_name,
+        lastName: last_name,
+        approved: true,
+        token: token
+      )
+    end
 
-    let!(:game1) { user.games.create }
-    let!(:game2) { user.games.create }
+    let!(:game1) { user.games.create(challenged_email: 'abc@example.com') }
+    let!(:game2) { user.games.create(challenged_email: '123@example.com') }
 
     it 'returns all of that users\'s games' do
       get :index, params: { token: user.token }, format: :json
 
       expect(response.status).to eq 200
-      expect(JSON.parse(response.body).deep_symbolize_keys[:data].first[:id]).to eq game1.id
-      expect(JSON.parse(response.body).deep_symbolize_keys[:data].last[:id]).to eq game2.id
+      expect(JSON.parse(response.body).deep_symbolize_keys[:data].first[:id])
+        .to eq game1.id
+      expect(JSON.parse(response.body).deep_symbolize_keys[:data].last[:id])
+        .to eq game2.id
     end
   end
 
@@ -56,7 +60,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         token: token)
       }
 
-      let!(:game) { user.games.create }
+      let!(:game) { user.games.create(challenged_email: 'abc@example.com') }
 
       it 'returns a user\'s serialized game' do
         get :show, params: { id: game.id, token: user.token }, format: :json
