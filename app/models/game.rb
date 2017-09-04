@@ -42,10 +42,15 @@ class Game < ApplicationRecord
         pending: pending,
         playerColor: current_player_color(user_email),
         opponentName: current_opponent_name(user_email),
-        opponentGravatar: opponent_gravatar
+        opponentGravatar: opponent_gravatar,
+        isChallenger: is_challenger?(user_email)
       },
       included: pieces.map(&:serialize_piece)
     }
+  end
+
+  def is_challenger?(email)
+    challenged_email != email
   end
 
   def current_player_color(email)

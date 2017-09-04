@@ -256,6 +256,11 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#is_challenger?' do
+    xit 'test' do
+    end
+  end
+
   describe '#serialize_games' do
     it 'calls serialize game on each game' do
       user_email = Faker::Internet.email
@@ -297,7 +302,8 @@ RSpec.describe Game, type: :model do
           pending: game.pending,
           playerColor: 'black',
           opponentName: challenged_name,
-          opponentGravatar: Digest::MD5.hexdigest(challenged_email.downcase.strip)
+          opponentGravatar: Digest::MD5.hexdigest(challenged_email.downcase.strip),
+          isChallenger: true
         },
         included: [game.pieces.first.serialize_piece]
       }
