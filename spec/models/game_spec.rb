@@ -73,6 +73,26 @@ RSpec.describe Game, type: :model do
             .with(user, game_params)
         game.setup(user, game_params)
       end
+
+      it 'sets the player_color on the game' do
+        user = User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name
+        )
+
+        game_params = {
+          challengePlayer: true,
+          challengedEmail: Faker::Internet.email,
+          playerColor: 'white'
+        }
+
+        game = Game.create
+        game.setup(user, game_params)
+
+        expect(game.player_color).to eq 'white'
+      end
     end
   end
 
@@ -179,7 +199,37 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#serialize_game' do
-    xit 'serializes a game instance' do
+    it 'serializes a game instance' do
+      user = User.create(
+        firstName: Faker::Name.first_name,
+        lastName: Faker::Name.last_name,
+        email: Faker::Internet.email,
+        password: 'password'
+      )
+
+      challenged_email = Faker::Internet.email
+
+      game = Game.create(
+        challenged_email: challenged_email,
+        player_color: 'black'
+      )
+      game.pieces.create(
+        pieceType: 'pawn',
+        currentPosition: 'a2',
+        color: 'black'
+      )
+
+      result = {
+        type: 'game',
+        id: game.id,
+        attributes: {
+          pending: game.pending,
+          playerColor: 'black'
+        },
+        included: [game.pieces.first.serialize_piece]
+      }
+
+      expect(game.serialize_game(user.email)).to eq result
     end
   end
 
@@ -189,7 +239,14 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#handle_challenge' do
-    xit 'test' do
+    context 'when a challenge is already in progress' do
+      xit 'returns an error message' do
+      end
+    end
+
+    context 'when a challenge has not been submitted' do
+      xit 'test' do
+      end
     end
   end
 end

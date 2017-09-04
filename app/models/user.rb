@@ -14,7 +14,7 @@ class User < ApplicationRecord
 
   def serialize_user
     user_games = (Game.where(challenged_email: email) + games).sort_by(&:created_at)
-    serialized_games = Game.serialize_games(user_games)
+    serialized_games = Game.serialize_games(user_games, email)
 
     {
       data: {

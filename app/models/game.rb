@@ -23,17 +23,21 @@ class Game < ApplicationRecord
       end
     end
 
-    def serialize_games(games)
-      { data: games.map(&:serialize_game), meta: { count: games.count } }
+    def serialize_games(games, user_email)
+      {
+        data: games.map { |game| game.serialize_game(user_email) },
+        meta: { count: games.count }
+      }
     end
   end
 
-  def serialize_game
+  def serialize_game(user_email)
     {
       type: 'game',
       id: id,
       attributes: {
-        pending: pending
+        pending: pending,
+        playerColor: current_player_color(user_email)
         # if challengedEmail is equal to current eamil then not playerColor else player color
       },
       included: pieces.map(&:serialize_piece)
@@ -54,6 +58,7 @@ class Game < ApplicationRecord
       add_challenged_player(game_params[:challengedEmail])
       send_challenge_email(user, game_params)
     end
+    update(player_color: game_params[:playerColor])
   end
 
   def add_challenged_player(challenged_email)

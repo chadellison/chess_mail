@@ -6,11 +6,11 @@ module Api
       before_action :authenticate_with_token, except: :accept
 
       def index
-        respond_with Game.serialize_games(@user.games)
+        respond_with Game.serialize_games(@user.games, @user.email)
       end
 
       def show
-        serialized_game = { data: find_game.serialize_game }
+        serialized_game = { data: find_game.serialize_game(@user.email) }
 
         respond_with serialized_game
       end
@@ -19,7 +19,7 @@ module Api
         game = Game.handle_game_creation(@user, game_params)
 
         if game[:error].blank?
-          serialized_game = { data: game.serialize_game }
+          serialized_game = { data: game.serialize_game(@user.email) }
           render json: serialized_game, status: 201
         else
           render json: game, status: 400

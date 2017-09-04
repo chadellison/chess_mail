@@ -108,7 +108,7 @@ RSpec.describe User, type: :model do
       game2 = Game.create
       game3 = Game.create(challenged_email: user.email)
 
-      serialzed_games = Game.serialize_games([game1, game3])[:data]
+      serialzed_games = Game.serialize_games([game1, game3], user.email)[:data]
 
       expect(user.serialize_user[:data][:included].length).to eq 2
       expect(user.serialize_user[:data][:included]).to eq serialzed_games
