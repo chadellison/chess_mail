@@ -104,9 +104,24 @@ RSpec.describe User, type: :model do
                          token: token,
                          hashed_email: hashed_email)
 
-      game1 = user.games.create
+      user2 = User.create(email: Faker::Internet.email,
+                          password: 'password2',
+                          firstName: 'bob',
+                          lastName: 'jones',
+                          token: 'token2',
+                          hashed_email: 'hashed_email')
+
+      game1 = user.games.create(
+        challenged_email: Faker::Internet.email,
+        challenged_name: Faker::Name.name,
+        player_color: 'black'
+      )
+
       game2 = Game.create
-      game3 = Game.create(challenged_email: user.email)
+      game3 = user2.games.create(
+        challenged_email: user.email,
+        challenged_name: user.firstName
+      )
 
       serialzed_games = Game.serialize_games([game1, game3], user.email)[:data]
 
@@ -118,11 +133,12 @@ RSpec.describe User, type: :model do
   context 'before_save' do
     describe 'hashed_email' do
       it 'returns a hash of the user\'s email' do
-        user = User.create(email: Faker::Internet.email,
-                 password: Faker::Internet.password,
-                 firstName: first_name,
-                 lastName: last_name
-               )
+        user = User.create(
+          email: Faker::Internet.email,
+          password: Faker::Internet.password,
+          firstName: first_name,
+          lastName: last_name
+        )
 
         expect(user.hashed_email).to eq Digest::MD5.hexdigest(user.email)
       end

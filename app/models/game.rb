@@ -37,8 +37,8 @@ class Game < ApplicationRecord
       id: id,
       attributes: {
         pending: pending,
-        playerColor: current_player_color(user_email)
-        # if challengedEmail is equal to current eamil then not playerColor else player color
+        playerColor: current_player_color(user_email),
+        opponentName: current_opponent_name(user_email)
       },
       included: pieces.map(&:serialize_piece)
     }
@@ -49,6 +49,14 @@ class Game < ApplicationRecord
       player_color == 'white' ? 'black' : 'white'
     else
       player_color
+    end
+  end
+
+  def current_opponent_name(email)
+    if challenged_email == email
+      users.where.not(email: email).first.firstName
+    else
+      challenged_name
     end
   end
 
