@@ -34,10 +34,20 @@ class Game < ApplicationRecord
       id: id,
       attributes: {
         pending: pending
+        # if challengedEmail is equal to current eamil then not playerColor else player color
       },
       included: pieces.map(&:serialize_piece)
     }
   end
+
+  def current_player_color(email)
+    if challenged_email == email
+      player_color == 'white' ? 'black' : 'white'
+    else
+      player_color
+    end
+  end
+
 
   def setup(user, game_params)
     if game_params[:challengePlayer].to_s == 'true'
@@ -56,12 +66,8 @@ class Game < ApplicationRecord
   def send_challenge_email(user, game_params)
     full_name = "#{user.firstName.capitalize} #{user.lastName.capitalize}"
     challenged_player = User.find_by(email: game_params[:challengedEmail])
-
-    if challenged_player
-      token = challenged_player.token
-    else
-      token = ''
-    end
+    token = ''
+    token = challenged_player.token if challenged_player
 
     ChallengeMailer.challenge_player(
       full_name,

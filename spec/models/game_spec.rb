@@ -131,6 +131,48 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#current_player_color' do
+    context 'when the player is the challenger' do
+      let(:firstName) { Faker::Name.first_name }
+      let(:lastName) { Faker::Name.last_name }
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+
+      it 'returns the the color of the the challenger' do
+        challenged_email = Faker::Internet.email
+        user = User.create(
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password
+        )
+
+        game = Game.create(challenged_email: challenged_email, player_color: 'black')
+        expect(game.current_player_color(user.email)).to eq 'black'
+      end
+    end
+
+    context 'when the player is not the challenger; (palyer is the challenged)' do
+      let(:firstName) { Faker::Name.first_name }
+      let(:lastName) { Faker::Name.last_name }
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+
+      it 'returns the color of the player that is the challenged' do
+        challenged_email = Faker::Internet.email
+        user = User.create(
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password
+        )
+
+        game = Game.create(challenged_email: email, player_color: 'black')
+        expect(game.current_player_color(user.email)).to eq 'white'
+      end
+    end
+  end
+
   describe '#serialize_games' do
     xit 'serializes the passed in games' do
     end
