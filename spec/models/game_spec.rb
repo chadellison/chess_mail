@@ -14,7 +14,13 @@ RSpec.describe Game, type: :model do
       lastName: last_name
     )
 
-    game = Game.create
+    game = Game.create(
+      human: true,
+      challengedEmail: Faker::Internet.email,
+      challengedName: Faker::Name.name,
+      challengerColor: 'white'
+    )
+    
     game.users << user
 
     expect(game.users).to eq [user]
@@ -43,15 +49,15 @@ RSpec.describe Game, type: :model do
           lastName: last_name
         )
 
-        game_params = {
-          challengePlayer: true,
-          challengedEmail: Faker::Internet.email
-        }
+        game = Game.create(
+          human: true,
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
 
-        game = Game.create
-
-        expect_any_instance_of(Game).to receive(:add_challenged_player).with(game_params[:challengedEmail])
-        game.setup(user, game_params)
+        expect_any_instance_of(Game).to receive(:add_challenged_player)
+        game.setup(user)
       end
 
       it 'calls send_challenge_email' do
@@ -62,16 +68,15 @@ RSpec.describe Game, type: :model do
           lastName: last_name
         )
 
-        game_params = {
-          challengePlayer: true,
-          challengedEmail: Faker::Internet.email
-        }
+        game = Game.create(
+          human: true,
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
 
-        game = Game.create
-
-        expect_any_instance_of(Game).to receive(:send_challenge_email)
-            .with(user, game_params)
-        game.setup(user, game_params)
+        expect_any_instance_of(Game).to receive(:send_challenge_email).with(user)
+        game.setup(user)
       end
 
       it 'sets the player_color on the game' do
@@ -82,16 +87,16 @@ RSpec.describe Game, type: :model do
           lastName: last_name
         )
 
-        game_params = {
-          challengePlayer: true,
+        game = Game.create(
+          human: true,
           challengedEmail: Faker::Internet.email,
-          playerColor: 'white'
-        }
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
 
-        game = Game.create
-        game.setup(user, game_params)
+        game.setup(user)
 
-        expect(game.player_color).to eq 'white'
+        expect(game.challengerColor).to eq 'white'
       end
     end
   end
@@ -111,23 +116,14 @@ RSpec.describe Game, type: :model do
           lastName: last_name
         )
 
-        game = Game.create
-        expect{ game.add_challenged_player(user.email) }.to change{ game.users.count }.by(1)
-        expect(game.users.last).to eq user
-      end
-
-      it 'sets the challenged_id on the game to the user\'s id' do
-        user = User.create(
-          email: email,
-          password: password,
-          firstName: first_name,
-          lastName: last_name
+        game = Game.create(
+          human: true,
+          challengedEmail: user.email,
+          challengedName: user.firstName,
+          challengerColor: 'white'
         )
-
-        game = Game.create
-        game.add_challenged_player(user.email)
-
-        expect(game.challenged_email).to eq user.email
+        expect{ game.add_challenged_player }.to change{ game.users.count }.by(1)
+        expect(game.users.last).to eq user
       end
     end
 
@@ -145,8 +141,13 @@ RSpec.describe Game, type: :model do
           lastName: last_name
         )
 
-        game = Game.create
-        expect{ game.add_challenged_player(user.email) }.not_to change{ game.users.count }
+        game = Game.create(
+          human: true,
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+        expect{ game.add_challenged_player }.not_to change{ game.users.count }
       end
     end
   end
@@ -159,7 +160,9 @@ RSpec.describe Game, type: :model do
       let(:password) { 'password' }
 
       it 'returns the color of the the challenger' do
-        challenged_email = Faker::Internet.email
+        challengedEmail = Faker::Internet.email
+        challengedName = Faker::Name.name
+
         user = User.create(
           firstName: firstName,
           lastName: lastName,
@@ -167,7 +170,11 @@ RSpec.describe Game, type: :model do
           password: password
         )
 
-        game = Game.create(challenged_email: challenged_email, player_color: 'black')
+        game = Game.create(
+          challengedEmail: challengedEmail,
+          challengerColor: 'black',
+          challengedName: challengedName
+        )
         expect(game.current_player_color(user.email)).to eq 'black'
       end
     end
@@ -187,7 +194,11 @@ RSpec.describe Game, type: :model do
           password: password
         )
 
-        game = Game.create(challenged_email: email, player_color: 'black')
+        game = Game.create(
+          challengedEmail: user.email,
+          challengerColor: 'black',
+          challengedName: user.firstName
+        )
         expect(game.current_player_color(user.email)).to eq 'white'
       end
     end
@@ -201,8 +212,8 @@ RSpec.describe Game, type: :model do
       let(:password) { 'password' }
 
       it 'returns the first name of the challenged player' do
-        challenged_email = Faker::Internet.email
-        challenged_name = Faker::Name.name
+        challengedEmail = Faker::Internet.email
+        challengedName = Faker::Name.name
 
         user = User.create(
           firstName: firstName,
@@ -212,11 +223,11 @@ RSpec.describe Game, type: :model do
         )
 
         game = Game.create(
-          challenged_email: challenged_email,
-          challenged_name: challenged_name,
-          player_color: 'black'
+          challengedEmail: challengedEmail,
+          challengedName: challengedName,
+          challengerColor: 'black'
         )
-        expect(game.current_opponent_name(user.email)).to eq challenged_name
+        expect(game.current_opponent_name(user.email)).to eq challengedName
       end
     end
 
@@ -242,9 +253,9 @@ RSpec.describe Game, type: :model do
         )
 
         game = user.games.create(
-          challenged_email: challenged_user.email,
-          challenged_name: challenged_user.firstName,
-          player_color: 'black'
+          challengedEmail: challenged_user.email,
+          challengedName: challenged_user.firstName,
+          challengerColor: 'black'
         )
         expect(game.current_opponent_name(challenged_user.email)).to eq user.firstName
       end
@@ -264,9 +275,17 @@ RSpec.describe Game, type: :model do
   describe '#serialize_games' do
     it 'calls serialize game on each game' do
       user_email = Faker::Internet.email
+      user_name = Faker::Name.name
+
+      game = Game.create(
+        human: true,
+        challengedEmail:  user_email,
+        challengedName: user_name,
+        challengerColor: 'white'
+      )
 
       expect_any_instance_of(Game).to receive(:serialize_game).with(user_email)
-      games = [Game.create(challenged_email: user_email, player_color: 'white')]
+      games = [game]
 
       Game.serialize_games(games, user_email)
     end
@@ -281,13 +300,13 @@ RSpec.describe Game, type: :model do
         password: 'password'
       )
 
-      challenged_email = Faker::Internet.email
-      challenged_name = Faker::Name.name
+      challengedEmail = Faker::Internet.email
+      challengedName = Faker::Name.name
 
       game = Game.create(
-        challenged_email: challenged_email,
-        challenged_name: challenged_name,
-        player_color: 'black'
+        challengedEmail: challengedEmail,
+        challengedName: challengedName,
+        challengerColor: 'black'
       )
       game.pieces.create(
         pieceType: 'pawn',
@@ -301,8 +320,8 @@ RSpec.describe Game, type: :model do
         attributes: {
           pending: game.pending,
           playerColor: 'black',
-          opponentName: challenged_name,
-          opponentGravatar: Digest::MD5.hexdigest(challenged_email.downcase.strip),
+          opponentName: challengedName,
+          opponentGravatar: Digest::MD5.hexdigest(challengedEmail.downcase.strip),
           isChallenger: true
         },
         included: [game.pieces.first.serialize_piece]
@@ -312,20 +331,20 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#handle_game_creation' do
-    xit 'test' do
-    end
-  end
-
-  describe '#handle_challenge' do
-    context 'when a challenge is already in progress' do
-      xit 'returns an error message' do
-      end
-    end
-
-    context 'when a challenge has not been submitted' do
-      xit 'test' do
-      end
-    end
-  end
+  # describe '#handle_game_creation' do
+  #   xit 'test' do
+  #   end
+  # end
+  #
+  # describe '#handle_challenge' do
+  #   context 'when a challenge is already in progress' do
+  #     xit 'returns an error message' do
+  #     end
+  #   end
+  #
+  #   context 'when a challenge has not been submitted' do
+  #     xit 'test' do
+  #     end
+  #   end
+  # end
 end

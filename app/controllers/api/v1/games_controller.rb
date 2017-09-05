@@ -16,13 +16,14 @@ module Api
       end
 
       def create
-        game = Game.handle_game_creation(@user, game_params)
+        game = @user.games.create(game_params)
 
-        if game[:error].blank?
+        if game.valid?
+          game.setup(@user)
           serialized_game = { data: game.serialize_game(@user.email) }
           render json: serialized_game, status: 201
         else
-          render json: game, status: 400
+          render json: return_errors(game), status: 400
         end
       end
 
@@ -38,7 +39,7 @@ module Api
 
         if challenged_user
           game = challenged_user.games.find(params[:game_id])
-          game.update(pending: false) if challenged_user.email == game.challenged_email
+          game.update(pending: false) if challenged_user.email == game.challengedEmail
         else
           redirect_to ENV['host']
         end
@@ -56,8 +57,15 @@ module Api
 
       def game_params
         params.require(:game).permit(:challengedName, :challengedEmail,
-                                     :playerColor, :challengePlayer,
-                                     :challengeRobot)
+                                     :challengerColor, :human)
+      end
+
+      def return_errors(game)
+        {
+          errors: game.errors.map do |key, value|
+            "#{key} #{value}"
+          end.join("\n")
+        }
       end
     end
   end

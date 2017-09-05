@@ -19,7 +19,11 @@ RSpec.describe UserGame, type: :model do
   end
 
   it 'belongs_to a user' do
-    game = Game.create
+    game = Game.create(
+      challengedEmail: Faker::Internet.email,
+      challengedName: Faker::Name.name,
+      challengerColor: 'black'
+    )
 
     user_game = UserGame.create(game_id: game.id)
     expect(user_game.game).to eq game

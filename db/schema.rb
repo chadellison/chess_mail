@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170904041931) do
+ActiveRecord::Schema.define(version: 20170905015737) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,9 +26,10 @@ ActiveRecord::Schema.define(version: 20170904041931) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "pending", default: true
-    t.string "challenged_email"
-    t.string "player_color"
-    t.string "challenged_name"
+    t.string "challengedName"
+    t.string "challengedEmail"
+    t.boolean "human", default: true
+    t.string "challengerColor"
   end
 
   create_table "pieces", force: :cascade do |t|

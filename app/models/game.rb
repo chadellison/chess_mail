@@ -4,25 +4,26 @@ class Game < ApplicationRecord
   has_many :game_pieces
   has_many :pieces, through: :game_pieces
 
+  validates_presence_of :challengedName, :challengedEmail, :challengerColor
+
   class << self
-    def handle_game_creation(user, game_params)
-      if game_params[:challengedName].present? && game_params[:challengedEmail].present?
-        handle_challenge(user, game_params)
-      else
-        { error: 'Player name and player email must be filled.' }
-      end
-    end
-
-    def handle_challenge(user, game_params)
-      if user.games.find_by(challenged_email: game_params[:challengedEmail]).present?
-        { error: 'A game or challenge is already in progress for this person' }
-      else
-        game = user.games.create
-        game.setup(user, game_params)
-        game
-      end
-    end
-
+    # def handle_game_creation(user, game_params)
+    #   if game_params[:challengedName].present? && game_params[:challengedEmail].present?
+    #     handle_challenge(user, game_params)
+    #   else
+    #     { error: 'Player name and player email must be filled.' }
+    #   end
+    # end
+    #
+    # def handle_challenge(user, game_params)
+    #   if user.games.find_by(challengedEmail: game_params[:challengedEmail]).present?
+    #     { error: 'A game or challenge is already in progress for this person' }
+    #   else
+    #     game = user.games.create
+    #     game.setup(user, game_params)
+    #     game
+    #   end
+    # end
     def serialize_games(games, user_email)
       {
         data: games.map { |game| game.serialize_game(user_email) },
@@ -50,59 +51,54 @@ class Game < ApplicationRecord
   end
 
   def is_challenger?(email)
-    challenged_email != email
+    challengedEmail != email
   end
 
   def current_player_color(email)
-    if challenged_email == email
-      player_color == 'white' ? 'black' : 'white'
+    if challengedEmail == email
+      challengerColor == 'white' ? 'black' : 'white'
     else
-      player_color
+      challengerColor
     end
   end
 
   def current_opponent_name(email)
-    if challenged_email == email
+    if challengedEmail == email
       users.where.not(email: email).first.firstName
     else
-      challenged_name
+      challengedName
     end
   end
 
   def current_opponent_email(email)
-    if challenged_email == email
+    if challengedEmail == email
       users.where.not(email: email).first.email
     else
-      challenged_email
+      challengedEmail
     end
   end
 
-
-  def setup(user, game_params)
-    if game_params[:challengePlayer].to_s == 'true'
-      add_challenged_player(game_params[:challengedEmail])
-      send_challenge_email(user, game_params)
+  def setup(user)
+    if human == true
+      add_challenged_player
+      send_challenge_email(user)
     end
-    update(player_color: game_params[:playerColor])
   end
 
-  def add_challenged_player(challenged_email)
-    update(challenged_email: challenged_email)
-
-    user = User.find_by(email: challenged_email)
+  def add_challenged_player
+    user = User.find_by(email: challengedEmail)
     users << user if user
   end
 
-  def send_challenge_email(user, game_params)
-    full_name = "#{user.firstName.capitalize} #{user.lastName.capitalize}"
-    challenged_player = User.find_by(email: game_params[:challengedEmail])
+  def send_challenge_email(user)
+    challenged_player = User.find_by(email: challengedEmail)
     token = ''
     token = challenged_player.token if challenged_player
 
     ChallengeMailer.challenge_player(
-      full_name,
-      game_params[:challengedName],
-      game_params[:challengedEmail],
+      "#{user.firstName.capitalize} #{user.lastName.capitalize}",
+      challengedName,
+      challengedEmail,
       "#{ENV['api_host']}/api/v1/games/accept/#{id}?token=#{token}",
       ENV['host']
     )

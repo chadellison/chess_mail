@@ -14,7 +14,13 @@ RSpec.describe User, type: :model do
       lastName: last_name
     )
 
-    game = Game.create
+    game = Game.create(
+      human: true,
+      challengedEmail: Faker::Internet.email,
+      challengedName: Faker::Name.name,
+      challengerColor: 'white'
+    )
+
     user.games << game
 
     expect(user.games).to eq [game]
@@ -112,15 +118,16 @@ RSpec.describe User, type: :model do
                           hashed_email: 'hashed_email')
 
       game1 = user.games.create(
-        challenged_email: Faker::Internet.email,
-        challenged_name: Faker::Name.name,
-        player_color: 'black'
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'black'
       )
 
       game2 = Game.create
       game3 = user2.games.create(
-        challenged_email: user.email,
-        challenged_name: user.firstName
+        challengedEmail: user.email,
+        challengedName: user.firstName,
+        challengerColor: 'white'
       )
 
       serialzed_games = Game.serialize_games([game1, game3], user.email)[:data]

@@ -13,7 +13,11 @@ RSpec.describe GamePiece, type: :model do
   end
 
   it 'belongs_to a game' do
-    game = Game.create
+    game = Game.create(
+      challengedEmail: Faker::Internet.email,
+      challengedName: Faker::Name.name,
+      challengerColor: 'whtie'
+    )
 
     game_piece = UserGame.create(game_id: game.id)
     expect(game_piece.game).to eq game
