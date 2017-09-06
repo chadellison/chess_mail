@@ -6,7 +6,7 @@ module Api
       before_action :authenticate_with_token, except: :accept
 
       def index
-        respond_with Game.serialize_games(@user.games, @user.email)
+        render json: Game.serialize_games(@user.games, @user.email)
       end
 
       def show
@@ -40,9 +40,9 @@ module Api
         if challenged_user
           game = Game.where(challengedEmail: challenged_user.email).find(params[:game_id])
           game.update(pending: false)
-        else
-          redirect_to ENV['host']
         end
+
+        redirect_to ENV['host']
       end
 
       private
