@@ -38,8 +38,8 @@ module Api
         challenged_user = User.find_by(token: params[:token])
 
         if challenged_user
-          game = challenged_user.games.find(params[:game_id])
-          game.update(pending: false) if challenged_user.email == game.challengedEmail
+          game = Game.where(challengedEmail: challenged_user.email).find(params[:game_id])
+          game.update(pending: false)
         else
           redirect_to ENV['host']
         end
