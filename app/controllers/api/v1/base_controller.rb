@@ -8,6 +8,14 @@ module Api
           return raise ActiveRecord::RecordNotFound
         end
       end
+
+      def return_errors(resource)
+        {
+          errors: resource.errors.map do |key, value|
+            "#{key} #{value}"
+          end.join("\n")
+        }
+      end
     end
   end
 end

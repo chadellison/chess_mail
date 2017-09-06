@@ -59,14 +59,6 @@ module Api
         params.require(:game).permit(:challengedName, :challengedEmail,
                                      :challengerColor, :human)
       end
-
-      def return_errors(game)
-        {
-          errors: game.errors.map do |key, value|
-            "#{key} #{value}"
-          end.join("\n")
-        }
-      end
     end
   end
 end

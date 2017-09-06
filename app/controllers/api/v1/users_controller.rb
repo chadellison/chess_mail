@@ -1,6 +1,6 @@
 module Api
   module V1
-    class UsersController < ApplicationController
+    class UsersController < Api::V1::BaseController
       respond_to :json
 
       def create
@@ -12,8 +12,7 @@ module Api
 
           render json: user.serialize_user, status: 201, location: nil
         else
-          errors = user.errors.map { |key, value| "#{key} #{value}" }.join("\n")
-          render json: { errors: errors }, status: 400
+          render json: return_errors(user), status: 400
         end
       end
 
