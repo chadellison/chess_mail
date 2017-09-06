@@ -7,23 +7,6 @@ class Game < ApplicationRecord
   validates_presence_of :challengedName, :challengedEmail, :challengerColor
 
   class << self
-    # def handle_game_creation(user, game_params)
-    #   if game_params[:challengedName].present? && game_params[:challengedEmail].present?
-    #     handle_challenge(user, game_params)
-    #   else
-    #     { error: 'Player name and player email must be filled.' }
-    #   end
-    # end
-    #
-    # def handle_challenge(user, game_params)
-    #   if user.games.find_by(challengedEmail: game_params[:challengedEmail]).present?
-    #     { error: 'A game or challenge is already in progress for this person' }
-    #   else
-    #     game = user.games.create
-    #     game.setup(user, game_params)
-    #     game
-    #   end
-    # end
     def serialize_games(games, user_email)
       {
         data: games.map { |game| game.serialize_game(user_email) },
@@ -95,12 +78,12 @@ class Game < ApplicationRecord
     token = ''
     token = challenged_player.token if challenged_player
 
-    ChallengeMailer.challenge_player(
+    ChallengeMailer.challenge(
       "#{user.firstName.capitalize} #{user.lastName.capitalize}",
       challengedName,
       challengedEmail,
       "#{ENV['api_host']}/api/v1/games/accept/#{id}?token=#{token}",
       ENV['host']
-    )
+    ).deliver_later
   end
 end
