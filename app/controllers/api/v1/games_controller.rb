@@ -52,7 +52,7 @@ module Api
       end
 
       def piece_params
-        params.require(:piece).permit(:id, :pieceType, :color, :currentPosition)
+        params.require(:piece).permit(:pieceType, :color, :currentPosition)
       end
 
       def game_params

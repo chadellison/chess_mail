@@ -142,7 +142,6 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       let(:piece_params) {
         {
-          id: piece.id,
           pieceType: piece.pieceType,
           color: piece.color,
           currentPosition: piece.currentPosition
@@ -179,7 +178,6 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       let(:piece_params) {
         {
-          id: piece.id,
           pieceType: piece.pieceType,
           color: piece.color,
           currentPosition: piece.currentPosition
