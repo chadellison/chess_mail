@@ -36,13 +36,13 @@ module Api
 
       def accept
         challenged_user = User.find_by(token: params[:token])
-
         if challenged_user
           game = Game.where(challengedEmail: challenged_user.email).find(params[:game_id])
           game.update(pending: false)
+          render status: 204
+        else
+          redirect_to ENV['host']
         end
-
-        redirect_to ENV['host']
       end
 
       private
@@ -52,7 +52,8 @@ module Api
       end
 
       def piece_params
-        params.require(:piece).permit(:pieceType, :color, :currentPosition)
+        params.require(:piece).permit(:pieceType, :color, :currentPosition,
+                                      :hasMoved, :movedTwo, :startIndex)
       end
 
       def game_params

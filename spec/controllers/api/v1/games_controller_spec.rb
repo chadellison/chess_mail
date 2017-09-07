@@ -524,7 +524,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           params = { game_id: game.id, token: challengedUser.token }
 
           get :accept, params: params, format: :json
-          expect(response.status).to eq 302
+          expect(response.status).to eq 204
           expect(game.reload.pending).to be false
           expect(game.challengedEmail).to eq challengedUser.email
         end
