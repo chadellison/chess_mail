@@ -31,7 +31,7 @@ module Api
         piece = Piece.find_or_create_by(piece_params)
         find_game.pieces << piece
 
-        render status: 204
+        render json: find_game.serialize_game(@user.email), status: 201
       end
 
       def accept

@@ -139,7 +139,6 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       end
 
       let(:piece) { Piece.create(pieceType: 'rook', color: 'black', currentPosition: 'a6') }
-
       let(:piece_params) {
         {
           pieceType: piece.pieceType,
@@ -153,7 +152,8 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           get :update, params: { id: game.id, token: user.token, piece: piece_params }, format: :json
         }.to change{ game.pieces.count}.by(1)
 
-        expect(response.status).to eq 204
+        expect(response.status).to eq 201
+        expect(JSON.parse(response.body)['included'].first['id']).to eq piece.id
         expect(game.pieces).to eq [piece]
       end
     end
