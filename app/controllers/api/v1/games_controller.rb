@@ -4,13 +4,14 @@ module Api
       respond_to :json
 
       before_action :authenticate_with_token, except: :accept
+      before_action :find_game, only: [:show, :update]
 
       def index
         render json: Game.serialize_games(@user.games, @user.email)
       end
 
       def show
-        serialized_game = { data: find_game.serialize_game(@user.email) }
+        serialized_game = { data: @game.serialize_game(@user.email) }
 
         respond_with serialized_game
       end
@@ -29,9 +30,9 @@ module Api
 
       def update
         piece = Piece.find_or_create_by(piece_params)
-        find_game.pieces << piece
-
-        render json: find_game.serialize_game(@user.email), status: 201
+        @game.pieces << piece
+        serialized_game = { data: @game.serialize_game(@user.email) }
+        render json: serialized_game, status: 201
       end
 
       def accept
@@ -48,7 +49,7 @@ module Api
       private
 
       def find_game
-        @user.games.find(params[:id])
+        @game = @user.games.find(params[:id])
       end
 
       def piece_params

@@ -153,7 +153,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         }.to change{ game.pieces.count}.by(1)
 
         expect(response.status).to eq 201
-        expect(JSON.parse(response.body)['included'].first['id']).to eq piece.id
+        expect(JSON.parse(response.body)['data']['included'].first['id']).to eq piece.id
         expect(game.pieces).to eq [piece]
       end
     end
