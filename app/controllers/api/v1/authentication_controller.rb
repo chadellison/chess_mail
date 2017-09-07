@@ -12,7 +12,7 @@ module Api
         else
           error = ActiveRecord::RecordNotFound
           message = { errors: "Invalid Credentials" }
-          render json: message, location: nil, status: 404
+          render json: message, status: 404
         end
       end
 
