@@ -64,11 +64,11 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       let!(:user) {
         User.create(email: email,
-        password: password,
-        firstName: first_name,
-        lastName: last_name,
-        approved: true,
-        token: token)
+                    password: password,
+                    firstName: first_name,
+                    lastName: last_name,
+                    approved: true,
+                    token: token)
       }
 
       let!(:game) do
@@ -98,11 +98,11 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       let!(:user) {
         User.create(email: email,
-        password: password,
-        firstName: first_name,
-        lastName: last_name,
-        approved: true,
-        token: token)
+                    password: password,
+                    firstName: first_name,
+                    lastName: last_name,
+                    approved: true,
+                    token: token)
       }
 
       it 'returns a 404' do
@@ -123,11 +123,11 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       let(:user) {
         User.create(email: email,
-        password: password,
-        firstName: first_name,
-        lastName: last_name,
-        approved: true,
-        token: token)
+                    password: password,
+                    firstName: first_name,
+                    lastName: last_name,
+                    approved: true,
+                    token: token)
       }
 
       let(:game) do
@@ -167,11 +167,11 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       let!(:user) {
         User.create(email: email,
-        password: password,
-        firstName: first_name,
-        lastName: last_name,
-        approved: true,
-        token: token)
+                    password: password,
+                    firstName: first_name,
+                    lastName: last_name,
+                    approved: true,
+                    token: token)
       }
 
       let(:piece) { Piece.create(pieceType: 'rook', color: 'black', currentPosition: 'a6') }
