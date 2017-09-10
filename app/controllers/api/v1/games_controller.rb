@@ -37,12 +37,16 @@ module Api
 
       def accept
         challenged_user = User.find_by(token: params[:token])
+
         if challenged_user
           game = Game.where(challengedEmail: challenged_user.email).find(params[:game_id])
           game.update(pending: false)
-          render status: 204
-        else
+        end
+
+        if params[:from_email].present?
           redirect_to ENV['host']
+        else
+          render status: 204
         end
       end
 
