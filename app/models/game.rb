@@ -75,15 +75,19 @@ class Game < ApplicationRecord
 
   def send_challenge_email(user)
     challenged_player = User.find_by(email: challengedEmail)
-    token = ''
-    token = challenged_player.token if challenged_player
+    token = challenged_player ? challenged_player.token : ''
 
     ChallengeMailer.challenge(
       "#{user.firstName.capitalize} #{user.lastName.capitalize}",
       challengedName,
       challengedEmail,
-      "#{ENV['api_host']}/api/v1/games/accept/#{id}?token=#{token}&from_email=true",
-      ENV['host']
+      "#{ENV['api_host']}/api/v1/games/accept/#{id}?token=#{token}&from_email=true"
     ).deliver_later
+  end
+
+  def send_new_move_email(piece, user)
+    recipient = users.detect { |each_user| each_user != user }
+    opponent_name = user.firstName
+    MoveMailer.move(recipient, opponent_name, piece).deliver_later
   end
 end

@@ -1,12 +1,12 @@
 class ChallengeMailer < ApplicationMailer
-  default from: "no-reply@beerproject.com"
+  default from: "no-reply@chess-mail.com"
 
-  def challenge(player_name, challenged_name, challenged_email, accept, url)
+  def challenge(player_name, challenged_name, challenged_email, accept)
     @player_name = player_name
     @challenged_name = challenged_name
     @challenged_email = challenged_email
     @accept = accept
-    @url = url
+    @host = ENV['host']
     mail(to: challenged_email, subject: "You have been challenged to a game of chess")
   end
 end

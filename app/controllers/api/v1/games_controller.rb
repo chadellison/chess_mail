@@ -31,6 +31,8 @@ module Api
       def update
         piece = Piece.find_or_create_by(piece_params)
         @game.pieces << piece
+        @game.send_new_move_email(piece, @user)
+
         serialized_game = { data: @game.serialize_game(@user.email) }
         render json: serialized_game, status: 201
       end
