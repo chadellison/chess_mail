@@ -62,14 +62,16 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       let(:last_name) { Faker::Name.last_name }
       let(:token) { 'token' }
 
-      let!(:user) {
-        User.create(email: email,
-                    password: password,
-                    firstName: first_name,
-                    lastName: last_name,
-                    approved: true,
-                    token: token)
-      }
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
 
       let!(:game) do
         user.games.create(
@@ -96,14 +98,16 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       let(:last_name) { Faker::Name.last_name }
       let(:token) { 'token' }
 
-      let!(:user) {
-        User.create(email: email,
-                    password: password,
-                    firstName: first_name,
-                    lastName: last_name,
-                    approved: true,
-                    token: token)
-      }
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
 
       it 'returns a 404' do
         expect{
@@ -121,14 +125,16 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       let(:last_name) { Faker::Name.last_name }
       let(:token) { 'token' }
 
-      let(:user) {
-        User.create(email: email,
-                    password: password,
-                    firstName: first_name,
-                    lastName: last_name,
-                    approved: true,
-                    token: token)
-      }
+      let(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
 
       let(:game) do
         user.games.create(
@@ -165,30 +171,32 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       let(:last_name) { Faker::Name.last_name }
       let(:token) { 'token' }
 
-      let!(:user) {
-        User.create(email: email,
-                    password: password,
-                    firstName: first_name,
-                    lastName: last_name,
-                    approved: true,
-                    token: token)
-      }
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
 
       let(:piece) { Piece.create(pieceType: 'rook', color: 'black', currentPosition: 'a6') }
 
-      let(:piece_params) {
+      let(:piece_params) do
         {
           pieceType: piece.pieceType,
           color: piece.color,
           currentPosition: piece.currentPosition
         }
-      }
+      end
 
       it 'returns a 404' do
-        expect{
+        expect {
           get :update, params: { id: Faker::Number.number(8),
-                                  token: user.token,
-                                  piece: piece_params }, format: :json
+                                 token: user.token,
+                                 piece: piece_params }, format: :json
         }.to raise_exception(ActiveRecord::RecordNotFound)
       end
     end
@@ -203,14 +211,16 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         let(:last_name) { Faker::Name.last_name }
         let(:token) { 'token' }
 
-        let!(:user) {
-          User.create(email: email,
-                      password: password,
-                      firstName: first_name,
-                      lastName: last_name,
-                      approved: true,
-                      token: token)
-        }
+        let!(:user) do
+          User.create(
+            email: email,
+            password: password,
+            firstName: first_name,
+            lastName: last_name,
+            approved: true,
+            token: token
+          )
+        end
 
         let!(:challengedUser) {
           User.create(email: 'bob@example.com',
@@ -221,7 +231,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
                       token: 'other_token')
         }
 
-        let(:game_params) {
+        let(:game_params) do
           {
             game: {
               challengedName: challengedUser.firstName,
@@ -231,12 +241,12 @@ RSpec.describe Api::V1::GamesController, type: :controller do
             },
             token: user.token
           }
-        }
+        end
 
         it 'creates and returns the game' do
-          expect{
+          expect {
             post :create, params: game_params, format: :json
-          }.to change{ user.games.count }.by(1)
+          }.to change { user.games.count }.by(1)
 
           expect(response.status).to eq 201
           expect(JSON.parse(response.body)['data']['type']).to eq 'game'
@@ -266,7 +276,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           let(:challengedEmail) { Faker::Internet.email }
           let(:challengedName) { Faker::Name.first_name }
 
-          let(:params) {
+          let(:params) do
             {
               game: {
                 challengedName: challengedName,
@@ -277,7 +287,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
               },
               token: user.token
             }
-          }
+          end
 
           it 'sets the challenged user\'s email on the game' do
             post :create, params: params, format: :json
@@ -305,16 +315,18 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         let(:last_name) { Faker::Name.last_name }
         let(:token) { 'token' }
 
-        let!(:user) {
-          User.create(email: email,
-          password: password,
-          firstName: first_name,
-          lastName: last_name,
-          approved: true,
-          token: token)
-        }
+        let!(:user) do
+          User.create(
+            email: email,
+            password: password,
+            firstName: first_name,
+            lastName: last_name,
+            approved: true,
+            token: token
+          )
+        end
 
-        let(:game_params) {
+        let(:game_params) do
           {
             game: {
               challengedName: '',
@@ -325,7 +337,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
             },
             token: user.token
           }
-        }
+        end
 
         it 'does not create a game' do
           expect{
@@ -395,16 +407,18 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         let(:last_name) { Faker::Name.last_name }
         let(:token) { 'token' }
 
-        let!(:user) {
-          User.create(email: email,
-          password: password,
-          firstName: first_name,
-          lastName: last_name,
-          approved: true,
-          token: token)
-        }
+        let!(:user) do
+          User.create(
+            email: email,
+            password: password,
+            firstName: first_name,
+            lastName: last_name,
+            approved: true,
+            token: token
+          )
+        end
 
-        let(:game_params) {
+        let(:game_params) do
           {
             game: {
               challengedName: 'same user',
@@ -415,12 +429,12 @@ RSpec.describe Api::V1::GamesController, type: :controller do
             },
             token: user.token
           }
-        }
+        end
 
         it 'does not create a game' do
-          expect{
+          expect {
             post :create, params: game_params, format: :json
-          }.not_to change{ Game.count }
+          }.not_to change { Game.count }
         end
 
         it 'returns a json api error message' do
@@ -590,12 +604,14 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         end
 
         let!(:challengedUser) do
-          User.create(email: 'bob@example.com',
-                      password: 'password',
-                      firstName: 'bob',
-                      lastName: 'jones',
-                      approved: true,
-                      token: 'other_token')
+          User.create(
+            email: 'bob@example.com',
+            password: 'password',
+            firstName: 'bob',
+            lastName: 'jones',
+            approved: true,
+            token: 'other_token'
+          )
         end
 
         context 'when the player\'s email matches the game\'s challengedEmail' do
