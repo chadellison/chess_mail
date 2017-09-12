@@ -150,6 +150,19 @@ RSpec.describe User, type: :model do
         expect(user.hashed_email).to eq Digest::MD5.hexdigest(user.email)
       end
     end
+
+    describe 'downcase_email' do
+      it 'downcases the user\'s email' do
+        user = User.create(
+          email: 'CapitalEmail.com',
+          password: Faker::Internet.password,
+          firstName: first_name,
+          lastName: last_name
+        )
+
+        expect(user.downcase_email).to eq 'capitalemail.com'
+      end
+    end
   end
 
   describe '#send_confirmation_email' do
