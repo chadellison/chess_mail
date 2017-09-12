@@ -388,59 +388,47 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         end
       end
 
-      context 'when the player has already submitted a challenge to the that person' do
+      context 'when the email passed in is the same as the player who is submitting the challenge' do
         let(:email) { Faker::Internet.email }
         let(:password) { 'password' }
         let(:first_name) { Faker::Name.first_name }
         let(:last_name) { Faker::Name.last_name }
         let(:token) { 'token' }
 
-        let!(:user) do
+        let!(:user) {
           User.create(email: email,
-                      password: password,
-                      firstName: first_name,
-                      lastName: last_name,
-                      approved: true,
-                      token: token)
-        end
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token)
+        }
 
-        let!(:challengedUser) do
-          User.create(email: 'bob@example.com',
-                      password: 'password',
-                      firstName: 'bob',
-                      lastName: 'jones',
-                      approved: true,
-                      token: 'other_token')
-        end
-
-        let(:game_params) do
+        let(:game_params) {
           {
             game: {
-              challengedName: challengedUser.firstName,
-              challengedEmail: challengedUser.email,
+              challengedName: 'same user',
+              challengedEmail: user.email,
               challengerColor: 'white',
               challengePlayer: true,
               challengeRobot: false
             },
             token: user.token
           }
-        end
+        }
 
-        xit 'does not create a game' do
-          user.games.create(challengedEmail: challengedUser.email)
-
+        it 'does not create a game' do
           expect{
             post :create, params: game_params, format: :json
           }.not_to change{ Game.count }
         end
 
-        xit 'returns a json api error message' do
-          user.games.create(challengedEmail: challengedUser.email)
-
-          error = 'A game or challenge is already in progress for this person'
+        it 'returns a json api error message' do
+          error = 'Your opponent must be someone other than yourself.'
           post :create, params: game_params, format: :json
+
           expect(response.status).to eq 400
-          expect(JSON.parse(response.body)['error']).to eq error
+          expect(JSON.parse(response.body)['errors']).to eq error
         end
       end
     end

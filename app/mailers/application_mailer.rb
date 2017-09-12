@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'from@chess-mail.com'
+  default from: 'no-reply@chess-mail.com'
   layout 'mailer'
 end

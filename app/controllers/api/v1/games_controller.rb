@@ -5,6 +5,7 @@ module Api
 
       before_action :authenticate_with_token, except: :accept
       before_action :find_game, only: [:show, :update]
+      before_action :validate_challenged_email, only: :create
 
       def index
         render json: Game.serialize_games(@user.games, @user.email)
@@ -66,6 +67,13 @@ module Api
       def game_params
         params.require(:game).permit(:challengedName, :challengedEmail,
                                      :challengerColor, :human)
+      end
+
+      def validate_challenged_email
+        if game_params[:challengedEmail] == @user.email
+          error = { errors: 'Your opponent must be someone other than yourself.' }
+          render json: error, status: 400
+        end
       end
     end
   end

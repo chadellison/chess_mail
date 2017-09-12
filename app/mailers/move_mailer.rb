@@ -1,6 +1,4 @@
 class MoveMailer < ApplicationMailer
-  default from: 'no-reply@chess-mail.com'
-
   def move(recipient, opponent_name, piece)
     @recipient     = recipient
     @opponent_name = opponent_name

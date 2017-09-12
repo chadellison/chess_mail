@@ -1,6 +1,4 @@
 class ChallengeMailer < ApplicationMailer
-  default from: "no-reply@chess-mail.com"
-
   def challenge(player_name, challenged_name, challenged_email, accept)
     @player_name = player_name
     @challenged_name = challenged_name
