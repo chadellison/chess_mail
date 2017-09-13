@@ -154,13 +154,19 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       }
 
       it 'updates a user\'s game' do
-        expect{
+        expect {
           get :update, params: { id: game.id, token: user.token, piece: piece_params }, format: :json
-        }.to change{ game.pieces.count}.by(1)
+        }.to change { game.pieces.count }.by(1)
 
         expect(response.status).to eq 201
         expect(JSON.parse(response.body)['data']['included'].first['id']).to eq piece.id
         expect(game.pieces).to eq [piece]
+      end
+
+      it 'calls send_new_move_email' do
+        expect_any_instance_of(Game).to receive(:send_new_move_email)
+          .with(piece, user)
+        get :update, params: { id: game.id, token: user.token, piece: piece_params }, format: :json
       end
     end
 
@@ -595,12 +601,14 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         let(:token) { 'token' }
 
         let!(:user) do
-          User.create(email: email,
-                      password: password,
-                      firstName: first_name,
-                      lastName: last_name,
-                      approved: true,
-                      token: token)
+          User.create(
+            email: email,
+            password: password,
+            firstName: first_name,
+            lastName: last_name,
+            approved: true,
+            token: token
+          )
         end
 
         let!(:challengedUser) do
@@ -630,6 +638,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
             }
 
             get :accept, params: params, format: :json
+
             expect(response.status).to eq 302
             expect(game.reload.pending).to be false
             expect(game.challengedEmail).to eq challengedUser.email
@@ -655,6 +664,198 @@ RSpec.describe Api::V1::GamesController, type: :controller do
             expect(game.reload.pending).to be true
           end
         end
+      end
+    end
+  end
+
+  describe '#destroy' do
+    context 'when the player is not authenticated' do
+      it 'raises a record not found error' do
+        user = User.new
+        params = { id: Faker::Number.number(4), token: user.token }
+
+        expect { delete :destroy, params: params, format: :json }
+          .to raise_exception(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when the game cannot be found' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
+
+      it 'raises a record not found error' do
+        params = { id: Faker::Number.number(4), token: user.token }
+
+        expect { delete :destroy, params: params, format: :json }
+          .to raise_exception(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when the game is pending' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
+
+      let!(:challengedUser) do
+        User.create(
+          email: 'bob@example.com',
+          password: 'password',
+          firstName: 'bob',
+          lastName: 'jones',
+          approved: true,
+          token: 'other_token'
+        )
+      end
+
+      let(:game) do
+        user.games.create(
+          challengedEmail: challengedUser.email,
+          challengedName: challengedUser.firstName,
+          challengerColor: 'white'
+        )
+      end
+
+      it 'deletes the game' do
+        params = { id: game.id, token: user.token }
+
+        expect { delete :destroy, params: params, format: :json }
+          .to change { Game.count }.by(-1)
+
+        expect(response.status).to eq 204
+      end
+    end
+
+    context 'when the game is active' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
+
+      let!(:challengedUser) do
+        User.create(
+          email: 'bob@example.com',
+          password: 'password',
+          firstName: 'bob',
+          lastName: 'jones',
+          approved: true,
+          token: 'other_token'
+        )
+      end
+
+      let(:game) do
+        user.games.create(
+          challengedEmail: challengedUser.email,
+          challengedName: challengedUser.firstName,
+          challengerColor: 'white',
+          pending: false
+        )
+      end
+
+      it 'archives the game' do
+        params = { id: game.id, token: user.token }
+
+        delete :destroy, params: params, format: :json
+
+        expect(game.reload.archived).to be true
+        expect(response.status).to eq 204
+      end
+
+      it 'sets the game outcome to the opponent color as the winner' do
+        params = { id: game.id, token: user.token }
+        opponent_color = 'black'
+
+        delete :destroy, params: params, format: :json
+
+        expect(game.reload.outcome).to eq opponent_color + ' wins!'
+      end
+    end
+
+    context 'when the game outcome is complete' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
+
+      let!(:challengedUser) do
+        User.create(
+          email: 'bob@example.com',
+          password: 'password',
+          firstName: 'bob',
+          lastName: 'jones',
+          approved: true,
+          token: 'other_token'
+        )
+      end
+
+      let(:game) do
+        user.games.create(
+          challengedEmail: challengedUser.email,
+          challengedName: challengedUser.firstName,
+          challengerColor: 'white',
+          pending: false,
+          outcome: 'draw!'
+        )
+      end
+
+      it 'archives the game' do
+        params = { id: game.id, token: user.token }
+
+        delete :destroy, params: params, format: :json
+
+        expect(game.reload.archived).to be true
+        expect(game.reload.outcome).to eq 'draw!'
+        expect(response.status).to eq 204
       end
     end
   end

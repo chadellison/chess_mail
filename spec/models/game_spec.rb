@@ -20,7 +20,7 @@ RSpec.describe Game, type: :model do
       challengedName: Faker::Name.name,
       challengerColor: 'white'
     )
-    
+
     game.users << user
 
     expect(game.users).to eq [user]
@@ -331,20 +331,8 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  # describe '#handle_game_creation' do
-  #   xit 'test' do
-  #   end
-  # end
-  #
-  # describe '#handle_challenge' do
-  #   context 'when a challenge is already in progress' do
-  #     xit 'returns an error message' do
-  #     end
-  #   end
-  #
-  #   context 'when a challenge has not been submitted' do
-  #     xit 'test' do
-  #     end
-  #   end
-  # end
+  describe '#archive' do
+    xit 'test' do
+    end
+  end
 end

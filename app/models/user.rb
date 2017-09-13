@@ -17,9 +17,6 @@ class User < ApplicationRecord
   end
 
   def serialize_user
-    user_games = (Game.where(challengedEmail: email) + games).sort_by(&:created_at).uniq
-    serialized_games = Game.serialize_games(user_games, email)
-
     {
       data: {
         type: 'user',
@@ -30,9 +27,16 @@ class User < ApplicationRecord
           firstName: firstName,
           lastName: lastName
         },
-        included: serialized_games[:data]
+        included: user_games
       }
     }
+  end
+
+  def user_games
+    unique_games = (Game.challenged_games(email).not_archived + games.not_archived)
+                   .sort_by(&:created_at).uniq
+                   
+    Game.serialize_games(unique_games, email)[:data]
   end
 
   def send_confirmation_email

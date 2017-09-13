@@ -130,10 +130,9 @@ RSpec.describe User, type: :model do
         challengerColor: 'white'
       )
 
-      serialzed_games = Game.serialize_games([game1, game3], user.email)[:data]
-
+      serialized_games = Game.serialize_games([game1, game3], user.email)[:data]
       expect(user.serialize_user[:data][:included].length).to eq 2
-      expect(user.serialize_user[:data][:included]).to eq serialzed_games
+      expect(user.serialize_user[:data][:included]).to eq serialized_games
     end
   end
 
@@ -166,6 +165,11 @@ RSpec.describe User, type: :model do
   end
 
   describe '#send_confirmation_email' do
+    xit 'test' do
+    end
+  end
+
+  describe '#user_games' do
     xit 'test' do
     end
   end

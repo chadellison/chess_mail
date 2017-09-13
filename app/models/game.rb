@@ -6,6 +6,9 @@ class Game < ApplicationRecord
 
   validates_presence_of :challengedName, :challengedEmail, :challengerColor
 
+  scope :not_archived, -> { where(archived: false) }
+  scope :challenged_games, ->(email) { where(challengedEmail: email) }
+
   class << self
     def serialize_games(games, user_email)
       {
@@ -71,6 +74,15 @@ class Game < ApplicationRecord
   def add_challenged_player
     user = User.find_by(email: challengedEmail)
     users << user if user
+  end
+
+  def archive(user)
+    if outcome.present?
+      update(archived: true)
+    else
+      winner = current_player_color(user) == 'white' ? 'black wins!' : 'white wins!'
+      update(archived: true, outcome: winner)
+    end
   end
 
   def send_challenge_email(user)
