@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       before_action :authenticate_with_token, except: :accept
-      before_action :find_game, only: [:show, :update, :destroy]
+      before_action :find_game, only: [:show, :update, :end_game, :destroy]
       before_action :validate_challenged_email, only: :create
 
       def index
@@ -36,6 +36,10 @@ module Api
 
         serialized_game = { data: @game.serialize_game(@user.email) }
         render json: serialized_game, status: 201
+      end
+
+      def end_game
+        @game.update(outcome: params[:outcome])
       end
 
       def destroy

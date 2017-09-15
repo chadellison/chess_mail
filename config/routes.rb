@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       resources :users, only: [:create]
       resources  :games, only: [:create, :index, :show, :update, :destroy]
       get 'games/accept/:game_id', to: 'games#accept'
+      patch 'games/end_game/:id', to: 'games#end_game'
       get 'users', to: 'users#approve'
     end
   end
