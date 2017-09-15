@@ -27,15 +27,15 @@ class User < ApplicationRecord
           firstName: firstName,
           lastName: lastName
         },
-        included: user_games
+        included: serialized_user_games
       }
     }
   end
 
-  def user_games
+  def serialized_user_games
     unique_games = (Game.challenged_games(email).not_archived + games.not_archived)
                    .sort_by(&:created_at).uniq
-                   
+
     Game.serialize_games(unique_games, email)[:data]
   end
 

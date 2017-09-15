@@ -169,7 +169,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '#user_games' do
+  describe '#serialized_user_games' do
     xit 'test' do
     end
   end
