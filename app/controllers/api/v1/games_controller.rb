@@ -45,6 +45,9 @@ module Api
           # needs backend validation to match outcome param
           @game.update(outcome: params[:outcome])
         end
+
+        serialized_game = { data: @game.serialize_game(@user.email) }
+        render json: serialized_game, status: 201
       end
 
       def destroy

@@ -884,7 +884,8 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         patch :end_game, params: params, format: :json
 
         expect(game.reload.outcome).to eq 'white wins'
-        expect(response.status).to eq 204
+        expect(response.status).to eq 201
+        expect(JSON.parse(response.body)['data']['id']).to eq game.id
       end
     end
 
@@ -933,7 +934,8 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         patch :end_game, params: params, format: :json
 
         expect(game.reload.outcome).to eq 'draw'
-        expect(response.status).to eq 204
+        expect(response.status).to eq 201
+        expect(JSON.parse(response.body)['data']['id']).to eq game.id
       end
     end
 
@@ -981,8 +983,9 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
         patch :end_game, params: params, format: :json
 
-        expect(response.status).to eq 204
+        expect(response.status).to eq 201
         expect(game.reload.outcome).to eq opponent_color + ' wins!'
+        expect(JSON.parse(response.body)['data']['id']).to eq game.id
       end
     end
   end
