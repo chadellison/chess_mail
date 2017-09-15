@@ -117,7 +117,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     end
   end
 
-  describe '#update' do
+  describe '#move' do
     context 'when the game exists' do
       let(:email) { Faker::Internet.email }
       let(:password) { 'password' }
@@ -155,7 +155,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       it 'updates a user\'s game' do
         expect {
-          get :update, params: { id: game.id, token: user.token, piece: piece_params }, format: :json
+          patch :move, params: { id: game.id, token: user.token, piece: piece_params }, format: :json
         }.to change { game.pieces.count }.by(1)
 
         expect(response.status).to eq 201
@@ -166,7 +166,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       it 'calls send_new_move_email' do
         expect_any_instance_of(Game).to receive(:send_new_move_email)
           .with(piece, user)
-        get :update, params: { id: game.id, token: user.token, piece: piece_params }, format: :json
+        patch :move, params: { id: game.id, token: user.token, piece: piece_params }, format: :json
       end
     end
 
@@ -200,7 +200,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       it 'returns a 404' do
         expect {
-          get :update, params: { id: Faker::Number.number(8),
+          patch :move, params: { id: Faker::Number.number(8),
                                  token: user.token,
                                  piece: piece_params }, format: :json
         }.to raise_exception(ActiveRecord::RecordNotFound)

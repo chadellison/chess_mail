@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       before_action :authenticate_with_token, except: :accept
-      before_action :find_game, only: [:show, :update, :end_game, :destroy]
+      before_action :find_game, only: [:show, :move, :end_game, :destroy]
       before_action :validate_challenged_email, only: :create
 
       def index
@@ -29,7 +29,7 @@ module Api
         end
       end
 
-      def update
+      def move
         piece = Piece.find_or_create_by(piece_params)
         @game.pieces << piece
         @game.send_new_move_email(piece, @user)
