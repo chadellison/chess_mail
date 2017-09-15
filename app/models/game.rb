@@ -30,7 +30,8 @@ class Game < ApplicationRecord
         playerColor: current_player_color(user_email),
         opponentName: current_opponent_name(user_email),
         opponentGravatar: opponent_gravatar,
-        isChallenger: is_challenger?(user_email)
+        isChallenger: is_challenger?(user_email),
+        outcome: outcome
       },
       included: pieces.map(&:serialize_piece)
     }

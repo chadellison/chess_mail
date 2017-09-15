@@ -322,7 +322,8 @@ RSpec.describe Game, type: :model do
           playerColor: 'black',
           opponentName: challengedName,
           opponentGravatar: Digest::MD5.hexdigest(challengedEmail.downcase.strip),
-          isChallenger: true
+          isChallenger: true,
+          outcome: nil
         },
         included: [game.pieces.first.serialize_piece]
       }
