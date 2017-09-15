@@ -331,7 +331,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#archive' do
+  describe '#handle_resign' do
     xit 'test' do
     end
   end

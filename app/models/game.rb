@@ -76,13 +76,9 @@ class Game < ApplicationRecord
     users << user if user
   end
 
-  def archive(user)
-    if outcome.present?
-      update(archived: true)
-    else
-      winner = current_player_color(user) == 'white' ? 'black wins!' : 'white wins!'
-      update(archived: true, outcome: winner)
-    end
+  def handle_resign(user)
+    winner = current_player_color(user) == 'white' ? 'black wins!' : 'white wins!'
+    update(outcome: winner)
   end
 
   def send_challenge_email(user)

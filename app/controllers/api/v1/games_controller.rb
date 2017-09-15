@@ -39,15 +39,17 @@ module Api
       end
 
       def end_game
-        @game.update(outcome: params[:outcome])
+        if params[:resign].present?
+          @game.handle_resign(@user)
+        else
+          # needs backend validation to match outcome param
+          @game.update(outcome: params[:outcome])
+        end
       end
 
       def destroy
-        if @game.pending
-          @game.destroy
-        else
-          @game.archive(@user)
-        end
+        @game.destroy if @game.pending
+        @game.update(archived: true) if @game.outcome.present?
       end
 
       def accept

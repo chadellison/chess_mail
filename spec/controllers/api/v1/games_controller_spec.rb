@@ -752,63 +752,6 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       end
     end
 
-    context 'when the game is active' do
-      let(:email) { Faker::Internet.email }
-      let(:password) { 'password' }
-      let(:first_name) { Faker::Name.first_name }
-      let(:last_name) { Faker::Name.last_name }
-      let(:token) { 'token' }
-
-      let!(:user) do
-        User.create(
-          email: email,
-          password: password,
-          firstName: first_name,
-          lastName: last_name,
-          approved: true,
-          token: token
-        )
-      end
-
-      let!(:challengedUser) do
-        User.create(
-          email: 'bob@example.com',
-          password: 'password',
-          firstName: 'bob',
-          lastName: 'jones',
-          approved: true,
-          token: 'other_token'
-        )
-      end
-
-      let(:game) do
-        user.games.create(
-          challengedEmail: challengedUser.email,
-          challengedName: challengedUser.firstName,
-          challengerColor: 'white',
-          pending: false
-        )
-      end
-
-      it 'archives the game' do
-        params = { id: game.id, token: user.token }
-
-        delete :destroy, params: params, format: :json
-
-        expect(game.reload.archived).to be true
-        expect(response.status).to eq 204
-      end
-
-      it 'sets the game outcome to the opponent color as the winner' do
-        params = { id: game.id, token: user.token }
-        opponent_color = 'black'
-
-        delete :destroy, params: params, format: :json
-
-        expect(game.reload.outcome).to eq opponent_color + ' wins!'
-      end
-    end
-
     context 'when the game outcome is complete' do
       let(:email) { Faker::Internet.email }
       let(:password) { 'password' }
@@ -991,6 +934,55 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
         expect(game.reload.outcome).to eq 'draw'
         expect(response.status).to eq 204
+      end
+    end
+
+    context 'when the resign parameter is present' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
+
+      let!(:challengedUser) do
+        User.create(
+          email: 'bob@example.com',
+          password: 'password',
+          firstName: 'bob',
+          lastName: 'jones',
+          approved: true,
+          token: 'other_token'
+        )
+      end
+
+      let(:game) do
+        user.games.create(
+          challengedEmail: challengedUser.email,
+          challengedName: challengedUser.firstName,
+          challengerColor: 'white',
+          pending: false
+        )
+      end
+
+      it 'sets the game outcome to the opponent color as the winner' do
+        params = { id: game.id, resign: true, token: user.token }
+        opponent_color = 'black'
+
+        patch :end_game, params: params, format: :json
+
+        expect(response.status).to eq 204
+        expect(game.reload.outcome).to eq opponent_color + ' wins!'
       end
     end
   end
