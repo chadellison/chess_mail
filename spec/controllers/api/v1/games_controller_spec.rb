@@ -791,14 +791,24 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         )
       end
 
-      it 'archives the game' do
+      it 'archives the game for the current user' do
         params = { id: game.id, token: user.token }
 
-        delete :destroy, params: params, format: :json
+        expect {
+          delete :destroy, params: params, format: :json
+        }.to change { user.archives.count }.by(1)
 
-        expect(game.reload.archived).to be true
+        expect(user.archives.last.game_id).to eq game.id
         expect(game.reload.outcome).to eq 'draw!'
         expect(response.status).to eq 204
+      end
+
+      it 'does not archive the game for the other user' do
+        params = { id: game.id, token: user.token }
+
+        expect {
+          delete :destroy, params: params, format: :json
+        }.not_to change { challengedUser.archives.count }
       end
     end
   end

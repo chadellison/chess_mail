@@ -52,7 +52,7 @@ module Api
 
       def destroy
         @game.destroy if @game.pending
-        @game.update(archived: true) if @game.outcome.present?
+        @user.archives.create(game_id: @game.id) if @game.outcome.present?
       end
 
       def accept

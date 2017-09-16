@@ -6,7 +6,7 @@ class Game < ApplicationRecord
 
   validates_presence_of :challengedName, :challengedEmail, :challengerColor
 
-  scope :not_archived, -> { where(archived: false) }
+  scope :not_archived, ->(archived_game_ids) { where.not(id: archived_game_ids) }
   scope :challenged_games, ->(email) { where(challengedEmail: email) }
 
   class << self
@@ -78,7 +78,7 @@ class Game < ApplicationRecord
   end
 
   def handle_resign(user)
-    winner = current_player_color(user) == 'white' ? 'black wins!' : 'white wins!'
+    winner = current_player_color(user.email) == 'white' ? 'black wins!' : 'white wins!'
     update(outcome: winner)
   end
 

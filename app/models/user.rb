@@ -5,6 +5,7 @@ class User < ApplicationRecord
 
   has_many :user_games
   has_many :games, through: :user_games
+  has_many :archives
 
   before_save :hash_email, :downcase_email
 
@@ -33,8 +34,12 @@ class User < ApplicationRecord
   end
 
   def serialized_user_games
-    unique_games = (Game.challenged_games(email).not_archived + games.not_archived)
-                   .sort_by(&:created_at).uniq
+    archived_game_ids = archives.pluck(:game_id)
+
+    unique_games = (
+      Game.challenged_games(email).not_archived(archived_game_ids) +
+        games.not_archived(archived_game_ids)
+    ).sort_by(&:created_at).uniq
 
     Game.serialize_games(unique_games, email)[:data]
   end

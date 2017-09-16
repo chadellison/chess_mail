@@ -86,14 +86,16 @@ RSpec.describe User, type: :model do
       token = 'token'
       hashed_email = Faker::Internet.email
 
-      user = User.new(email: Faker::Internet.email,
-                      password: password,
-                      firstName: first_name,
-                      lastName: last_name,
-                      token: token,
-                      hashed_email: hashed_email)
+      user = User.create(
+        email: Faker::Internet.email,
+        password: password,
+        firstName: first_name,
+        lastName: last_name,
+        token: token,
+        hashed_email: hashed_email
+      )
 
-      expect(user.serialize_user[:data][:attributes][:hashed_email]).to eq hashed_email
+      expect(user.serialize_user[:data][:attributes][:hashed_email]).to be_present
       expect(user.serialize_user[:data][:attributes][:token]).to eq token
       expect(user.serialize_user[:data][:attributes][:firstName]).to eq first_name
       expect(user.serialize_user[:data][:attributes][:lastName]).to eq last_name
