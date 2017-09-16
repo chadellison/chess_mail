@@ -30,7 +30,7 @@ RSpec.describe Game, type: :model do
     piece = Piece.create(
       pieceType: 'rook',
       color: 'black',
-      currentPosition: 'a2',
+      currentPosition: 'a2'
     )
 
     game = Game.create
