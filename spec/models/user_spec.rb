@@ -112,12 +112,12 @@ RSpec.describe User, type: :model do
                          token: token,
                          hashed_email: hashed_email)
 
-      user2 = User.create(email: Faker::Internet.email,
-                          password: 'password2',
-                          firstName: 'bob',
-                          lastName: 'jones',
-                          token: 'token2',
-                          hashed_email: 'hashed_email')
+      user2 = User.new(email: Faker::Internet.email,
+                       password: 'password2',
+                       firstName: 'bob',
+                       lastName: 'jones',
+                       token: 'token2',
+                       hashed_email: 'hashed_email')
 
       game1 = user.games.create(
         challengedEmail: Faker::Internet.email,
@@ -126,15 +126,18 @@ RSpec.describe User, type: :model do
       )
 
       game2 = Game.create
-      game3 = user2.games.create(
-        challengedEmail: user.email,
-        challengedName: user.firstName,
+      game3 = user.games.create(
+        challengedEmail: user2.email,
+        challengedName: user2.firstName,
         challengerColor: 'white'
       )
 
-      serialized_games = Game.serialize_games([game1, game3], user.email)[:data]
+      user2.save
+
+      serialized_games = Game.serialize_games([game3, game1], user.email)[:data]
       expect(user.serialize_user[:data][:included].length).to eq 2
       expect(user.serialize_user[:data][:included]).to eq serialized_games
+      expect(user2.serialize_user[:data][:included].length).to eq 1
     end
   end
 
@@ -172,6 +175,11 @@ RSpec.describe User, type: :model do
   end
 
   describe '#serialized_user_games' do
+    xit 'test' do
+    end
+  end
+
+  describe '#calculate_offset' do
     xit 'test' do
     end
   end

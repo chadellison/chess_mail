@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :archives
 
   before_save :hash_email, :downcase_email
+  after_commit :add_games, on: :create
 
   def hash_email
     self.hashed_email = Digest::MD5.hexdigest(email.downcase.strip)
@@ -15,6 +16,10 @@ class User < ApplicationRecord
 
   def downcase_email
     self.email = email.downcase
+  end
+
+  def add_games
+    self.games = Game.where(challengedEmail: email)
   end
 
   def serialize_user
@@ -33,15 +38,20 @@ class User < ApplicationRecord
     }
   end
 
-  def serialized_user_games
+  def serialized_user_games(page = 1, quantity = 6)
+    page = 1 if page.blank?
+
     archived_game_ids = archives.pluck(:game_id)
+    user_games = games.not_archived(archived_game_ids)
+                      .order(created_at: :desc)
+                      .offset(calculate_offset(page, quantity))
+                      .limit(quantity)
 
-    unique_games = (
-      Game.challenged_games(email).not_archived(archived_game_ids) +
-        games.not_archived(archived_game_ids)
-    ).sort_by(&:created_at).uniq
+    Game.serialize_games(user_games, email)[:data]
+  end
 
-    Game.serialize_games(unique_games, email)[:data]
+  def calculate_offset(page, quantity)
+    (page.to_i - 1) * quantity.to_i
   end
 
   def send_confirmation_email

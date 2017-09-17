@@ -47,10 +47,88 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     it 'returns all of that users\'s games' do
       get :index, params: { token: user.token }, format: :json
       expect(response.status).to eq 200
-      expect(JSON.parse(response.body).deep_symbolize_keys[:data].first[:id])
-        .to eq game1.id
       expect(JSON.parse(response.body).deep_symbolize_keys[:data].last[:id])
+        .to eq game1.id
+      expect(JSON.parse(response.body).deep_symbolize_keys[:data].first[:id])
         .to eq game2.id
+    end
+
+    context 'when the user has more than 6 games' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
+
+      before do
+        10.times do |n|
+          user.games.create(
+            challengedEmail: 'abc@example.com',
+            challengedName: n.to_s,
+            challengerColor: 'white'
+          )
+        end
+      end
+
+      it 'returns the most recent six' do
+        expected = ['9', '8', '7', '6', '5', '4']
+        get :index, params: { token: user.token }, format: :json
+        actual = JSON.parse(response.body).deep_symbolize_keys[:data]
+                     .map { |game| game[:attributes][:opponentName] }
+
+        expect(actual).to eq expected
+      end
+    end
+
+    context 'when the user has more than six games and passes in a page param' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
+
+      before do
+        user.games.destroy_all
+
+        10.times do |n|
+          user.games.create(
+            challengedEmail: 'abc@example.com',
+            challengedName: n.to_s,
+            challengerColor: 'white'
+          )
+        end
+      end
+
+      it 'returns the first 4 games created' do
+        expected = ['3', '2', '1', '0']
+        get :index, params: { token: user.token, page: 2 }, format: :json
+        actual = JSON.parse(response.body).deep_symbolize_keys[:data]
+                     .map { |game| game[:attributes][:opponentName] }
+
+        expect(actual).to eq expected
+      end
     end
   end
 

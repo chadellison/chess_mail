@@ -7,7 +7,6 @@ class Game < ApplicationRecord
   validates_presence_of :challengedName, :challengedEmail, :challengerColor
 
   scope :not_archived, ->(archived_game_ids) { where.not(id: archived_game_ids) }
-  scope :challenged_games, ->(email) { where(challengedEmail: email) }
 
   class << self
     def serialize_games(games, user_email)
