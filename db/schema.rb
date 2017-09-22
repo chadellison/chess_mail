@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170916065518) do
+ActiveRecord::Schema.define(version: 20170922211623) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,12 @@ ActiveRecord::Schema.define(version: 20170916065518) do
     t.boolean "hasMoved", default: false
     t.boolean "movedTwo", default: false
     t.integer "startIndex"
+  end
+
+  create_table "training_games", force: :cascade do |t|
+    t.text "moves"
+    t.string "outcome"
+    t.integer "move_count"
   end
 
   create_table "user_games", force: :cascade do |t|

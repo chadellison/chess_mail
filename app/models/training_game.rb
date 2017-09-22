@@ -1,0 +1,2 @@
+class TrainingGame < ApplicationRecord
+end
