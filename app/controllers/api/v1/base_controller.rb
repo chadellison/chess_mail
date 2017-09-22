@@ -9,6 +9,10 @@ module Api
         end
       end
 
+      def find_game
+        @game = @user.games.find(params[:id])
+      end
+
       def return_errors(resource)
         {
           errors: resource.errors.map do |key, value|

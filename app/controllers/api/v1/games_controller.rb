@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       before_action :authenticate_with_token, except: :accept
-      before_action :find_game, only: [:show, :move, :end_game, :destroy]
+      before_action :find_game, only: [:show, :end_game, :destroy]
       before_action :validate_challenged_email, only: :create
 
       def index
@@ -27,14 +27,6 @@ module Api
         else
           render json: return_errors(game), status: 400
         end
-      end
-
-      def move
-        piece = @game.pieces.create(piece_params)
-        @game.send_new_move_email(piece, @user)
-
-        serialized_game = { data: @game.serialize_game(@user.email) }
-        render json: serialized_game, status: 201
       end
 
       def end_game
@@ -66,15 +58,6 @@ module Api
       end
 
       private
-
-      def find_game
-        @game = @user.games.find(params[:id])
-      end
-
-      def piece_params
-        params.require(:piece).permit(:pieceType, :color, :currentPosition,
-                                      :hasMoved, :movedTwo, :startIndex)
-      end
 
       def game_params
         params.require(:game).permit(:challengedName, :challengedEmail,
