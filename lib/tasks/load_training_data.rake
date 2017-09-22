@@ -1,4 +1,4 @@
-desc "import beers"
+desc "load_training_data"
 task load_training_data: :environment do
   puts 'loading training data'
 
@@ -10,13 +10,15 @@ task load_training_data: :environment do
         .map { |moves| moves.gsub("\r\n", '').delete(' ') }[1..-1]
         .each do |moves|
           if ['0-1', '1-0', '1/2'].include?(moves[-3..-1])
+            outcome = moves[-3..-1]
+
             TrainingGame.create(
               moves: moves[0..-4],
-              outcome: (moves[-3..-1]),
+              outcome: outcome,
               move_count: moves.split('.').count * 2
             )
 
-            puts(moves[-3..-1])
+            puts(outcome)
           end
         end
   end
