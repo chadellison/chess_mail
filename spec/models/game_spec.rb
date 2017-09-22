@@ -263,12 +263,92 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#current_opponent_email' do
-    xit 'test' do
+    let(:firstName) { Faker::Name.first_name }
+    let(:lastName) { Faker::Name.last_name }
+    let(:email) { Faker::Internet.email }
+    let(:password) { 'password' }
+
+    let(:user) do
+      User.create(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password
+      )
+    end
+
+    let(:challenged_user) do
+      User.create(
+        firstName: 'firstName',
+        lastName: 'lastName',
+        email: 'email',
+        password: 'password'
+      )
+    end
+
+    let(:game) do
+      user.games.create(
+        challengedEmail: challenged_user.email,
+        challengedName: challenged_user.firstName,
+        challengerColor: 'black'
+      )
+    end
+
+    context 'when the challenged email is the user email' do
+      it 'returns the game\'s email that is not the challengedEmail' do
+        expect(game.current_opponent_email(challenged_user.email)).to eq user.email
+      end
+    end
+
+    context 'when the challenged email is not the user email' do
+      it 'returns the challengedEmail' do
+        expect(game.current_opponent_email(user.email)).to eq challenged_user.email
+      end
     end
   end
 
   describe '#is_challenger?' do
-    xit 'test' do
+    let(:firstName) { Faker::Name.first_name }
+    let(:lastName) { Faker::Name.last_name }
+    let(:email) { Faker::Internet.email }
+    let(:password) { 'password' }
+
+    let(:user) do
+      User.create(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password
+      )
+    end
+
+    let(:challenged_user) do
+      User.create(
+        firstName: 'firstName',
+        lastName: 'lastName',
+        email: 'email',
+        password: 'password'
+      )
+    end
+
+    let(:game) do
+      user.games.create(
+        challengedEmail: challenged_user.email,
+        challengedName: challenged_user.firstName,
+        challengerColor: 'black'
+      )
+    end
+
+    context 'when email belongs to the challenger' do
+      it 'returns true' do
+        expect(game.is_challenger?(email)).to be true
+      end
+    end
+
+    context 'when email does not belong to the challenger' do
+      it 'returns false' do
+        expect(game.is_challenger?(challenged_user.email)).to be false
+      end
     end
   end
 
@@ -334,7 +414,49 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#handle_resign' do
-    xit 'test' do
+    let(:firstName) { Faker::Name.first_name }
+    let(:lastName) { Faker::Name.last_name }
+    let(:email) { Faker::Internet.email }
+    let(:password) { 'password' }
+
+    let(:user) do
+      User.create(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password
+      )
+    end
+
+    let(:challenged_user) do
+      User.create(
+        firstName: 'firstName',
+        lastName: 'lastName',
+        email: 'email',
+        password: 'password'
+      )
+    end
+
+    let(:game) do
+      user.games.create(
+        challengedEmail: challenged_user.email,
+        challengedName: challenged_user.firstName,
+        challengerColor: 'white'
+      )
+    end
+
+    context 'when the current player is white' do
+      it 'updates the game so that black wins' do
+        game.handle_resign(user)
+        expect(game.outcome).to eq 'black wins!'
+      end
+    end
+
+    context 'when the current player is black' do
+      it 'updates the game so that white wins' do
+        game.handle_resign(challenged_user)
+        expect(game.outcome).to eq 'white wins!'
+      end
     end
   end
 end

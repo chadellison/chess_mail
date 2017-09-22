@@ -180,7 +180,15 @@ RSpec.describe User, type: :model do
   end
 
   describe '#calculate_offset' do
-    xit 'test' do
+    it 'returns the page given minus 1 times the quantity passed in' do
+      user = User.create(
+        email: 'CapitalEmail.com',
+        password: Faker::Internet.password,
+        firstName: first_name,
+        lastName: last_name
+      )
+
+      expect(user.calculate_offset('3', '5')).to eq 10
     end
   end
 end

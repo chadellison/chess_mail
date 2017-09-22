@@ -1,16 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Piece, type: :model do
-
-  # id: 54,
- # currentPosition: "c5",
- # color: "black",
- # created_at: Fri, 22 Sep 2017 03:08:00 UTC +00:00,
- # updated_at: Fri, 22 Sep 2017 03:08:00 UTC +00:00,
- # pieceType: "knight",
- # hasMoved: true,
- # movedTwo: false,
- # startIndex: 7>
   it 'validates the presence of a currentPosition' do
     piece = Piece.new(
       color: 'black',
