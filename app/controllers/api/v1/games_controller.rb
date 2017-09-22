@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       before_action :authenticate_with_token
-      before_action :find_game, only: [:show, :end_game, :destroy]
+      before_action :find_game, only: [:show, :destroy]
       before_action :validate_challenged_email, only: :create
 
       def index
@@ -27,18 +27,6 @@ module Api
         else
           render json: return_errors(game), status: 400
         end
-      end
-
-      def end_game
-        if params[:resign].present?
-          @game.handle_resign(@user)
-        else
-          # needs backend validation to match outcome param
-          @game.update(outcome: params[:outcome])
-        end
-
-        serialized_game = { data: @game.serialize_game(@user.email) }
-        render json: serialized_game, status: 201
       end
 
       def destroy
