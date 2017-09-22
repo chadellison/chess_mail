@@ -311,7 +311,8 @@ RSpec.describe Game, type: :model do
       game.pieces.create(
         pieceType: 'pawn',
         currentPosition: 'a2',
-        color: 'black'
+        color: 'black',
+        startIndex: Faker::Number.number(8)
       )
 
       result = {

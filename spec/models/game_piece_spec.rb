@@ -5,7 +5,8 @@ RSpec.describe GamePiece, type: :model do
     piece = Piece.create(
       pieceType: 'queen',
       color: 'white',
-      currentPosition: 'b7'
+      currentPosition: 'b7',
+      startIndex: Faker::Number.number(2)
     )
 
     game_piece = GamePiece.create(piece_id: piece.id)
