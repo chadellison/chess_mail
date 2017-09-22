@@ -3,7 +3,7 @@ module Api
     class GamesController < Api::V1::BaseController
       respond_to :json
 
-      before_action :authenticate_with_token, except: :accept
+      before_action :authenticate_with_token
       before_action :find_game, only: [:show, :end_game, :destroy]
       before_action :validate_challenged_email, only: :create
 
@@ -46,17 +46,6 @@ module Api
         @user.archives.create(game_id: @game.id) if @game.outcome.present?
       end
 
-      def accept
-        challenged_user = User.find_by(token: params[:token])
-
-        if challenged_user
-          game = Game.where(challengedEmail: challenged_user.email).find(params[:game_id])
-          game.update(pending: false)
-        end
-
-        handle_response
-      end
-
       private
 
       def game_params
@@ -68,14 +57,6 @@ module Api
         if game_params[:challengedEmail] == @user.email
           error = { errors: 'Your opponent must be someone other than yourself.' }
           render json: error, status: 400
-        end
-      end
-
-      def handle_response
-        if params[:from_email].present?
-          redirect_to ENV['host']
-        else
-          render status: 204
         end
       end
     end

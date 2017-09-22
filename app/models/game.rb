@@ -89,7 +89,7 @@ class Game < ApplicationRecord
       "#{user.firstName.capitalize} #{user.lastName.capitalize}",
       challengedName,
       challengedEmail,
-      "#{ENV['api_host']}/api/v1/games/accept/#{id}?token=#{token}&from_email=true"
+      "#{ENV['api_host']}/api/v1/accept_challenge/#{id}?token=#{token}&from_email=true"
     ).deliver_later
   end
 
