@@ -222,12 +222,21 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         )
       end
 
-      let(:piece) { Piece.create(pieceType: 'rook', color: 'black', currentPosition: 'a6') }
+      let(:piece) do
+        Piece.create(
+          pieceType: 'rook',
+          color: 'black',
+          currentPosition: 'a6',
+          startIndex: '27'
+        )
+      end
+
       let(:piece_params) {
         {
           pieceType: piece.pieceType,
           color: piece.color,
-          currentPosition: piece.currentPosition
+          currentPosition: piece.currentPosition,
+          startIndex: piece.startIndex
         }
       }
 
@@ -237,13 +246,13 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         }.to change { game.pieces.count }.by(1)
 
         expect(response.status).to eq 201
-        expect(JSON.parse(response.body)['data']['included'].first['id']).to eq piece.id
-        expect(game.pieces).to eq [piece]
+        expect(JSON.parse(response.body)['data']['included']
+          .first['attributes']['startIndex']).to eq piece.startIndex
+        expect(game.pieces.first.startIndex).to eq piece.startIndex
       end
 
       it 'calls send_new_move_email' do
         expect_any_instance_of(Game).to receive(:send_new_move_email)
-          .with(piece, user)
         patch :move, params: { id: game.id, token: user.token, piece: piece_params }, format: :json
       end
     end

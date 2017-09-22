@@ -30,8 +30,7 @@ module Api
       end
 
       def move
-        piece = Piece.find_or_create_by(piece_params)
-        @game.pieces << piece
+        piece = @game.pieces.create(piece_params)
         @game.send_new_move_email(piece, @user)
 
         serialized_game = { data: @game.serialize_game(@user.email) }

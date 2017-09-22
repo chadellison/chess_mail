@@ -32,7 +32,7 @@ class Game < ApplicationRecord
         isChallenger: is_challenger?(user_email),
         outcome: outcome
       },
-      included: pieces.map(&:serialize_piece)
+      included: pieces.order(:created_at).map(&:serialize_piece)
     }
   end
 
