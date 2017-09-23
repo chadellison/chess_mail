@@ -30,7 +30,8 @@ class Game < ApplicationRecord
         opponentName: current_opponent_name(user_email),
         opponentGravatar: opponent_gravatar,
         isChallenger: is_challenger?(user_email),
-        outcome: outcome
+        outcome: outcome,
+        human: human
       },
       included: pieces.order(:created_at).map(&:serialize_piece)
     }
@@ -68,6 +69,12 @@ class Game < ApplicationRecord
     if human == true
       add_challenged_player
       send_challenge_email(user)
+    else
+      update(
+        pending: false,
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.first_name
+      )
     end
   end
 

@@ -404,7 +404,8 @@ RSpec.describe Game, type: :model do
           opponentName: challengedName,
           opponentGravatar: Digest::MD5.hexdigest(challengedEmail.downcase.strip),
           isChallenger: true,
-          outcome: nil
+          outcome: nil,
+          human: true
         },
         included: [game.pieces.first.serialize_piece]
       }

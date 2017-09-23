@@ -216,12 +216,14 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         end
 
         let!(:challengedUser) {
-          User.create(email: 'bob@example.com',
-                      password: 'password',
-                      firstName: 'bob',
-                      lastName: 'jones',
-                      approved: true,
-                      token: 'other_token')
+          User.create(
+            email: 'bob@example.com',
+            password: 'password',
+            firstName: 'bob',
+            lastName: 'jones',
+            approved: true,
+            token: 'other_token'
+            )
         }
 
         let(:game_params) do
@@ -441,7 +443,56 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     end
 
     context 'against an AI player' do
-      xit 'test' do
+      context 'with valid parameters' do
+        let(:email) { Faker::Internet.email }
+        let(:password) { 'password' }
+        let(:first_name) { Faker::Name.first_name }
+        let(:last_name) { Faker::Name.last_name }
+        let(:token) { 'token' }
+
+        let!(:user) do
+          User.create(
+            email: email,
+            password: password,
+            firstName: first_name,
+            lastName: last_name,
+            approved: true,
+            token: token
+          )
+        end
+
+        let!(:challengedUser) do
+          User.create(
+            email: 'bob@example.com',
+            password: 'password',
+            firstName: 'bob',
+            lastName: 'jones',
+            approved: true,
+            token: 'other_token'
+          )
+        end
+
+        let(:game_params) do
+          {
+            game: {
+              challengedName: 'robot',
+              challengedEmail: 'robot',
+              challengerColor: 'white',
+              human: false
+            },
+            token: user.token
+          }
+        end
+
+        it 'creates and returns the game' do
+          expect { post :create, params: game_params, format: :json }
+            .to change { user.games.count }.by(1)
+
+          expect(response.status).to eq 201
+          expect(JSON.parse(response.body)['data']['type']).to eq 'game'
+          expect(JSON.parse(response.body)['data']['attributes']['pending'])
+            .to be false
+        end
       end
     end
   end
