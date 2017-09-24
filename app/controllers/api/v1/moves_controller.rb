@@ -8,9 +8,9 @@ module Api
       def create
         game = Game.find(params[:game_id])
         piece = game.pieces.create(piece_params)
-        game.send_new_move_email(piece, @user)
+        game.handle_move(piece, @user)
 
-        serialized_game = { data: game.serialize_game(@user.email) }
+        serialized_game = { data: game.reload.serialize_game(@user.email) }
         render json: serialized_game, status: 201
       end
 

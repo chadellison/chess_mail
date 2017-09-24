@@ -25,20 +25,7 @@ RSpec.describe Piece, type: :model do
     expect(piece.valid?).to be true
   end
 
-  it 'validates the presence of startIndex' do
-    piece = Piece.new(
-      currentPosition: 'a2',
-      pieceType: 'knight',
-      color: 'black'
-    )
-
-    expect(piece.valid?).to be false
-
-    piece.update(startIndex: Faker::Number.number(2))
-    expect(piece.valid?).to be true
-  end
-
-  it 'validates the presence a pieceType' do
+  it 'validates the presence of a pieceType' do
     piece = Piece.new(
       currentPosition: 'a2',
       startIndex: Faker::Number.number(2),
@@ -49,4 +36,16 @@ RSpec.describe Piece, type: :model do
     piece.update(pieceType: 'knight')
     expect(piece.valid?).to be true
   end
+
+  # it 'validates the presence of a startIndex' do
+  #   piece = Piece.new(
+  #     currentPosition: 'a2',
+  #     pieceType: 'rook',
+  #     color: 'black'
+  #   )
+  #
+  #   expect(piece.valid?).to be false
+  #   piece.update(startIndex: '2')
+  #   expect(piece.valid?).to be true
+  # end
 end

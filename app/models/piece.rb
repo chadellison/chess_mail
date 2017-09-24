@@ -1,5 +1,5 @@
 class Piece < ApplicationRecord
-  validates_presence_of :currentPosition, :color, :startIndex, :pieceType
+  validates_presence_of :currentPosition, :color, :pieceType#, :startIndex
 
   has_many :game_pieces
   has_many :games, through: :game_pieces

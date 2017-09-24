@@ -75,7 +75,54 @@ class Game < ApplicationRecord
         challengedEmail: Faker::Internet.email,
         challengedName: Faker::Name.first_name
       )
+      pieces.create(
+        pieceType: 'pawn',
+        color: 'white',
+        currentPosition: 'd4',
+        hasMoved: true,
+        movedTwo: true,
+        startIndex: '20'
+      ) if pieces.empty? && challengerColor == 'black'
     end
+  end
+
+  def handle_move(piece, user)
+    if human.present?
+      send_new_move_email(piece, user)
+    else
+      move = pieces.count.odd? ? 'd5' : 'd4'
+      start_index = pieces.count.odd? ? '12' : '20'
+      pieces.create(
+        pieceType: 'pawn',
+        color: current_turn,
+        currentPosition: move,
+        hasMoved: true,
+        movedTwo: true,
+        startIndex: start_index
+      )
+    end
+  end
+
+  def create_piece_from_notation(notation)
+    pieces.create(
+      currentPosition: notation[-2..-1],
+      pieceType: piece_type_from_notation(notation),
+      color: current_turn
+    )
+  end
+
+  def piece_type_from_notation(notation)
+    piece_type = 'pawn' if notation.length == 2
+    piece_type = 'knight' if notation[0] == 'N'
+    piece_type = 'bishop' if notation[0] == 'B'
+    piece_type = 'rook' if notation[0] == 'R'
+    piece_type = 'queen' if notation[0] == 'Q'
+    piece_type = 'king' if notation[0] == 'K'
+    piece_type
+  end
+
+  def current_turn
+    pieces.count.even? ? 'white' : 'black'
   end
 
   def add_challenged_player
