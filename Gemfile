@@ -15,13 +15,13 @@ gem 'rack-cors'
 gem 'figaro'
 gem 'rubocop', require: false
 gem 'responders'
+gem 'faker'
 
 group :development, :test do
   gem 'rspec-rails'
   gem 'simplecov', :require => false
   gem 'pry-rails'
   gem 'brakeman', require: false
-  gem 'faker'
 end
 
 group :development do
