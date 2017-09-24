@@ -483,7 +483,7 @@ RSpec.describe Game, type: :model do
 
   describe '#create_piece_from_notation' do
     context 'when the notation is e4 on white\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -507,7 +507,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is Bb5 on white\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -531,7 +531,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is Nb6 on white\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -555,7 +555,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is Kd8 on white\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -579,7 +579,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is Qa1 on white\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -603,7 +603,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is Rd2 on white\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -627,7 +627,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is O-O on white\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the gam with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -651,7 +651,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is O-O on black\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -682,7 +682,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is O-O-O on white\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e4' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -706,7 +706,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is O-O-O on black\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of c8' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -737,7 +737,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is Nxf7 on black\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of f7' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -768,7 +768,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is Nxf7 on black\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of f7' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -799,7 +799,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is R6e2 on black\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates a piece on the game with a currentPosition of e2' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -830,7 +830,7 @@ RSpec.describe Game, type: :model do
     end
 
     context 'when the notation is Rdf8 on black\'s turn' do
-      it 'creates on the game with a piece with a currentPosition of e4' do
+      it 'creates  a piece on the game with a currentPosition of f8' do
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -857,6 +857,99 @@ RSpec.describe Game, type: :model do
 
         expect(game.pieces.last.pieceType)
           .to eq 'rook'
+      end
+    end
+
+    context 'when the notation is Rd5# on black\'s turn' do
+      it 'creates a piece on the game with a currentPosition of d5' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'rook',
+          startIndex: '8'
+        )
+
+        expect { game.create_piece_from_notation('Rd5#') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'd5'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'rook'
+      end
+    end
+
+    context 'when the notation is d5# on black\'s turn' do
+      it 'creates a piece on the game with a currentPosition of d5' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'rook',
+          startIndex: '8'
+        )
+
+        expect { game.create_piece_from_notation('d5#') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'd5'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'pawn'
+      end
+    end
+
+    context 'when the notation is f1=Q. on black\'s turn' do
+      it 'creates a piece on the game with a currentPosition of f1' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'rook',
+          startIndex: '8'
+        )
+
+        expect { game.create_piece_from_notation('f1=Q') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'f1'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'queen'
       end
     end
   end
