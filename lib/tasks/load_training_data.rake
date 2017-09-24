@@ -7,22 +7,25 @@ task load_training_data: :environment do
         .gsub(/\[.*?\]/, 'game')
         .split('game')
         .reject { |moves| moves == "\r\n" }
-        .map do |moves|
-          moves.gsub(/[\r\n+]/, '').gsub('.', '. ').split(' ').reject do |move|
-            move.include?('.')
-          end.join('.')
-        end[1..-1]
-        .each do |moves|
-          if ['0-1', '1-0', '1/2'].include?(moves[-3..-1])
-            outcome = moves[-3..-1]
-            TrainingGame.create(
-              moves: moves[0..-4],
-              outcome: outcome,
-              move_count: moves.split('.').count * 2
-            )
+        .map { |moves| make_substitutions(moves) }[1..-1]
+        .each { |moves| create_training_game(moves) }
+  end
+end
 
-            puts(outcome)
-          end
-        end
+def make_substitutions(moves)
+  moves.gsub(/[\r\n+]/, '').gsub(/\{.*?\}/, '').gsub('.', '. ').split(' ')
+       .reject { |move| move.include?('.') }.join('.')
+end
+
+def create_training_game(moves)
+  if ['0-1', '1-0', '1/2'].include?(moves[-3..-1])
+    outcome = moves[-3..-1]
+    TrainingGame.create(
+      moves: moves[0..-4],
+      outcome: outcome,
+      move_count: moves.split('.').count * 2
+    )
+
+    puts(outcome)
   end
 end

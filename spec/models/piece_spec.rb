@@ -37,15 +37,15 @@ RSpec.describe Piece, type: :model do
     expect(piece.valid?).to be true
   end
 
-  # it 'validates the presence of a startIndex' do
-  #   piece = Piece.new(
-  #     currentPosition: 'a2',
-  #     pieceType: 'rook',
-  #     color: 'black'
-  #   )
-  #
-  #   expect(piece.valid?).to be false
-  #   piece.update(startIndex: '2')
-  #   expect(piece.valid?).to be true
-  # end
+  it 'validates the presence of a startIndex' do
+    piece = Piece.new(
+      currentPosition: 'a2',
+      pieceType: 'rook',
+      color: 'black'
+    )
+
+    expect(piece.valid?).to be false
+    piece.update(startIndex: '2')
+    expect(piece.valid?).to be true
+  end
 end

@@ -735,5 +735,129 @@ RSpec.describe Game, type: :model do
           .to eq 'king'
       end
     end
+
+    context 'when the notation is Nxf7 on black\'s turn' do
+      it 'creates on the game with a piece with a currentPosition of e4' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'black',
+          startIndex: '20'
+        )
+
+        expect { game.create_piece_from_notation('Nxf7') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'f7'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'knight'
+      end
+    end
+
+    context 'when the notation is Nxf7 on black\'s turn' do
+      it 'creates on the game with a piece with a currentPosition of e4' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'black',
+          startIndex: '20'
+        )
+
+        expect { game.create_piece_from_notation('Nxf7') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'f7'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'knight'
+      end
+    end
+
+    context 'when the notation is R6e2 on black\'s turn' do
+      it 'creates on the game with a piece with a currentPosition of e4' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'black',
+          startIndex: '20'
+        )
+
+        expect { game.create_piece_from_notation('R6e2') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'e2'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'rook'
+      end
+    end
+
+    context 'when the notation is Rdf8 on black\'s turn' do
+      it 'creates on the game with a piece with a currentPosition of e4' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'rook',
+          startIndex: '8'
+        )
+
+        expect { game.create_piece_from_notation('Rdf8') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'f8'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'rook'
+      end
+    end
   end
 end

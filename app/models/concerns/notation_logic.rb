@@ -1,22 +1,17 @@
 module NotationLogic
   extend ActiveSupport::Concern
 
-  def piece_type_from_notation(notation)
-    piece_type = 'pawn' if notation.length == 2
-    piece_type = 'knight' if notation[0] == 'N'
-    piece_type = 'bishop' if notation[0] == 'B'
-    piece_type = 'rook' if notation[0] == 'R'
-    piece_type = 'queen' if notation[0] == 'Q'
-    piece_type = 'king' if notation[0] == 'K'
-    piece_type = 'king' if notation[0] == 'O'
-    piece_type
-  end
+  PIECE_TYPE = {
+    'N' => 'knight', 'B' => 'bishop', 'R' => 'rook', 'Q' => 'queen',
+    'K' => 'king', 'O' => 'king'
+  }
 
   def create_piece_from_notation(notation)
     pieces.create(
       currentPosition: position_from_notation(notation),
       pieceType: piece_type_from_notation(notation),
-      color: current_turn
+      color: current_turn,
+      startIndex: retrieve_start_index(notation)
     )
   end
 
@@ -28,5 +23,23 @@ module NotationLogic
     else
       notation[-2..-1]
     end
+  end
+
+  def piece_type_from_notation(notation)
+    if notation.length == 2
+      'pawn'
+    else
+      PIECE_TYPE[notation[0]]
+    end
+  end
+
+  def current_turn
+    pieces.count.even? ? 'white' : 'black'
+  end
+
+  def retrieve_start_index(notation)
+    # find piece that has relevant row and or column in game and get its startIndex
+    # find piece on new board by row or column and get its initial startIndex
+    notation
   end
 end

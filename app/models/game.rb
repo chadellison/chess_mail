@@ -105,10 +105,6 @@ class Game < ApplicationRecord
     end
   end
 
-  def current_turn
-    pieces.count.even? ? 'white' : 'black'
-  end
-
   def add_challenged_player
     user = User.find_by(email: challengedEmail)
     users << user if user
