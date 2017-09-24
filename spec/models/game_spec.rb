@@ -461,17 +461,22 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe 'handle_move' do
+  describe '#handle_move' do
     xit 'test' do
     end
   end
 
-  describe 'current_turn' do
+  describe '#current_turn' do
     xit 'test' do
     end
   end
 
-  describe 'piece_type_from_notation' do
+  describe '#piece_type_from_notation' do
+    xit 'test' do
+    end
+  end
+
+  describe '#position_from_notation' do
     xit 'test' do
     end
   end
@@ -618,6 +623,116 @@ RSpec.describe Game, type: :model do
 
         expect(game.pieces.last.pieceType)
           .to eq 'rook'
+      end
+    end
+
+    context 'when the notation is O-O on white\'s turn' do
+      it 'creates on the game with a piece with a currentPosition of e4' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        expect { game.create_piece_from_notation('O-O') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'g1'
+
+        expect(game.pieces.last.color)
+          .to eq 'white'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'king'
+      end
+    end
+
+    context 'when the notation is O-O on black\'s turn' do
+      it 'creates on the game with a piece with a currentPosition of e4' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'black',
+          startIndex: '20'
+        )
+
+        expect { game.create_piece_from_notation('O-O') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'g8'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'king'
+      end
+    end
+
+    context 'when the notation is O-O-O on white\'s turn' do
+      it 'creates on the game with a piece with a currentPosition of e4' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        expect { game.create_piece_from_notation('O-O-O') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'c1'
+
+        expect(game.pieces.last.color)
+          .to eq 'white'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'king'
+      end
+    end
+
+    context 'when the notation is O-O-O on black\'s turn' do
+      it 'creates on the game with a piece with a currentPosition of e4' do
+        game = Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+
+        game.pieces.create(
+          currentPosition: 'd4',
+          color: 'white',
+          pieceType: 'black',
+          startIndex: '20'
+        )
+
+        expect { game.create_piece_from_notation('O-O-O') }
+          .to change { game.pieces.count }.by(1)
+
+        expect(game.pieces.last.currentPosition)
+          .to eq 'c8'
+
+        expect(game.pieces.last.color)
+          .to eq 'black'
+
+        expect(game.pieces.last.pieceType)
+          .to eq 'king'
       end
     end
   end

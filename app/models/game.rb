@@ -8,6 +8,8 @@ class Game < ApplicationRecord
 
   scope :not_archived, ->(archived_game_ids) { where.not(id: archived_game_ids) }
 
+  include NotationLogic
+
   class << self
     def serialize_games(games, user_email)
       {
@@ -101,24 +103,6 @@ class Game < ApplicationRecord
         startIndex: start_index
       )
     end
-  end
-
-  def create_piece_from_notation(notation)
-    pieces.create(
-      currentPosition: notation[-2..-1],
-      pieceType: piece_type_from_notation(notation),
-      color: current_turn
-    )
-  end
-
-  def piece_type_from_notation(notation)
-    piece_type = 'pawn' if notation.length == 2
-    piece_type = 'knight' if notation[0] == 'N'
-    piece_type = 'bishop' if notation[0] == 'B'
-    piece_type = 'rook' if notation[0] == 'R'
-    piece_type = 'queen' if notation[0] == 'Q'
-    piece_type = 'king' if notation[0] == 'K'
-    piece_type
   end
 
   def current_turn
