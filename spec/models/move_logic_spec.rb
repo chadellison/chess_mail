@@ -64,7 +64,7 @@ RSpec.describe MoveLogic, type: :model do
   end
 
   describe '#moves_for_queen' do
-    it 'returns an array of all possible moves for a rook in a given position' do
+    it 'returns an array of all possible moves for a queen in a given position' do
       position = 'd4'
       expected = ['d5', 'd6', 'd7', 'd8', 'd3', 'd2', 'd1', 'c4', 'b4', 'a4',
                   'e4', 'f4', 'g4', 'h4', 'e5', 'f6', 'g7', 'h8', 'c5', 'b6',
@@ -75,11 +75,20 @@ RSpec.describe MoveLogic, type: :model do
   end
 
   describe '#moves_for_king' do
-    it 'returns an array of all possible moves for a rook in a given position' do
+    it 'returns an array of all possible moves for a king in a given position' do
       position = 'd4'
-      expected = ['d5', 'd3', 'c4', 'e4', 'e5', 'c5', 'c3', 'e3']
+      expected = ["d5", "d3", "c4", "e4", "e5", "c5", "c3", "e3", "b4", "f4"]
 
       expect(MoveLogic.moves_for_king(position)).to eq expected
+    end
+  end
+
+  describe '#moves_for_knight' do
+    it 'returns an array of all possible moves for a knight in a given position' do
+      position = 'd4'
+      expected = ["b5", "b3", "f5", "f3", "c6", "c2", "e6", "e2"]
+
+      expect(MoveLogic.moves_for_knight(position)).to eq expected
     end
   end
 end

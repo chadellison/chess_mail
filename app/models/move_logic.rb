@@ -27,7 +27,24 @@ class MoveLogic
       moves_for_queen(position).reject do |move|
         move[0] > position[0].next || move[0] < (position[0].ord - 1).chr ||
         move[1].to_i > position[1].to_i + 1 || move[1].to_i < position[1].to_i - 1
-      end
+      end + [(position[0].ord - 2).chr + position[1], position[0].next.next + position[1]]
+    end
+
+    def moves_for_knight(position)
+      possible_moves = []
+
+      possible_moves << (position[0].ord - 2).chr + (position[1].to_i + 1).to_s
+      possible_moves << (position[0].ord - 2).chr + (position[1].to_i - 1).to_s
+
+      possible_moves << (position[0].ord + 2).chr + (position[1].to_i + 1).to_s
+      possible_moves << (position[0].ord + 2).chr + (position[1].to_i - 1).to_s
+
+      possible_moves << (position[0].ord - 1).chr + (position[1].to_i + 2).to_s
+      possible_moves << (position[0].ord - 1).chr + (position[1].to_i - 2).to_s
+
+      possible_moves << position[0].next + (position[1].to_i + 2).to_s
+      possible_moves << position[0].next + (position[1].to_i - 2).to_s
+      possible_moves
     end
 
     def extract_diagonals(moves)
