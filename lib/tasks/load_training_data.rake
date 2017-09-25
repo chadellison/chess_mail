@@ -25,7 +25,7 @@ def create_training_game(moves)
     TrainingGame.create(
       moves: condensed_moves,
       outcome: outcome,
-      move_count: moves.split('.').count * 2
+      move_count: moves.split('.')
     )
 
     puts(outcome)

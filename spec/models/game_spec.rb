@@ -481,6 +481,16 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#retrieve_start_index' do
+    xit 'test' do
+    end
+  end
+
+  describe '#find_current_location' do
+    xit 'test' do
+    end
+  end
+
   describe '#create_piece_from_notation' do
     context 'when the notation is e4 on white\'s turn' do
       it 'creates a piece on the game with a currentPosition of e4' do

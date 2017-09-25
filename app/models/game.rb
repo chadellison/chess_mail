@@ -83,7 +83,7 @@ class Game < ApplicationRecord
         currentPosition: 'd4',
         hasMoved: true,
         movedTwo: true,
-        startIndex: '20'
+        startIndex: 20
       ) if pieces.empty? && challengerColor == 'black'
     end
   end
