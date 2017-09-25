@@ -135,6 +135,16 @@ module PieceMoveLogic
     end
   end
 
+  def valid_destination?(destination, game_pieces)
+    destination_piece = game_pieces.find_by(currentPosition: destination)
+
+    if destination_piece.present?
+      destination_piece.color != color
+    else
+      true
+    end
+  end
+
   def vertical_collision?(destination, occupied_spaces)
     difference = (currentPosition[1].to_i - destination[1].to_i).abs - 1
 
@@ -167,5 +177,15 @@ module PieceMoveLogic
       vertical_moves = moves_down((difference - currentPosition[1].to_i).abs)
     end
     (extract_diagonals(horizontal_moves.zip(vertical_moves)) & occupied_spaces).present?
+  end
+
+  def king_is_safe?(color, game_pieces)
+    king = game_pieces.find_by(pieceType: 'king', color: color)
+
+    game_pieces.none? do |game_piece|
+      game_piece.moves_for_piece.include?(king.currentPosition) &&
+        game_piece.valid_move_path?(king.currentPosition, game_pieces.pluck(:currentPosition)) &&
+        game_piece.valid_destination?(king.currentPosition, game_pieces)
+    end
   end
 end

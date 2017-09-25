@@ -311,5 +311,138 @@ RSpec.describe Piece, type: :model do
         expect(piece.valid_move_path?('e7', ['a8', 'd6', 'a5'])).to be false
       end
     end
+
+    context 'when the piece is a knight or a king' do
+      it 'returns true' do
+        piece = Piece.new(color: 'white', currentPosition: 'f3', pieceType: 'knight')
+        expect(piece.valid_move_path?('d4', ['a8', 'e4', 'a5'])).to be true
+      end
+
+      it 'returns false' do
+        piece = Piece.new(color: 'white', currentPosition: 'a3', pieceType: 'rook')
+        expect(piece.valid_move_path?('a4', ['a8', 'd6', 'a5'])).to be true
+      end
+    end
+  end
+
+  describe '#valid_destination' do
+    context 'when the destination is a different color than the piece moving' do
+      it 'returns true' do
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.create(color: 'white', currentPosition: 'a3', pieceType: 'rook')
+        game.pieces.create(color: 'black', currentPosition: 'a4', pieceType: 'rook')
+
+        expect(piece.valid_destination?('a4', game.pieces)).to be true
+      end
+    end
+
+    context 'when the destination is empty' do
+      it 'returns true' do
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.create(
+          color: 'white',
+          currentPosition: 'a3',
+          pieceType: 'rook',
+          startIndex: 25
+        )
+        game.pieces.create(
+          color: 'black',
+          currentPosition: 'a7',
+          pieceType: 'rook',
+          startIndex: 32
+        )
+
+        expect(piece.valid_destination?('a4', game.pieces)).to be true
+      end
+    end
+
+    context 'when the destination is occupied by an allied piece' do
+      it 'returns false' do
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.create(
+          color: 'white',
+          currentPosition: 'a3',
+          pieceType: 'rook',
+          startIndex: 25
+        )
+        game.pieces.create(
+          color: 'white',
+          currentPosition: 'a7',
+          pieceType: 'rook',
+          startIndex: 32
+        )
+
+        expect(piece.valid_destination?('a7', game.pieces)).to be false
+      end
+    end
+  end
+
+  describe '#king_is_safe?' do
+    context 'when the king is not in check' do
+      it 'returns true' do
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.create(
+          color: 'white',
+          currentPosition: 'a3',
+          pieceType: 'rook',
+          startIndex: 25
+        )
+
+        game.pieces.create(
+          color: 'black',
+          currentPosition: 'd7',
+          pieceType: 'king',
+          startIndex: 5
+        )
+
+        expect(piece.king_is_safe?('black', game.pieces)).to be true
+      end
+    end
+
+    context 'when the king is in check' do
+      it 'returns false' do
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.create(
+          color: 'white',
+          currentPosition: 'd1',
+          pieceType: 'rook',
+          startIndex: 25
+        )
+
+        game.pieces.create(
+          color: 'black',
+          currentPosition: 'd7',
+          pieceType: 'king',
+          startIndex: 5
+        )
+
+        expect(piece.king_is_safe?('black', game.pieces)).to be false
+      end
+    end
   end
 end
