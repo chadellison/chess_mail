@@ -1,8 +1,5 @@
 class MoveLogic
   class << self
-
-    LETTER_KEY = ['a' => 1, 'b' => 2, 'c' => 3, 'd' => 4, 'e' => 5, 'f' => 6, 'g' => 7, 'h' => 8]
-
     def moves_for_rook(position)
       moves_up(position) +
         moves_down(position) +
@@ -44,7 +41,31 @@ class MoveLogic
 
       possible_moves << position[0].next + (position[1].to_i + 2).to_s
       possible_moves << position[0].next + (position[1].to_i - 2).to_s
-      possible_moves
+
+      remove_out_of_bounds_moves(possible_moves)
+    end
+
+    def moves_for_pawn(position)
+      left_letter = (position[0].ord - 1).chr
+      right_letter = (position[0].ord + 1).chr
+      up_count = position[1].to_i + 1
+      down_count = position[1].to_i - 1
+
+      moves_up(position, up_count + 1) +
+      moves_down(position, down_count - 1).concat(
+        [
+          moves_left(position, left_letter).last[0] + moves_up(position, up_count).last[1],
+          moves_right(position, right_letter).last[0] + moves_up(position, up_count).last[1],
+          moves_left(position, left_letter).last[0] + moves_down(position, down_count).last[1],
+          moves_right(position, right_letter).last[0] + moves_down(position, down_count).last[1],
+        ]
+      )
+    end
+
+    def remove_out_of_bounds_moves(moves)
+      moves.reject do |move|
+        move[0] < 'a' || move[0] > 'h' || move[1] < '1' || move[1] > '8'
+      end
     end
 
     def extract_diagonals(moves)
@@ -53,33 +74,33 @@ class MoveLogic
       end.compact
     end
 
-    def moves_up(position)
+    def moves_up(position, count = 8)
       possible_moves = []
       row = position[1].to_i
 
-      while row < 8
+      while row < count
         row += 1
         possible_moves << (position[0] + row.to_s)
       end
       possible_moves
     end
 
-    def moves_down(position)
+    def moves_down(position, count = 1)
       possible_moves = []
       row = position[1].to_i
 
-      while row > 1
+      while row > count
         row -= 1
         possible_moves << (position[0] + row.to_s)
       end
       possible_moves
     end
 
-    def moves_left(position)
+    def moves_left(position, letter = 'a')
       possible_moves = []
       column = position[0]
 
-      while column > 'a'
+      while column > letter
         column = (column.ord - 1).chr
 
         possible_moves << (column + position[1])
@@ -87,11 +108,11 @@ class MoveLogic
       possible_moves
     end
 
-    def moves_right(position)
+    def moves_right(position, letter = 'h')
       possible_moves = []
       column = position[0]
 
-      while column < 'h'
+      while column < letter
         column = column.next
 
         possible_moves << (column + position[1])

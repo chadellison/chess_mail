@@ -77,7 +77,7 @@ RSpec.describe MoveLogic, type: :model do
   describe '#moves_for_king' do
     it 'returns an array of all possible moves for a king in a given position' do
       position = 'd4'
-      expected = ["d5", "d3", "c4", "e4", "e5", "c5", "c3", "e3", "b4", "f4"]
+      expected = ['d5', 'd3', 'c4', 'e4', 'e5', 'c5', 'c3', 'e3', 'b4', 'f4']
 
       expect(MoveLogic.moves_for_king(position)).to eq expected
     end
@@ -86,9 +86,23 @@ RSpec.describe MoveLogic, type: :model do
   describe '#moves_for_knight' do
     it 'returns an array of all possible moves for a knight in a given position' do
       position = 'd4'
-      expected = ["b5", "b3", "f5", "f3", "c6", "c2", "e6", "e2"]
+      expected = ['b5', 'b3', 'f5', 'f3', 'c6', 'c2', 'e6', 'e2']
 
       expect(MoveLogic.moves_for_knight(position)).to eq expected
+    end
+  end
+
+  describe '#moves_for_pawn' do
+    it 'returns an array of all possible moves for a pawn (of either color) in a given position' do
+      position = 'd4'
+      expected = ['d5', 'd6', 'd3', 'd2', 'c5', 'e5', 'c3', 'e3']
+
+      expect(MoveLogic.moves_for_pawn(position)).to eq expected
+    end
+  end
+
+  describe '#remove_out_of_bounds_moves' do
+    xit 'returns an array of all possible moves for a pawn (of either color) in a given position' do
     end
   end
 end
