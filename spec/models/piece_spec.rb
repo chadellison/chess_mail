@@ -423,4 +423,9 @@ RSpec.describe Piece, type: :model do
       end
     end
   end
+
+  describe '#king_will_be_safe?' do
+    xit 'test' do
+    end
+  end
 end

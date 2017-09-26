@@ -187,4 +187,8 @@ module PieceMoveLogic
         game_piece.valid_destination?(king.currentPosition, game_pieces)
     end
   end
+
+  def king_will_be_safe
+    true #WIP
+  end
 end

@@ -7,11 +7,10 @@ module NotationLogic
   }.freeze
 
   def create_piece_from_notation(notation)
-    pieces.create(
+    pieces.find_by(startIndex: retrieve_start_index(notation)).update(
       currentPosition: position_from_notation(notation),
       pieceType: piece_type_from_notation(notation),
-      color: current_turn,
-      startIndex: retrieve_start_index(notation)
+      color: current_turn
     )
   end
 
@@ -44,85 +43,58 @@ module NotationLogic
   end
 
   def retrieve_start_index(notation)
-    current_location = find_current_location(notation)
+    start_position = find_start_position(notation)
 
     piece_type = piece_type_from_notation(notation)
 
-    if current_location.length == 2
-      previously_moved = pieces.order(created_at: :desc)
-                               .find_by(currentPosition: current_location)
+    if piece_type == 'king' || piece_type == 'queen'
+      pieces.find_by(pieceType: piece_type, color: current_turn).startIndex
+    elsif start_position.length == 2
+      previously_moved = pieces.where(hasMoved: true, color: current_turn)
+                               .order(updated_at: :desc)
+                               .find_by(currentPosition: start_position)
       if previously_moved.present?
         previously_moved.startIndex
       else
-        START_INDICES[current_location]
+        json_pieces = File.read(Rails.root + './json/pieces.json')
+        JSON.parse(json_pieces)[start_position]['piece']['startIndex']
       end
-    elsif current_location.length == 1
-      if START_INDICES[piece_type][current_location].present?
-        START_INDICES[piece_type][current_location][current_turn]
-      else
-        pieces.where(pieceType: piece_type)
-              .all.detect do |piece|
-                piece.currentPosition[0] == current_location
-              end.startIndex
-      end
-    elsif piece_type == 'king' || piece_type == 'queen'
-      START_INDICES[piece_type][current_turn]
-    elsif current_location.empty?
-      # previously_moved = pieces.where(pieceType: piece_type, color: current_turn)
-      #                          .detect do |piece|
-      #                            piece.possible_moves(pieces) == position_from_notation(notation)
-      #                          end
-      #
-      # if previously_moved.present?
-      #   previously_moved.startIndex
-      # else
-      #   # coords...
-      #   START_INDICES[coordinates]
-      # end
+    elsif start_position.length == 1
+      previously_moved = pieces.where(
+        hasMoved: true,
+        pieceType: piece_type,
+        color: current_turn
+      ).all.detect { |piece| piece.currentPosition[0] == start_position }
 
-      notation
+      if previously_moved.present?
+        previously_moved.startIndex
+      else
+        START_INDICES[piece_type][start_position][current_turn]
+      end
+    elsif start_position.empty?
+      previously_moved = pieces.where(
+        hasMoved: true,
+        pieceType: piece_type,
+        color: current_turn
+      ).detect { |piece| piece.valid_moves.include?(position_from_notation) }
+
+      if previously_moved.present?
+        previously_moved.startIndex
+      else
+        pieces.where(hasMoved: false, pieceType: piece_type, color: current_turn)
+              .detect { |piece| piece.valid_moves.include?(position_from_notation) }
+              .startIndex
+      end
     end
   end
 
-  def find_current_location(notation)
+  def find_start_position(notation)
     notation.gsub(position_from_notation(notation), '').chars.reject do |char|
       ['#', '=', 'x', char.capitalize].include?(char)
     end.join('')
   end
 
   START_INDICES = {
-    'a8' => 1,
-    'b8' => 2,
-    'c8' => 3,
-    'd8' => 4,
-    'e8' => 5,
-    'f8' => 6,
-    'g8' => 7,
-    'h8' => 8,
-    'a7' => 9,
-    'b7' => 10,
-    'c7' => 11,
-    'd7' => 12,
-    'e7' => 13,
-    'f7' => 14,
-    'g7' => 15,
-    'h7' => 16,
-    'a2' => 17,
-    'b2' => 18,
-    'c2' => 19,
-    'd2' => 20,
-    'e2' => 21,
-    'f2' => 22,
-    'g2' => 23,
-    'h2' => 24,
-    'a1' => 25,
-    'b1' => 26,
-    'c1' => 27,
-    'd1' => 28,
-    'e1' => 29,
-    'f1' => 30,
-    'g1' => 31,
-    'h1' => 32,
     'king' => {
       'black' => 5,
       'white' => 29

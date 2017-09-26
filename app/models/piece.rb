@@ -1,6 +1,7 @@
 class Piece < ApplicationRecord
   validates_presence_of :currentPosition, :color, :pieceType, :startIndex
 
+  # belongs_to :game
   has_many :game_pieces
   has_many :games, through: :game_pieces
 
@@ -20,6 +21,15 @@ class Piece < ApplicationRecord
       moves_for_knight
     when 'pawn'
       moves_for_pawn
+    end
+  end
+
+  def valid_moves
+    moves_for_piece.select do |move|
+      valid_move_path &&
+        valid_destination &&
+        king_is_safe(color, ) &&
+        king_will_be_safe
     end
   end
 
