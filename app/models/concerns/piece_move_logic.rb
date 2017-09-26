@@ -188,7 +188,6 @@ module PieceMoveLogic
     end
   end
 
-  def king_will_be_safe
-    true #WIP
-  end
+  # def king_will_be_safe
+  # end
 end

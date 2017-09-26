@@ -1,9 +1,7 @@
 class Piece < ApplicationRecord
   validates_presence_of :currentPosition, :color, :pieceType, :startIndex
 
-  # belongs_to :game
-  has_many :game_pieces
-  has_many :games, through: :game_pieces
+  belongs_to :game, optional: true
 
   include PieceMoveLogic
 
@@ -25,12 +23,12 @@ class Piece < ApplicationRecord
   end
 
   def valid_moves
-    moves_for_piece.select do |move|
-      valid_move_path &&
-        valid_destination &&
-        king_is_safe(color, ) &&
-        king_will_be_safe
-    end
+  #   moves_for_piece.select do |move|
+  #     valid_move_path() &&
+  #       valid_destination &&
+  #       king_is_safe(color, game.pieces) &&
+  #       king_will_be_safe
+  #   end
   end
 
   def serialize_piece
