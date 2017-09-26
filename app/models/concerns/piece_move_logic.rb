@@ -67,7 +67,7 @@ module PieceMoveLogic
 
   def remove_out_of_bounds_moves(moves)
     moves.reject do |move|
-      move[0] < 'a' || move[0] > 'h' || move[1] < '1' || move[1] > '8'
+      move[0] < 'a' || move[0] > 'h' || move[1..-1].to_i < 1 || move[1..-1].to_i > 8
     end
   end
 
@@ -181,7 +181,6 @@ module PieceMoveLogic
 
   def king_is_safe?(color, game_pieces)
     king = game_pieces.find_by(pieceType: 'king', color: color)
-
     game_pieces.none? do |game_piece|
       game_piece.moves_for_piece.include?(king.currentPosition) &&
         game_piece.valid_move_path?(king.currentPosition, game_pieces.pluck(:currentPosition)) &&

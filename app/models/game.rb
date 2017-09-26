@@ -6,6 +6,8 @@ class Game < ApplicationRecord
 
   validates_presence_of :challengedName, :challengedEmail, :challengerColor
 
+  after_commit :add_pieces, on: :create
+
   scope :not_archived, ->(archived_game_ids) { where.not(id: archived_game_ids) }
 
   include NotationLogic
@@ -35,7 +37,8 @@ class Game < ApplicationRecord
         outcome: outcome,
         human: human
       },
-      included: pieces.order(:created_at).map(&:serialize_piece)
+      included: pieces.where(hasMoved: true)
+                      .order(:updated_at).map(&:serialize_piece)
     }
   end
 
@@ -131,5 +134,13 @@ class Game < ApplicationRecord
     recipient = users.detect { |each_user| each_user != user }
     opponent_name = user.firstName
     MoveMailer.move(recipient, opponent_name, piece).deliver_later
+  end
+
+  def add_pieces
+    json_pieces = JSON.parse(File.read(Rails.root + 'json/pieces.json'))
+
+    json_pieces.deep_symbolize_keys.values.each do |json_piece|
+      pieces.create(json_piece[:piece])
+    end
   end
 end

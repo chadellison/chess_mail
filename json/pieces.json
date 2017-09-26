@@ -1,0 +1,258 @@
+{
+  "a8": {
+    "piece": {
+      "startIndex": 1,
+      "pieceType": "rook",
+      "color": "black",
+      "currentPosition": "a8"
+    }
+  },
+  "b8": {
+    "piece": {
+      "startIndex": 2,
+      "pieceType": "knight",
+      "color": "black",
+      "currentPosition": "b8"
+    }
+  },
+  "c8": {
+    "piece": {
+      "startIndex": 3,
+      "pieceType": "bishop",
+      "color": "black",
+      "currentPosition": "c8"
+    }
+  },
+  "d8": {
+    "piece": {
+      "startIndex": 4,
+      "pieceType": "queen",
+      "color": "black",
+      "currentPosition": "d8"
+    }
+  },
+  "e8": {
+    "piece": {
+      "startIndex": 5,
+      "pieceType": "king",
+      "color": "black",
+      "currentPosition": "e8"
+    }
+  },
+  "f8": {
+    "piece": {
+      "startIndex": 6,
+      "pieceType": "bishop",
+      "color": "black",
+      "currentPosition": "f8"
+    }
+  },
+  "g8": {
+    "piece": {
+      "startIndex": 7,
+      "pieceType": "knight",
+      "color": "black",
+      "currentPosition": "g8"
+    }
+  },
+  "h8": {
+    "piece": {
+      "startIndex": 8,
+      "pieceType": "rook",
+      "color": "black",
+      "currentPosition": "h8"
+    }
+  },
+  "a7": {
+    "piece": {
+      "startIndex": 9,
+      "pieceType": "pawn",
+      "color": "black",
+      "currentPosition": "a7"
+    }
+  },
+  "b7": {
+    "piece": {
+      "startIndex": 10,
+      "pieceType": "pawn",
+      "color": "black",
+      "currentPosition": "b7"
+    }
+  },
+  "c7": {
+    "piece": {
+      "startIndex": 11,
+      "pieceType": "pawn",
+      "color": "black",
+      "currentPosition": "c7"
+    }
+  },
+  "d7": {
+    "piece": {
+      "startIndex": 12,
+      "pieceType": "pawn",
+      "color": "black",
+      "currentPosition": "d7"
+    }
+  },
+  "e7": {
+    "piece": {
+      "startIndex": 13,
+      "pieceType": "pawn",
+      "color": "black",
+      "currentPosition": "e7"
+    }
+  },
+  "f7": {
+    "piece": {
+      "startIndex": 14,
+      "pieceType": "pawn",
+      "color": "black",
+      "currentPosition": "f7"
+    }
+  },
+  "g7": {
+    "piece": {
+      "startIndex": 15,
+      "pieceType": "pawn",
+      "color": "black",
+      "currentPosition": "g7"
+    }
+  },
+  "h7": {
+    "piece": {
+      "startIndex": 16,
+      "pieceType": "pawn",
+      "color": "black",
+      "currentPosition": "h7"
+    }
+  },
+  "a2": {
+    "piece": {
+      "startIndex": 17,
+      "pieceType": "pawn",
+      "color": "white",
+      "currentPosition": "a2"
+    }
+  },
+  "b2": {
+    "piece": {
+      "startIndex": 18,
+      "pieceType": "pawn",
+      "color": "white",
+      "currentPosition": "b2"
+    }
+  },
+  "c2": {
+    "piece": {
+      "startIndex": 19,
+      "pieceType": "pawn",
+      "color": "white",
+      "currentPosition": "c2"
+    }
+  },
+  "d2": {
+    "piece": {
+      "startIndex": 20,
+      "pieceType": "pawn",
+      "color": "white",
+      "currentPosition": "d2"
+    }
+  },
+  "e2": {
+    "piece": {
+      "startIndex": 21,
+      "pieceType": "pawn",
+      "color": "white",
+      "currentPosition": "e2"
+    }
+  },
+  "f2": {
+    "piece": {
+      "startIndex": 22,
+      "pieceType": "pawn",
+      "color": "white",
+      "currentPosition": "f2"
+    }
+  },
+  "g2": {
+    "piece": {
+      "startIndex": 23,
+      "pieceType": "pawn",
+      "color": "white",
+      "currentPosition": "g2"
+    }
+  },
+  "h2": {
+    "piece": {
+      "startIndex": 24,
+      "pieceType": "pawn",
+      "color": "white",
+      "currentPosition": "h2"
+    }
+  },
+  "a1": {
+    "piece": {
+      "startIndex": 25,
+      "pieceType": "rook",
+      "color": "white",
+      "currentPosition": "a1"
+    }
+  },
+  "b1": {
+    "piece": {
+      "startIndex": 26,
+      "pieceType": "knight",
+      "color": "white",
+      "currentPosition": "b1"
+    }
+  },
+  "c1": {
+    "piece": {
+      "startIndex": 27,
+      "pieceType": "bishop",
+      "color": "white",
+      "currentPosition": "c1"
+    }
+  },
+  "d1": {
+    "piece": {
+      "startIndex": 28,
+      "pieceType": "queen",
+      "color": "white",
+      "currentPosition": "d1"
+    }
+  },
+  "e1": {
+    "piece": {
+      "startIndex": 29,
+      "pieceType": "king",
+      "color": "white",
+      "currentPosition": "e1"
+    }
+  },
+  "f1": {
+    "piece": {
+      "startIndex": 30,
+      "pieceType": "bishop",
+      "color": "white",
+      "currentPosition": "f1"
+    }
+  },
+  "g1": {
+    "piece": {
+      "startIndex": 31,
+      "pieceType": "knight",
+      "color": "white",
+      "currentPosition": "g1"
+    }
+  },
+  "h1": {
+    "piece": {
+      "startIndex": 32,
+      "pieceType": "rook",
+      "color": "white",
+      "currentPosition": "h1"
+    }
+  }
+}

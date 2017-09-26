@@ -388,12 +388,6 @@ RSpec.describe Game, type: :model do
         challengedName: challengedName,
         challengerColor: 'black'
       )
-      game.pieces.create(
-        pieceType: 'pawn',
-        currentPosition: 'a2',
-        color: 'black',
-        startIndex: Faker::Number.number(8)
-      )
 
       result = {
         type: 'game',
@@ -407,7 +401,7 @@ RSpec.describe Game, type: :model do
           outcome: nil,
           human: true
         },
-        included: [game.pieces.first.serialize_piece]
+        included: []
       }
 
       expect(game.serialize_game(user.email)).to eq result
@@ -961,6 +955,11 @@ RSpec.describe Game, type: :model do
         expect(game.pieces.last.pieceType)
           .to eq 'queen'
       end
+    end
+  end
+
+  describe '#add_pieces' do
+    xit 'test' do
     end
   end
 end

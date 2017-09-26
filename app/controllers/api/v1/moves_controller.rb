@@ -7,7 +7,8 @@ module Api
 
       def create
         game = Game.find(params[:game_id])
-        piece = game.pieces.create(piece_params)
+        piece = game.pieces.find_by(startIndex: piece_params[:startIndex])
+        piece.update(currentPosition: piece_params[:currentPosition], hasMoved: true)
         game.handle_move(piece, @user)
 
         serialized_game = { data: game.reload.serialize_game(@user.email) }

@@ -28,33 +28,28 @@ RSpec.describe Api::V1::MovesController, type: :controller do
         )
       end
 
-      let(:piece) do
-        Piece.create(
-          pieceType: 'rook',
-          color: 'black',
-          currentPosition: 'a6',
-          startIndex: '27'
-        )
-      end
-
       let(:piece_params) {
         {
-          pieceType: piece.pieceType,
-          color: piece.color,
-          currentPosition: piece.currentPosition,
-          startIndex: piece.startIndex
+          pieceType: 'pawn',
+          color: 'black',
+          currentPosition: 'd5',
+          startIndex: 12,
+          hasMoved: true
         }
       }
 
       it 'updates a user\'s game' do
-        expect {
-          post :create, params: { game_id: game.id, token: user.token, piece: piece_params }, format: :json
-        }.to change { game.pieces.count }.by(1)
+        post :create, params: {
+          game_id: game.id,
+          token: user.token,
+          piece: piece_params
+        }, format: :json
 
         expect(response.status).to eq 201
         expect(JSON.parse(response.body)['data']['included']
-          .first['attributes']['startIndex']).to eq piece.startIndex
-        expect(game.pieces.first.startIndex).to eq piece.startIndex
+          .last['attributes']['startIndex']).to eq piece_params[:startIndex]
+        expect(game.pieces.find_by(startIndex: 12).currentPosition)
+          .to eq piece_params[:currentPosition]
       end
 
       it 'calls send_new_move_email' do

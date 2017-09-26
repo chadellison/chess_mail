@@ -374,13 +374,9 @@ RSpec.describe Piece, type: :model do
           challengerColor: 'white'
         )
 
-        piece = game.pieces.create(
-          color: 'white',
-          currentPosition: 'a3',
-          pieceType: 'rook',
-          startIndex: 25
-        )
-        game.pieces.create(
+        piece = game.pieces.find_by(startIndex: 17)
+
+        game.pieces.find_by(startIndex: 9).update(
           color: 'white',
           currentPosition: 'a7',
           pieceType: 'rook',
@@ -401,19 +397,10 @@ RSpec.describe Piece, type: :model do
           challengerColor: 'white'
         )
 
-        piece = game.pieces.create(
-          color: 'white',
-          currentPosition: 'a3',
-          pieceType: 'rook',
-          startIndex: 25
-        )
+        piece = game.pieces.find_by(startIndex: 25)
+        piece.update(currentPosition: 'a3')
 
-        game.pieces.create(
-          color: 'black',
-          currentPosition: 'd7',
-          pieceType: 'king',
-          startIndex: 5
-        )
+        game.pieces.find_by(startIndex: 5).update(currentPosition: 'd6')
 
         expect(piece.king_is_safe?('black', game.pieces)).to be true
       end
@@ -427,19 +414,10 @@ RSpec.describe Piece, type: :model do
           challengerColor: 'white'
         )
 
-        piece = game.pieces.create(
-          color: 'white',
-          currentPosition: 'd1',
-          pieceType: 'rook',
-          startIndex: 25
-        )
+        piece = game.pieces.find_by(startIndex: 25)
+        piece.update(currentPosition: 'd4')
 
-        game.pieces.create(
-          color: 'black',
-          currentPosition: 'd7',
-          pieceType: 'king',
-          startIndex: 5
-        )
+        game.pieces.find_by(startIndex: 5).update(currentPosition: 'd6')
 
         expect(piece.king_is_safe?('black', game.pieces)).to be false
       end

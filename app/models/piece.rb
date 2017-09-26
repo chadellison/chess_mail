@@ -10,7 +10,7 @@ class Piece < ApplicationRecord
     case pieceType
     when 'rook'
       moves_for_rook
-    when 'biship'
+    when 'bishop'
       moves_for_bishop
     when 'queen'
       moves_for_queen
