@@ -469,7 +469,35 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#handle_move' do
-    xit 'test' do
+    context 'when a piece is on the square being moved to' do
+      let(:user) do
+        User.create(
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          email: Faker::Internet.email,
+          password: 'password'
+        )
+      end
+
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      it 'removes that piece from the game' do
+        game.pieces.find_by(startIndex: 20).update(currentPosition: 'd4')
+        game.pieces.find_by(startIndex: 13).update(currentPosition: 'e5')
+        move_params = { currentPosition: 'e5', movedTwo: false, startIndex: '20' }
+
+
+        expect { game.handle_move(move_params, user) }.to change {
+          game.pieces.count }.by(-1)
+
+        expect(game.pieces.find_by(startIndex: 13)).to be_nil
+      end
     end
   end
 

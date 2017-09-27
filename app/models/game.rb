@@ -93,6 +93,8 @@ class Game < ApplicationRecord
   def handle_move(move_params, user)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
     move_params[:hasMoved] = true
+    captured_piece = pieces.find_by(currentPosition: move_params[:currentPosition])
+    captured_piece.destroy if captured_piece.present?
     piece.update(move_params)
 
     move = piece.attributes
@@ -103,16 +105,9 @@ class Game < ApplicationRecord
       send_new_move_email(piece, user)
     else
       # have robot move
-      move = pieces.count.odd? ? 'd5' : 'd4'
-      start_index = pieces.count.odd? ? '12' : '20'
-      pieces.create(
-        pieceType: 'pawn',
-        color: current_turn,
-        currentPosition: move,
-        hasMoved: true,
-        movedTwo: true,
-        startIndex: start_index
-      )
+      move = pieces.count.odd? ? 'a6' : 'a3'
+      start_index = pieces.count.odd? ? 9 : 17
+      pieces.find_by(startIndex: start_index).update(currentPosition: move)
     end
   end
 
