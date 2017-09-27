@@ -441,4 +441,9 @@ RSpec.describe Piece, type: :model do
     xit 'test' do
     end
   end
+
+  describe '#valid_moves' do
+    xit 'test' do
+    end
+  end
 end
