@@ -39,6 +39,19 @@ RSpec.describe Game, type: :model do
     expect(game.pieces).to eq [piece]
   end
 
+  it 'has many moves' do
+    game = Game.create
+    move = Move.create(
+      pieceType: 'rook',
+      color: 'black',
+      currentPosition: 'a2'
+    )
+
+    game.moves << move
+
+    expect(game.moves).to eq [move]
+  end
+
   describe '#setup' do
     context 'when the game_params have challengePlayer equal to true' do
       it 'calls add_challenged_player' do

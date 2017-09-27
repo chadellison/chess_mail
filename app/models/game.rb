@@ -2,6 +2,7 @@ class Game < ApplicationRecord
   has_many :user_games
   has_many :users, through: :user_games
   has_many :pieces
+  has_many :moves
 
   validates_presence_of :challengedName, :challengedEmail, :challengerColor
 
@@ -36,8 +37,7 @@ class Game < ApplicationRecord
         outcome: outcome,
         human: human
       },
-      included: pieces.where(hasMoved: true)
-                      .order(:updated_at).map(&:serialize_piece)
+      included: moves.order(:created_at).map(&:serialize_move)
     }
   end
 
@@ -90,10 +90,19 @@ class Game < ApplicationRecord
     end
   end
 
-  def handle_move(piece, user)
+  def handle_move(move_params, user)
+    piece = pieces.find_by(startIndex: move_params[:startIndex])
+    move_params[:hasMoved] = true
+    piece.update(move_params)
+
+    move = piece.attributes
+    move.delete('id')
+    moves.create(move)
+
     if human.present?
       send_new_move_email(piece, user)
     else
+      # have robot move
       move = pieces.count.odd? ? 'd5' : 'd4'
       start_index = pieces.count.odd? ? '12' : '20'
       pieces.create(

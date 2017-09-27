@@ -28,10 +28,8 @@ RSpec.describe Api::V1::MovesController, type: :controller do
         )
       end
 
-      let(:piece_params) {
+      let(:move_params) {
         {
-          pieceType: 'pawn',
-          color: 'black',
           currentPosition: 'd5',
           startIndex: 12,
           hasMoved: true
@@ -42,19 +40,20 @@ RSpec.describe Api::V1::MovesController, type: :controller do
         post :create, params: {
           game_id: game.id,
           token: user.token,
-          piece: piece_params
+          move: move_params
         }, format: :json
 
         expect(response.status).to eq 201
         expect(JSON.parse(response.body)['data']['included']
-          .last['attributes']['startIndex']).to eq piece_params[:startIndex]
+          .last['attributes']['startIndex']).to eq move_params[:startIndex]
         expect(game.pieces.find_by(startIndex: 12).currentPosition)
-          .to eq piece_params[:currentPosition]
+          .to eq move_params[:currentPosition]
       end
 
       it 'calls send_new_move_email' do
         expect_any_instance_of(Game).to receive(:send_new_move_email)
-        post :create, params: { game_id: game.id, token: user.token, piece: piece_params }, format: :json
+        post :create, params: { game_id: game.id, token: user.token,
+                                move: move_params }, format: :json
       end
     end
 
@@ -76,21 +75,19 @@ RSpec.describe Api::V1::MovesController, type: :controller do
         )
       end
 
-      let(:piece) { Piece.create(pieceType: 'rook', color: 'black', currentPosition: 'a6') }
-
-      let(:piece_params) do
+      let(:move_params) do
         {
-          pieceType: piece.pieceType,
-          color: piece.color,
-          currentPosition: piece.currentPosition
+          startIndex: 1,
+          currentPosition: 'a6',
+          movedTwo: false
         }
       end
 
       it 'returns a 404' do
         expect {
           post :create, params: { game_id: Faker::Number.number(8),
-                                 token: user.token,
-                                 piece: piece_params }, format: :json
+                                  token: user.token,
+                                  move: move_params }, format: :json
         }.to raise_exception(ActiveRecord::RecordNotFound)
       end
     end

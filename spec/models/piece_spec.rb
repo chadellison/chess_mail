@@ -49,6 +49,19 @@ RSpec.describe Piece, type: :model do
     expect(piece.valid?).to be true
   end
 
+  it 'belongs to a game' do
+    piece = Piece.new(
+      currentPosition: 'a2',
+      pieceType: 'knight',
+      color: 'white',
+      startIndex: Faker::Number.number(2)
+    )
+    game = Game.new
+    game.pieces << piece
+
+    expect(piece.game).to eq game
+  end
+
   describe '#moves_up' do
     it 'returns an array of all possible moves up given a position' do
       position = 'f3'

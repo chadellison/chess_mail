@@ -7,9 +7,7 @@ module Api
 
       def create
         game = Game.find(params[:game_id])
-        piece = game.pieces.find_by(startIndex: piece_params[:startIndex])
-        piece.update(currentPosition: piece_params[:currentPosition], hasMoved: true)
-        game.handle_move(piece, @user)
+        game.handle_move(move_params, @user)
 
         serialized_game = { data: game.reload.serialize_game(@user.email) }
         render json: serialized_game, status: 201
@@ -17,9 +15,8 @@ module Api
 
       private
 
-      def piece_params
-        params.require(:piece).permit(:pieceType, :color, :currentPosition,
-                                      :hasMoved, :movedTwo, :startIndex)
+      def move_params
+        params.require(:move).permit(:currentPosition, :movedTwo, :startIndex)
       end
     end
   end
