@@ -1,7 +1,8 @@
 module PieceMoveLogic
   extend ActiveSupport::Concern
 
-  LETTER_KEY = { 'a' => 1, 'b' => 2, 'c' => 3, 'd' => 4, 'e' => 5, 'f' => 6, 'g' => 7, 'h' => 8 }.freeze
+  LETTER_KEY = { 'a' => 1, 'b' => 2, 'c' => 3, 'd' => 4, 'e' => 5, 'f' => 6,
+                 'g' => 7, 'h' => 8 }.freeze
 
   def moves_for_rook
     moves_up +
@@ -25,27 +26,32 @@ module PieceMoveLogic
 
   def moves_for_king
     moves_for_queen.reject do |move|
-      move[0] > currentPosition[0].next || move[0] < (currentPosition[0].ord - 1).chr ||
-      move[1].to_i > currentPosition[1].to_i + 1 || move[1].to_i < currentPosition[1].to_i - 1
-    end + [(currentPosition[0].ord - 2).chr + currentPosition[1], currentPosition[0].next.next + currentPosition[1]]
+      move[0] > currentPosition[0].next ||
+        move[0] < (currentPosition[0].ord - 1).chr ||
+        move[1].to_i > currentPosition[1].to_i + 1 ||
+        move[1].to_i < currentPosition[1].to_i - 1
+    end + [(currentPosition[0].ord - 2).chr + currentPosition[1],
+           currentPosition[0].next.next + currentPosition[1]]
   end
 
   def moves_for_knight
-    possible_moves = []
+    moves = []
+    column = currentPosition[0].ord
+    row = currentPosition[1].to_i
 
-    possible_moves << (currentPosition[0].ord - 2).chr + (currentPosition[1].to_i + 1).to_s
-    possible_moves << (currentPosition[0].ord - 2).chr + (currentPosition[1].to_i - 1).to_s
+    moves << (column - 2).chr + (row + 1).to_s
+    moves << (column - 2).chr + (row - 1).to_s
 
-    possible_moves << (currentPosition[0].ord + 2).chr + (currentPosition[1].to_i + 1).to_s
-    possible_moves << (currentPosition[0].ord + 2).chr + (currentPosition[1].to_i - 1).to_s
+    moves << (column + 2).chr + (row + 1).to_s
+    moves << (column + 2).chr + (row - 1).to_s
 
-    possible_moves << (currentPosition[0].ord - 1).chr + (currentPosition[1].to_i + 2).to_s
-    possible_moves << (currentPosition[0].ord - 1).chr + (currentPosition[1].to_i - 2).to_s
+    moves << (column - 1).chr + (row + 2).to_s
+    moves << (column - 1).chr + (row - 2).to_s
 
-    possible_moves << currentPosition[0].next + (currentPosition[1].to_i + 2).to_s
-    possible_moves << currentPosition[0].next + (currentPosition[1].to_i - 2).to_s
+    moves << (column + 1).chr + (row + 2).to_s
+    moves << (column + 1).chr + (row - 2).to_s
 
-    remove_out_of_bounds_moves(possible_moves)
+    remove_out_of_bounds_moves(moves)
   end
 
   def moves_for_pawn
@@ -55,19 +61,22 @@ module PieceMoveLogic
     down_count = currentPosition[1].to_i - 1
 
     possible_moves = moves_up(up_count + 1) +
-    moves_down((down_count - 1).abs) +
-      [
-        moves_left(left_letter).last[0] + moves_up(up_count).last[1],
-        moves_right(right_letter).last[0] + moves_up(up_count).last[1],
-        moves_left(left_letter).last[0] + moves_down(down_count).last[1],
-        moves_right(right_letter).last[0] + moves_down(down_count).last[1],
-      ]
+    moves_down((down_count - 1).abs) + [
+      moves_left(left_letter).last[0] +
+      moves_up(up_count).last[1],
+      moves_right(right_letter).last[0] + moves_up(up_count).last[1],
+      moves_left(left_letter).last[0] + moves_down(down_count).last[1],
+      moves_right(right_letter).last[0] + moves_down(down_count).last[1]
+    ]
     remove_out_of_bounds_moves(possible_moves)
   end
 
   def remove_out_of_bounds_moves(moves)
     moves.reject do |move|
-      move[0] < 'a' || move[0] > 'h' || move[1..-1].to_i < 1 || move[1..-1].to_i > 8
+      move[0] < 'a' ||
+        move[0] > 'h' ||
+        move[1..-1].to_i < 1 ||
+        move[1..-1].to_i > 8
     end
   end
 
@@ -135,8 +144,8 @@ module PieceMoveLogic
     end
   end
 
-  def valid_destination?(destination, game_pieces)
-    destination_piece = game_pieces.find_by(currentPosition: destination)
+  def valid_destination?(destination)
+    destination_piece = game.pieces.find_by(currentPosition: destination)
 
     if destination_piece.present?
       destination_piece.color != color
@@ -146,12 +155,13 @@ module PieceMoveLogic
   end
 
   def vertical_collision?(destination, occupied_spaces)
-    difference = (currentPosition[1].to_i - destination[1].to_i).abs - 1
+    row = currentPosition[1].to_i
+    difference = (row - destination[1].to_i).abs - 1
 
-    if currentPosition[1].to_i > destination[1].to_i
-      (moves_down((difference - currentPosition[1].to_i).abs) & occupied_spaces).present?
+    if row > destination[1].to_i
+      (moves_down((difference - row).abs) & occupied_spaces).present?
     else
-      (moves_up(difference + currentPosition[1].to_i) & occupied_spaces).present?
+      (moves_up(difference + row) & occupied_spaces).present?
     end
   end
 
@@ -176,15 +186,18 @@ module PieceMoveLogic
     else
       vertical_moves = moves_down((difference - currentPosition[1].to_i).abs)
     end
-    (extract_diagonals(horizontal_moves.zip(vertical_moves)) & occupied_spaces).present?
+    (extract_diagonals(horizontal_moves.zip(vertical_moves)) & occupied_spaces)
+      .present?
   end
 
-  def king_is_safe?(color, game_pieces)
-    king = game_pieces.find_by(pieceType: 'king', color: color)
-    game_pieces.none? do |game_piece|
+  def king_is_safe?(color)
+    king = game.pieces.find_by(pieceType: 'king', color: color)
+    occupied_spaces = game.pieces.pluck(:currentPosition)
+
+    game.pieces.none? do |game_piece|
       game_piece.moves_for_piece.include?(king.currentPosition) &&
-        game_piece.valid_move_path?(king.currentPosition, game_pieces.pluck(:currentPosition)) &&
-        game_piece.valid_destination?(king.currentPosition, game_pieces)
+        game_piece.valid_move_path?(king.currentPosition, occupied_spaces) &&
+        game_piece.valid_destination?(king.currentPosition)
     end
   end
 

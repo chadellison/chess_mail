@@ -350,7 +350,7 @@ RSpec.describe Piece, type: :model do
         piece = game.pieces.create(color: 'white', currentPosition: 'a3', pieceType: 'rook')
         game.pieces.create(color: 'black', currentPosition: 'a4', pieceType: 'rook')
 
-        expect(piece.valid_destination?('a4', game.pieces)).to be true
+        expect(piece.valid_destination?('a4')).to be true
       end
     end
 
@@ -375,7 +375,7 @@ RSpec.describe Piece, type: :model do
           startIndex: 32
         )
 
-        expect(piece.valid_destination?('a4', game.pieces)).to be true
+        expect(piece.valid_destination?('a4')).to be true
       end
     end
 
@@ -396,7 +396,7 @@ RSpec.describe Piece, type: :model do
           startIndex: 32
         )
 
-        expect(piece.valid_destination?('a7', game.pieces)).to be false
+        expect(piece.valid_destination?('a7')).to be false
       end
     end
   end
@@ -415,7 +415,7 @@ RSpec.describe Piece, type: :model do
 
         game.pieces.find_by(startIndex: 5).update(currentPosition: 'd6')
 
-        expect(piece.king_is_safe?('black', game.pieces)).to be true
+        expect(piece.king_is_safe?('black')).to be true
       end
     end
 
@@ -432,7 +432,7 @@ RSpec.describe Piece, type: :model do
 
         game.pieces.find_by(startIndex: 5).update(currentPosition: 'd6')
 
-        expect(piece.king_is_safe?('black', game.pieces)).to be false
+        expect(piece.king_is_safe?('black')).to be false
       end
     end
   end
