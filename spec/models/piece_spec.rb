@@ -437,7 +437,7 @@ RSpec.describe Piece, type: :model do
     end
   end
 
-  describe '#king_will_be_safe?' do
+  describe '#pieces_with_next_move' do
     xit 'test' do
     end
   end

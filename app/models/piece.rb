@@ -23,12 +23,13 @@ class Piece < ApplicationRecord
   end
 
   def valid_moves
-  #   moves_for_piece.select do |move|
-  #     valid_move_path() &&
-  #       valid_destination &&
-  #       king_is_safe(color, game.pieces) &&
-  #       king_will_be_safe
-  #   end
+    moves_for_piece.select do |move|
+      game_pieces = pieces_with_next_move(move)
+
+      valid_move_path?(move, game.pieces.pluck(:currentPosition)) &&
+        valid_destination?(move) &&
+        king_is_safe?(color, game_pieces)
+    end
   end
 
   def serialize_piece

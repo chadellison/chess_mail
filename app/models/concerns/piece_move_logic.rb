@@ -201,6 +201,13 @@ module PieceMoveLogic
     end
   end
 
-  # def king_will_be_safe
-  # end
+  def pieces_with_next_move(move)
+    pieces.map do |game_piece|
+      if game_piece.startIndex == startIndex
+        game_piece.currentPosition = move
+      else
+        game_piece
+      end
+    end
+  end
 end
