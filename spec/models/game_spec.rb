@@ -501,6 +501,11 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#move' do
+    xit 'test' do
+    end
+  end
+
   describe '#current_turn' do
     xit 'test' do
     end

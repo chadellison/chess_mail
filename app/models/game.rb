@@ -91,15 +91,7 @@ class Game < ApplicationRecord
   end
 
   def handle_move(move_params, user)
-    piece = pieces.find_by(startIndex: move_params[:startIndex])
-    move_params[:hasMoved] = true
-    captured_piece = pieces.find_by(currentPosition: move_params[:currentPosition])
-    captured_piece.destroy if captured_piece.present?
-    piece.update(move_params)
-
-    move = piece.attributes
-    move.delete('id')
-    moves.create(move)
+    piece = move(move_params)
 
     if human.present?
       send_new_move_email(piece, user)
@@ -109,6 +101,19 @@ class Game < ApplicationRecord
       start_index = pieces.count.odd? ? 9 : 17
       pieces.find_by(startIndex: start_index).update(currentPosition: move)
     end
+  end
+
+  def move(move_params)
+    piece = pieces.find_by(startIndex: move_params[:startIndex])
+    move_params[:hasMoved] = true
+    captured_piece = pieces.find_by(currentPosition: move_params[:currentPosition])
+    captured_piece.destroy if captured_piece.present?
+    piece.update(move_params)
+
+    move = piece.attributes
+    move.delete('id')
+    moves.create(move)
+    piece
   end
 
   def add_challenged_player
