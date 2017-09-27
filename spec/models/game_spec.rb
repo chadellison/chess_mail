@@ -320,7 +320,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#is_challenger?' do
+  describe '#challenger?' do
     let(:firstName) { Faker::Name.first_name }
     let(:lastName) { Faker::Name.last_name }
     let(:email) { Faker::Internet.email }
@@ -354,13 +354,13 @@ RSpec.describe Game, type: :model do
 
     context 'when email belongs to the challenger' do
       it 'returns true' do
-        expect(game.is_challenger?(email)).to be true
+        expect(game.challenger?(email)).to be true
       end
     end
 
     context 'when email does not belong to the challenger' do
       it 'returns false' do
-        expect(game.is_challenger?(challenged_user.email)).to be false
+        expect(game.challenger?(challenged_user.email)).to be false
       end
     end
   end

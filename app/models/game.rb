@@ -33,7 +33,7 @@ class Game < ApplicationRecord
         playerColor: current_player_color(user_email),
         opponentName: current_opponent_name(user_email),
         opponentGravatar: opponent_gravatar,
-        isChallenger: is_challenger?(user_email),
+        isChallenger: challenger?(user_email),
         outcome: outcome,
         human: human
       },
@@ -41,7 +41,7 @@ class Game < ApplicationRecord
     }
   end
 
-  def is_challenger?(email)
+  def challenger?(email)
     challengedEmail != email
   end
 
@@ -122,8 +122,11 @@ class Game < ApplicationRecord
   end
 
   def handle_resign(user)
-    winner = current_player_color(user.email) == 'white' ? 'black wins!' : 'white wins!'
-    update(outcome: winner)
+    if current_player_color(user.email) == 'white'
+      update(outcome: 'black wins!')
+    else
+      update(outcome: 'white wins!')
+    end
   end
 
   def send_challenge_email(user)
