@@ -241,20 +241,23 @@ module PieceMoveLogic
     ].all?
   end
 
-  def can_en_pessant?(next_move)
-
-  end
-
   def valid_for_pawn?(next_move, game_pieces)
     if next_move[0] == currentPosition[0]
-      if next_move[1].to_i == currentPosition[1].to_i + 2
-        move_two?(next_move, game_pieces)
-      else
-        advance_pawn_row(1) == next_move[1] && empty_square?(next_move, game_pieces)
-      end
+      advance_pawn?(next_move, game_pieces)
     else
-      # capture?(next_move, game_pieces)
+      capture?(next_move, game_pieces)
     end
+  end
+
+  def capture?(next_move, game_pieces)
+    if next_move[0].ord == currentPosition[0].ord + 1 || next_move[0].ord == currentPosition[0].ord - 1
+      next_move == next_move[0] + advance_pawn_row(1) &&
+      !empty_square?(next_move, game_pieces)
+    end
+  end
+
+  def can_en_pessant?(next_move, game_pieces)
+    true
   end
 
   def empty_square?(space, game_pieces)
@@ -274,6 +277,14 @@ module PieceMoveLogic
       (currentPosition[1].to_i + amount).to_s
     else
       (currentPosition[1].to_i - amount).to_s
+    end
+  end
+
+  def advance_pawn?(next_move, game_pieces)
+    if next_move[1].to_i == currentPosition[1].to_i + 2
+      move_two?(next_move, game_pieces)
+    else
+      advance_pawn_row(1) == next_move[1] && empty_square?(next_move, game_pieces)
     end
   end
 end

@@ -679,7 +679,7 @@ RSpec.describe Piece, type: :model do
       game.pieces.find_by(currentPosition: 'd7').update(currentPosition: 'd4')
     end
 
-    xit 'returns false' do
+    it 'returns false' do
       piece = game.pieces.find_by(currentPosition: 'd2')
       expect(piece.valid_for_pawn?('d4', game.pieces)).to be false
     end
@@ -698,13 +698,97 @@ RSpec.describe Piece, type: :model do
       game.pieces.find_by(currentPosition: 'd2').update(hasMoved: true)
     end
 
-    xit 'returns true' do
-      piece = game.pieces.find_by(currentPosition: 'd7')
-      expect(piece.valid_for_pawn?('d6', game.pieces)).to be true
+    it 'returns false' do
+      piece = game.pieces.find_by(currentPosition: 'd2')
+      expect(piece.valid_for_pawn?('d4', game.pieces)).to be false
+    end
+  end
+
+  context 'when the pawn attempts to move in the wrong direction' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    before do
+      game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd4')
+    end
+
+    it 'returns false' do
+      piece = game.pieces.find_by(currentPosition: 'd4')
+      expect(piece.valid_for_pawn?('d3', game.pieces)).to be false
+    end
+  end
+
+  context 'when the pawn attempts to capture a piece in the wrong direction' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    before do
+      game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd4')
+      game.pieces.find_by(currentPosition: 'e7').update(currentPosition: 'e3')
+    end
+
+    it 'returns false' do
+      piece = game.pieces.find_by(currentPosition: 'd4')
+      expect(piece.valid_for_pawn?('e3', game.pieces)).to be false
+    end
+  end
+
+  context 'when the pawn attempts to capture a piece on an empty square' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    before do
+      game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd4')
+      game.pieces.find_by(currentPosition: 'e7').update(currentPosition: 'e5')
+    end
+
+    it 'returns false' do
+      piece = game.pieces.find_by(currentPosition: 'd4')
+      expect(piece.valid_for_pawn?('c5', game.pieces)).to be false
+    end
+  end
+
+  context 'when the pawn attempts to capture a piece on an occupied square' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    before do
+      game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd4')
+      game.pieces.find_by(currentPosition: 'e7').update(currentPosition: 'e5')
+    end
+
+    it 'returns true' do
+      piece = game.pieces.find_by(currentPosition: 'd4')
+      expect(piece.valid_for_pawn?('e5', game.pieces)).to be true
     end
   end
 
   describe '#move_two?' do
+    xit 'test' do
+    end
+  end
+
+  describe '#advance_pawn?' do
     xit 'test' do
     end
   end
