@@ -571,8 +571,119 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'when a does not move two it updates the movedTwo property to false' do
-      xit 'updates the movedTwo property to true' do
+    context 'when a pawn does not move two it updates the movedTwo property to false' do
+      let(:user) do
+        User.create(
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          email: Faker::Internet.email,
+          password: 'password'
+        )
+      end
+
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      it 'updates the movedTwo property to true' do
+        move_params = { currentPosition: 'd3', startIndex: 20 }
+        game.handle_move(move_params, user)
+
+        expect(game.pieces.find_by(startIndex: 20).movedTwo).to be false
+      end
+    end
+
+    context 'when the move is a castle' do
+      let(:user) do
+        User.create(
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          email: Faker::Internet.email,
+          password: 'password'
+        )
+      end
+
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      before do
+        game.pieces.where(currentPosition: ['f1', 'g1']).destroy_all
+      end
+
+      it 'updates the position of the rook as well' do
+        move_params = { currentPosition: 'g1', startIndex: 29 }
+        game.handle_move(move_params, user)
+
+        expect(game.pieces.find_by(startIndex: 32).currentPosition).to eq 'f1'
+      end
+    end
+
+    context 'when the move is a castle on the queen side' do
+      let(:user) do
+        User.create(
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          email: Faker::Internet.email,
+          password: 'password'
+        )
+      end
+
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      before do
+        game.pieces.where(currentPosition: ['d1', 'c1', 'b1']).destroy_all
+      end
+
+      it 'updates the position of the rook as well' do
+        move_params = { currentPosition: 'c1', startIndex: 29 }
+        game.handle_move(move_params, user)
+
+        expect(game.pieces.find_by(startIndex: 25).currentPosition).to eq 'd1'
+      end
+    end
+
+    context 'when the move is a castle on the queen side for a black piece' do
+      let(:user) do
+        User.create(
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          email: Faker::Internet.email,
+          password: 'password'
+        )
+      end
+
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      before do
+        game.pieces.where(currentPosition: ['d8', 'c8', 'b8']).destroy_all
+      end
+
+      it 'updates the position of the rook as well' do
+        move_params = { currentPosition: 'c8', startIndex: 5 }
+        game.handle_move(move_params, user)
+
+        expect(game.pieces.find_by(startIndex: 1).currentPosition).to eq 'd8'
       end
     end
   end
@@ -1096,6 +1207,11 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#en_passant?' do
+    xit 'test' do
+    end
+  end
+
+  describe '#handle_castle' do
     xit 'test' do
     end
   end

@@ -446,4 +446,9 @@ RSpec.describe Piece, type: :model do
     xit 'test' do
     end
   end
+
+  describe '#handle_moved_two' do
+    xit 'test' do
+    end
+  end
 end

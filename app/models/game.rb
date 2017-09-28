@@ -108,13 +108,28 @@ class Game < ApplicationRecord
 
     move_params[:hasMoved] = true
     piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
+    handle_castle(move_params, piece) if piece.pieceType == 'king'
     handle_captured_piece(move_params, piece)
+    # the order is important
     piece.update(move_params)
 
     move = piece.attributes
     move.delete('id')
     moves.create(move)
     piece
+  end
+
+  def handle_castle(move_params, piece)
+    column_difference = piece.currentPosition[0].ord - move_params[:currentPosition][0].ord
+    row = piece.color == 'white' ? '1' : '8'
+
+    if column_difference == -2
+      pieces.find_by(currentPosition: ('h' + row)).update(currentPosition: ('f' + row))
+    end
+
+    if column_difference == 2
+      pieces.find_by(currentPosition: ('a' + row)).update(currentPosition: ('d' + row))
+    end
   end
 
   def handle_captured_piece(move_params, piece)
