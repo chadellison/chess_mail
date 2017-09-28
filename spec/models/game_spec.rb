@@ -1215,4 +1215,9 @@ RSpec.describe Game, type: :model do
     xit 'test' do
     end
   end
+
+  describe '#create_move' do
+    xit 'test' do
+    end
+  end
 end

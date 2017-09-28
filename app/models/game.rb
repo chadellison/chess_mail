@@ -112,11 +112,14 @@ class Game < ApplicationRecord
     handle_captured_piece(move_params, piece)
     # the order is important
     piece.update(move_params)
+    create_move(piece)
+    piece
+  end
 
+  def create_move(piece)
     move = piece.attributes
     move.delete('id')
     moves.create(move)
-    piece
   end
 
   def handle_castle(move_params, piece)

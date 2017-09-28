@@ -340,12 +340,15 @@ RSpec.describe Piece, type: :model do
 
   describe '#valid_destination' do
     context 'when the destination is a different color than the piece moving' do
-      it 'returns true' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           challengedEmail: Faker::Internet.email,
           challengedName: Faker::Name.name,
           challengerColor: 'white'
         )
+      }
+
+      it 'returns true' do
 
         piece = game.pieces.create(color: 'white', currentPosition: 'a3', pieceType: 'rook')
         game.pieces.create(color: 'black', currentPosition: 'a4', pieceType: 'rook')
@@ -355,13 +358,14 @@ RSpec.describe Piece, type: :model do
     end
 
     context 'when the destination is empty' do
-      it 'returns true' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           challengedEmail: Faker::Internet.email,
           challengedName: Faker::Name.name,
           challengerColor: 'white'
         )
-
+      }
+      it 'returns true' do
         piece = game.pieces.create(
           color: 'white',
           currentPosition: 'a3',
@@ -380,13 +384,15 @@ RSpec.describe Piece, type: :model do
     end
 
     context 'when the destination is occupied by an allied piece' do
-      it 'returns false' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           challengedEmail: Faker::Internet.email,
           challengedName: Faker::Name.name,
           challengerColor: 'white'
         )
+      }
 
+      it 'returns false' do
         piece = game.pieces.find_by(startIndex: 17)
 
         game.pieces.find_by(startIndex: 9).update(
@@ -403,36 +409,39 @@ RSpec.describe Piece, type: :model do
 
   describe '#king_is_safe?' do
     context 'when the king is not in check' do
-      it 'returns true' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           challengedEmail: Faker::Internet.email,
           challengedName: Faker::Name.name,
           challengerColor: 'white'
         )
+      }
 
+      it 'returns true' do
         piece = game.pieces.find_by(startIndex: 25)
         piece.update(currentPosition: 'a3')
 
         game.pieces.find_by(startIndex: 5).update(currentPosition: 'd6')
 
-        expect(piece.king_is_safe?('black')).to be true
+        expect(piece.king_is_safe?('black', game.pieces)).to be true
       end
     end
 
     context 'when the king is in check' do
-      it 'returns false' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           challengedEmail: Faker::Internet.email,
           challengedName: Faker::Name.name,
           challengerColor: 'white'
         )
+      }
 
+      it 'returns false' do
         piece = game.pieces.find_by(startIndex: 25)
         piece.update(currentPosition: 'd4')
 
         game.pieces.find_by(startIndex: 5).update(currentPosition: 'd6')
-
-        expect(piece.king_is_safe?('black')).to be false
+        expect(piece.king_is_safe?('black', game.pieces)).to be false
       end
     end
   end
@@ -448,6 +457,126 @@ RSpec.describe Piece, type: :model do
   end
 
   describe '#handle_moved_two' do
+    xit 'test' do
+    end
+  end
+
+  describe '#valid_for_piece' do
+    context 'when a king can castle' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+      before do
+        game.pieces.where(currentPosition: ['f1', 'g1']).destroy_all
+      end
+
+      it 'returns true when the next move is a castle' do
+        piece = game.pieces.find_by(startIndex: 29)
+        expect(piece.valid_for_piece?('g1')).to be true
+      end
+    end
+
+    context 'when a king cannot castle due to having moved' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+      before do
+        game.pieces.where(currentPosition: ['f1', 'g1']).destroy_all
+      end
+
+      it 'returns false when the next move is a castle' do
+        piece = game.pieces.find_by(startIndex: 29)
+        piece.update(hasMoved: true)
+
+        expect(piece.valid_for_piece?('g1')).to be false
+      end
+    end
+
+    context 'when a king cannot castle due to it\'s rook moving' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+
+      before do
+        game.pieces.where(currentPosition: ['f1', 'g1']).destroy_all
+      end
+
+      it 'returns false when the next move is a castle' do
+        rook = game.pieces.find_by(startIndex: 32)
+        rook.update(hasMoved: true)
+
+        king = game.pieces.find_by(startIndex: 29)
+
+        expect(king.valid_for_piece?('g1')).to be false
+      end
+    end
+
+    context 'when a king cannot castle due to it\'s rook not being present' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+
+      before do
+        game.pieces.where(currentPosition: ['f1', 'g1', 'h1']).destroy_all
+      end
+
+      it 'returns false when the next move is a castle' do
+        king = game.pieces.find_by(startIndex: 29)
+
+        expect(king.valid_for_piece?('g1')).to be false
+      end
+    end
+
+    context 'when a king cannot castle due to being in check' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+
+      before do
+        game.pieces.where(currentPosition: ['e2', 'f1', 'g1', 'e7']).destroy_all
+        game.pieces.find_by(startIndex: 4).update(currentPosition: 'e7')
+      end
+
+      it 'returns false when the next move is a castle' do
+        game.pieces.reload
+        king = game.pieces.find_by(startIndex: 29)
+
+        expect(king.valid_for_piece?('g1')).to be false
+      end
+    end
+
+    context 'when a king cannot castle due to moving through check' do
+      xit 'returns false when the next move is a castle' do
+      end
+    end
+  end
+
+  describe '#can_castle?' do
+    xit 'test' do
+    end
+  end
+
+  describe '#can_en_pessant?' do
     xit 'test' do
     end
   end

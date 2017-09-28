@@ -192,11 +192,15 @@ module PieceMoveLogic
       .present?
   end
 
-  def king_is_safe?(color)
-    king = game.pieces.find_by(pieceType: 'king', color: color)
-    occupied_spaces = game.pieces.pluck(:currentPosition)
+  def king_is_safe?(allied_color, game_pieces)
+    king = game_pieces.detect do |game_piece|
+      game_piece.pieceType == 'king' && game_piece.color == allied_color
+    end
 
-    game.pieces.none? do |game_piece|
+    occupied_spaces = game_pieces.map(&:currentPosition)
+    opponent_pieces = game_pieces.reject { |game_piece| game_piece.color == allied_color }
+
+    opponent_pieces.none? do |game_piece|
       game_piece.moves_for_piece.include?(king.currentPosition) &&
         game_piece.valid_move_path?(king.currentPosition, occupied_spaces) &&
         game_piece.valid_destination?(king.currentPosition)
@@ -204,12 +208,40 @@ module PieceMoveLogic
   end
 
   def pieces_with_next_move(move)
-    pieces.map do |game_piece|
+    game.pieces.map do |game_piece|
       if game_piece.startIndex == startIndex
-        game_piece.currentPosition = move
+        updated_piece = Piece.new(game_piece.attributes)
+        updated_piece.currentPosition = move
+        updated_piece
       else
         game_piece
       end
     end
+  end
+
+  def valid_for_piece?(next_move)
+    return can_castle?(next_move) if pieceType == 'king'
+    return can_en_pessant?(next_move) if pieceType == 'pawn'
+    true
+  end
+
+  def can_castle?(next_move)
+    column = next_move[0] == 'c' ? 'a' : 'h'
+    rook = game.pieces.find_by(currentPosition: (column + next_move[1]))
+
+    if next_move[0] == 'c'
+      through_check_moves = pieces_with_next_move('d' + next_move[1])
+    else
+      through_check_moves = pieces_with_next_move('f' + next_move[1])
+    end
+
+    [rook.present? && rook.hasMoved.blank?, hasMoved.blank?,
+      king_is_safe?(color, game.pieces),
+      king_is_safe?(color, through_check_moves)
+    ].all?
+  end
+
+  def can_en_pessant?(next_move)
+
   end
 end
