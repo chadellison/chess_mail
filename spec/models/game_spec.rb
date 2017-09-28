@@ -487,16 +487,71 @@ RSpec.describe Game, type: :model do
         )
       end
 
-      it 'removes that piece from the game' do
+      before do
         game.pieces.find_by(startIndex: 20).update(currentPosition: 'd4')
         game.pieces.find_by(startIndex: 13).update(currentPosition: 'e5')
+      end
+
+      xit 'removes that piece from the game' do
         move_params = { currentPosition: 'e5', movedTwo: false, startIndex: '20' }
-
-
         expect { game.handle_move(move_params, user) }.to change {
           game.pieces.count }.by(-1)
 
         expect(game.pieces.find_by(startIndex: 13)).to be_nil
+      end
+
+      xit 'places the new piece on the square' do
+        move_params = { currentPosition: 'e5', movedTwo: false, startIndex: '20' }
+        game.handle_move(move_params, user)
+        expect(game.pieces.find_by(startIndex: 20).currentPosition).to eq 'e5'
+      end
+    end
+
+    context 'when the move is an en passant' do
+      let(:user) do
+        User.create(
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          email: Faker::Internet.email,
+          password: 'password'
+        )
+      end
+
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      before do
+        game.pieces.find_by(startIndex: 20).update(currentPosition: 'd4', movedTwo: true)
+        game.pieces.find_by(startIndex: 13).update(currentPosition: 'e4')
+      end
+
+      it 'removes the opponent pawn from the adjacent position' do
+        move_params = { currentPosition: 'd3', movedTwo: false, startIndex: '13' }
+        expect { game.handle_move(move_params, user) }.to change {
+          game.pieces.count }.by(-1)
+
+        expect(game.pieces.find_by(currentPosition: 'd4')).to be_nil
+      end
+
+      xit 'places the new piece on the square' do
+        move_params = { currentPosition: 'd3', movedTwo: false, startIndex: '20' }
+        game.handle_move(move_params, user)
+        expect(game.pieces.find_by(startIndex: 20).currentPosition).to eq 'd3'
+      end
+    end
+
+    context 'when a pawn moves two' do
+      xit 'updates the movedTwo property to true' do
+      end
+    end
+
+    context 'when a does not move two it updates the movedTwo property to false' do
+      xit 'updates the movedTwo property to true' do
       end
     end
   end
@@ -1010,6 +1065,16 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#find_start_position' do
+    xit 'test' do
+    end
+  end
+
+  describe '#handle_en_passant' do
+    xit 'test' do
+    end
+  end
+
+  describe '#en_passant?' do
     xit 'test' do
     end
   end

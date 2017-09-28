@@ -105,15 +105,35 @@ class Game < ApplicationRecord
 
   def move(move_params)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
+
     move_params[:hasMoved] = true
-    captured_piece = pieces.find_by(currentPosition: move_params[:currentPosition])
-    captured_piece.destroy if captured_piece.present?
+    handle_captured_piece(move_params, piece)
     piece.update(move_params)
 
     move = piece.attributes
     move.delete('id')
     moves.create(move)
     piece
+  end
+
+  def handle_captured_piece(move_params, piece)
+    captured_piece = pieces.find_by(currentPosition: move_params[:currentPosition])
+    captured_piece = handle_en_passant(move_params, piece) if en_passant?(move_params, piece)
+
+    captured_piece.destroy if captured_piece.present?
+  end
+
+  def handle_en_passant(move_params, piece)
+    captured_position = move_params[:currentPosition][0] + piece.currentPosition[1]
+    captured_piece = pieces.find_by(currentPosition: captured_position)
+  end
+
+  def en_passant?(move_params, piece)
+    [
+      piece.pieceType == 'pawn',
+      piece.currentPosition[0] != move_params[:currentPosition][0],
+      pieces.find_by(currentPosition: move_params[:currentPosition]).blank?
+    ].all?
   end
 
   def add_challenged_player
