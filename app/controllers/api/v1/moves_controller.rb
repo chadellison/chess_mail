@@ -16,7 +16,7 @@ module Api
       private
 
       def move_params
-        params.require(:move).permit(:currentPosition, :movedTwo, :startIndex)
+        params.require(:move).permit(:currentPosition, :startIndex)
       end
     end
   end

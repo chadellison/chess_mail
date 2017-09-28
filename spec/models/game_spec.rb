@@ -492,16 +492,16 @@ RSpec.describe Game, type: :model do
         game.pieces.find_by(startIndex: 13).update(currentPosition: 'e5')
       end
 
-      xit 'removes that piece from the game' do
-        move_params = { currentPosition: 'e5', movedTwo: false, startIndex: '20' }
+      it 'removes that piece from the game' do
+        move_params = { currentPosition: 'e5', startIndex: '20' }
         expect { game.handle_move(move_params, user) }.to change {
           game.pieces.count }.by(-1)
 
         expect(game.pieces.find_by(startIndex: 13)).to be_nil
       end
 
-      xit 'places the new piece on the square' do
-        move_params = { currentPosition: 'e5', movedTwo: false, startIndex: '20' }
+      it 'places the new piece on the square' do
+        move_params = { currentPosition: 'e5', startIndex: '20' }
         game.handle_move(move_params, user)
         expect(game.pieces.find_by(startIndex: 20).currentPosition).to eq 'e5'
       end
@@ -531,22 +531,43 @@ RSpec.describe Game, type: :model do
       end
 
       it 'removes the opponent pawn from the adjacent position' do
-        move_params = { currentPosition: 'd3', movedTwo: false, startIndex: '13' }
+        move_params = { currentPosition: 'd3', startIndex: '13' }
         expect { game.handle_move(move_params, user) }.to change {
           game.pieces.count }.by(-1)
 
         expect(game.pieces.find_by(currentPosition: 'd4')).to be_nil
       end
 
-      xit 'places the new piece on the square' do
-        move_params = { currentPosition: 'd3', movedTwo: false, startIndex: '20' }
+      it 'places the new piece on the square' do
+        move_params = { currentPosition: 'd3', startIndex: '13' }
         game.handle_move(move_params, user)
-        expect(game.pieces.find_by(startIndex: 20).currentPosition).to eq 'd3'
+        expect(game.pieces.find_by(startIndex: 13).currentPosition).to eq 'd3'
       end
     end
 
     context 'when a pawn moves two' do
-      xit 'updates the movedTwo property to true' do
+      let(:user) do
+        User.create(
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          email: Faker::Internet.email,
+          password: 'password'
+        )
+      end
+
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      it 'updates the movedTwo property to true' do
+        move_params = { currentPosition: 'd4', startIndex: 20 }
+        game.handle_move(move_params, user)
+
+        expect(game.pieces.find_by(startIndex: 20).movedTwo).to be true
       end
     end
 

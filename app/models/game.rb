@@ -107,6 +107,7 @@ class Game < ApplicationRecord
     piece = pieces.find_by(startIndex: move_params[:startIndex])
 
     move_params[:hasMoved] = true
+    piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
     handle_captured_piece(move_params, piece)
     piece.update(move_params)
 
