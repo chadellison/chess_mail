@@ -28,6 +28,7 @@ class Piece < ApplicationRecord
 
       valid_move_path?(move, game.pieces.pluck(:currentPosition)) &&
         valid_destination?(move) &&
+        valid_for_piece?(move, game_pieces) &&
         king_is_safe?(color, game_pieces)
     end
   end
