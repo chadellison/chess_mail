@@ -783,6 +783,67 @@ RSpec.describe Piece, type: :model do
     end
   end
 
+  context 'when the pawn attempts to en passant a piece correctly' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    before do
+      game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd5')
+      game.pieces.find_by(currentPosition: 'e7')
+          .update(currentPosition: 'e5', movedTwo: true)
+    end
+
+    it 'returns true' do
+      piece = game.pieces.find_by(currentPosition: 'd5')
+      expect(piece.valid_for_pawn?('e6', game.pieces)).to be true
+    end
+  end
+
+  context 'when the pawn attempts to en passant a piece that has not movedTwo' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    before do
+      game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd5')
+      game.pieces.find_by(currentPosition: 'e7').update(currentPosition: 'e5')
+    end
+
+    it 'returns false' do
+      piece = game.pieces.find_by(currentPosition: 'd5')
+      expect(piece.valid_for_pawn?('e6', game.pieces)).to be false
+    end
+  end
+
+  context 'when the pawn attempts to en passant in the wrong direction' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    before do
+      game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd5')
+      game.pieces.find_by(currentPosition: 'e7').update(currentPosition: 'e5', movedTwo: true)
+    end
+
+    it 'returns false' do
+      piece = game.pieces.find_by(currentPosition: 'd5')
+      expect(piece.valid_for_pawn?('e4', game.pieces)).to be false
+    end
+  end
+
   describe '#move_two?' do
     xit 'test' do
     end

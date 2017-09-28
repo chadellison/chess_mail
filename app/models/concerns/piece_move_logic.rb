@@ -250,14 +250,18 @@ module PieceMoveLogic
   end
 
   def capture?(next_move, game_pieces)
-    if next_move[0].ord == currentPosition[0].ord + 1 || next_move[0].ord == currentPosition[0].ord - 1
-      next_move == next_move[0] + advance_pawn_row(1) &&
-      !empty_square?(next_move, game_pieces)
-    end
+    [
+      next_move[0].ord == currentPosition[0].ord + 1 || next_move[0].ord == currentPosition[0].ord - 1,
+      next_move == next_move[0] + advance_pawn_row(1),
+      !empty_square?(next_move, game_pieces) || can_en_pessant?(next_move, game_pieces)
+    ].all?
   end
 
   def can_en_pessant?(next_move, game_pieces)
-    true
+    game_pieces.any? do |game_piece|
+      game_piece.currentPosition == (next_move[0] + currentPosition[1]) &&
+      game_piece.movedTwo?
+    end
   end
 
   def empty_square?(space, game_pieces)
