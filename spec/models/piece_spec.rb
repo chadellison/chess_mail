@@ -476,7 +476,7 @@ RSpec.describe Piece, type: :model do
 
       it 'returns true when the next move is a castle' do
         piece = game.pieces.find_by(startIndex: 29)
-        expect(piece.valid_for_piece?('g1')).to be true
+        expect(piece.valid_for_piece?('g1', game.pieces)).to be true
       end
     end
 
@@ -496,7 +496,7 @@ RSpec.describe Piece, type: :model do
         piece = game.pieces.find_by(startIndex: 29)
         piece.update(hasMoved: true)
 
-        expect(piece.valid_for_piece?('g1')).to be false
+        expect(piece.valid_for_piece?('g1', game.pieces)).to be false
       end
     end
 
@@ -519,7 +519,7 @@ RSpec.describe Piece, type: :model do
 
         king = game.pieces.find_by(startIndex: 29)
 
-        expect(king.valid_for_piece?('g1')).to be false
+        expect(king.valid_for_piece?('g1', game.pieces)).to be false
       end
     end
 
@@ -539,7 +539,7 @@ RSpec.describe Piece, type: :model do
       it 'returns false when the next move is a castle' do
         king = game.pieces.find_by(startIndex: 29)
 
-        expect(king.valid_for_piece?('g1')).to be false
+        expect(king.valid_for_piece?('g1', game.pieces)).to be false
       end
     end
 
@@ -561,7 +561,7 @@ RSpec.describe Piece, type: :model do
         game.pieces.reload
         king = game.pieces.find_by(startIndex: 29)
 
-        expect(king.valid_for_piece?('g1')).to be false
+        expect(king.valid_for_piece?('g1', game.pieces)).to be false
       end
     end
 
@@ -578,6 +578,42 @@ RSpec.describe Piece, type: :model do
 
   describe '#can_en_pessant?' do
     xit 'test' do
+    end
+  end
+
+  describe '#valid_for_pawn?' do
+    context 'when the pawn moves one space forward and the space is open' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+      it 'returns true' do
+        piece = game.pieces.find_by(currentPosition: 'd2')
+        expect(piece.valid_for_pawn?('d3', game.pieces)).to be true
+      end
+    end
+
+    context 'when the pawn moves one space forward and the space is not open' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+
+      before do
+        game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd4')
+        game.pieces.find_by(currentPosition: 'd7').update(currentPosition: 'd5')
+      end
+
+      it 'returns false' do
+        piece = game.pieces.find_by(currentPosition: 'd4')
+        expect(piece.valid_for_pawn?('d5', game.pieces)).to be false
+      end
     end
   end
 end

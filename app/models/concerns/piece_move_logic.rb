@@ -219,15 +219,15 @@ module PieceMoveLogic
     end
   end
 
-  def valid_for_piece?(next_move)
-    return can_castle?(next_move) if pieceType == 'king'
-    return can_en_pessant?(next_move) if pieceType == 'pawn'
+  def valid_for_piece?(next_move, game_pieces)
+    return can_castle?(next_move, game_pieces) if pieceType == 'king'
+    return valid_for_pawn?(next_move, game_pieces) if pieceType == 'pawn'
     true
   end
 
-  def can_castle?(next_move)
+  def can_castle?(next_move, game_pieces)
     column = next_move[0] == 'c' ? 'a' : 'h'
-    rook = game.pieces.find_by(currentPosition: (column + next_move[1]))
+    rook = game_pieces.find_by(currentPosition: (column + next_move[1]))
 
     if next_move[0] == 'c'
       through_check_moves = pieces_with_next_move('d' + next_move[1])
@@ -243,5 +243,12 @@ module PieceMoveLogic
 
   def can_en_pessant?(next_move)
 
+  end
+
+  def valid_for_pawn?(next_move, game_pieces)
+    if color == 'white' && next_move[0] == currentPosition[0]
+      moves_up = next_move[0] + (currentPosition[1].to_i + 1).to_s
+      moves_up == next_move && game_pieces.detect { |piece| piece.currentPosition == next_move }.blank?
+    end
   end
 end
