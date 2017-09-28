@@ -246,9 +246,34 @@ module PieceMoveLogic
   end
 
   def valid_for_pawn?(next_move, game_pieces)
-    if color == 'white' && next_move[0] == currentPosition[0]
-      moves_up = next_move[0] + (currentPosition[1].to_i + 1).to_s
-      moves_up == next_move && game_pieces.detect { |piece| piece.currentPosition == next_move }.blank?
+    if next_move[0] == currentPosition[0]
+      if next_move[1].to_i == currentPosition[1].to_i + 2
+        move_two?(next_move, game_pieces)
+      else
+        advance_pawn_row(1) == next_move[1] && empty_square?(next_move, game_pieces)
+      end
+    else
+      # capture?(next_move, game_pieces)
+    end
+  end
+
+  def empty_square?(space, game_pieces)
+    game_pieces.detect do |game_piece|
+      game_piece.currentPosition == space
+    end.blank?
+  end
+
+  def move_two?(next_move, game_pieces)
+    empty_square?(next_move[0] + advance_pawn_row(1), game_pieces) &&
+    empty_square?(next_move[0] + advance_pawn_row(2), game_pieces) &&
+    hasMoved.blank?
+  end
+
+  def advance_pawn_row(amount)
+    if color == 'white'
+      (currentPosition[1].to_i + amount).to_s
+    else
+      (currentPosition[1].to_i - amount).to_s
     end
   end
 end
