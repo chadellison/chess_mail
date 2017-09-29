@@ -169,17 +169,17 @@ module PieceMoveLogic
 
   def horizontal_collision?(destination, occupied_spaces)
     if currentPosition[0] > destination[0]
-      (moves_left(destination[0]) & occupied_spaces).present?
+      (moves_left((destination[0].ord + 1).chr) & occupied_spaces).present?
     else
-      (moves_right(destination[0]) & occupied_spaces).present?
+      (moves_right((destination[0].ord - 1).chr) & occupied_spaces).present?
     end
   end
 
   def diagonal_collision?(destination, occupied_spaces)
     if currentPosition[0] < destination[0]
-      horizontal_moves = moves_right(destination[0])
+      horizontal_moves = moves_right((destination[0].ord - 1).chr)
     else
-      horizontal_moves = moves_left(destination[0])
+      horizontal_moves = moves_left((destination[0].ord + 1).chr)
     end
 
     difference = (currentPosition[1].to_i - destination[1].to_i).abs - 1
@@ -203,7 +203,8 @@ module PieceMoveLogic
     opponent_pieces.none? do |game_piece|
       game_piece.moves_for_piece.include?(king.currentPosition) &&
         game_piece.valid_move_path?(king.currentPosition, occupied_spaces) &&
-        game_piece.valid_destination?(king.currentPosition)
+        game_piece.valid_destination?(king.currentPosition) &&
+        game_piece.valid_for_piece?(king.currentPosition, game_pieces)
     end
   end
 
@@ -220,12 +221,16 @@ module PieceMoveLogic
   end
 
   def valid_for_piece?(next_move, game_pieces)
-    return can_castle?(next_move, game_pieces) if pieceType == 'king'
+    return castle?(next_move, game_pieces) if king_moved_two?(next_move)
     return valid_for_pawn?(next_move, game_pieces) if pieceType == 'pawn'
     true
   end
 
-  def can_castle?(next_move, game_pieces)
+  def king_moved_two?(next_move)
+    pieceType == 'king' && (currentPosition[0].ord - next_move[0].ord).abs == 2
+  end
+
+  def castle?(next_move, game_pieces)
     column = next_move[0] == 'c' ? 'a' : 'h'
     rook = game_pieces.find_by(currentPosition: (column + next_move[1]))
 

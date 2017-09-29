@@ -444,6 +444,42 @@ RSpec.describe Piece, type: :model do
         expect(piece.king_is_safe?('black', game.pieces)).to be false
       end
     end
+
+    context 'when the king is in check from a diagonal threat' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+
+      it 'returns false' do
+        piece = game.pieces.find_by(startIndex: 30)
+        piece.update(currentPosition: 'h3')
+
+        game.pieces.find_by(startIndex: 5).update(currentPosition: 'e6')
+        expect(piece.king_is_safe?('black', game.pieces)).to be false
+      end
+    end
+
+    context 'when the king is in check from a diagonal one space away' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+
+      it 'returns false' do
+        piece = game.pieces.find_by(startIndex: 30)
+        piece.update(currentPosition: 'f5')
+
+        game.pieces.find_by(startIndex: 5).update(currentPosition: 'e6')
+        expect(piece.king_is_safe?('black', game.pieces)).to be false
+      end
+    end
   end
 
   describe '#pieces_with_next_move' do
@@ -451,8 +487,77 @@ RSpec.describe Piece, type: :model do
     end
   end
 
-  describe '#valid_moves' do
-    xit 'test' do
+  describe 'valid_moves' do
+    context 'when the king is in check' do
+      it 'returns all moves to get the king out of check' do
+        allow_any_instance_of(Game).to receive(:add_pieces).and_return(nil)
+
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.create(
+          pieceType: 'king',
+          color: 'black',
+          startIndex: 5,
+          currentPosition: 'e8'
+        )
+        game.pieces.create(
+          pieceType: 'king',
+          color: 'white',
+          startIndex: 29,
+          currentPosition: 'e1'
+        )
+
+        game.pieces.create(
+          pieceType: 'queen',
+          color: 'white',
+          startIndex: 28,
+          currentPosition: 'e2'
+        )
+
+        expected = ['d8', 'f8', 'd7', 'f7']
+
+        expect(piece.valid_moves).to eq expected
+      end
+    end
+
+    context 'when the king must kill a piece to get out of check' do
+      it 'returns all moves to get the king out of check' do
+        allow_any_instance_of(Game).to receive(:add_pieces).and_return(nil)
+
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.create(
+          pieceType: 'king',
+          color: 'black',
+          startIndex: 5,
+          currentPosition: 'e8'
+        )
+        game.pieces.create(
+          pieceType: 'king',
+          color: 'white',
+          startIndex: 29,
+          currentPosition: 'e1'
+        )
+
+        game.pieces.create(
+          pieceType: 'queen',
+          color: 'white',
+          startIndex: 28,
+          currentPosition: 'e7'
+        )
+
+        expected = ['e7']
+
+        expect(piece.valid_moves).to eq expected
+      end
     end
   end
 
@@ -571,7 +676,7 @@ RSpec.describe Piece, type: :model do
     end
   end
 
-  describe '#can_castle?' do
+  describe '#castle?' do
     xit 'test' do
     end
   end

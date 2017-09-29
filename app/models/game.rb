@@ -37,7 +37,7 @@ class Game < ApplicationRecord
         outcome: outcome,
         human: human
       },
-      included: moves.order(:created_at).map(&:serialize_move)
+      included: moves.order(:updated_at).map(&:serialize_move)
     }
   end
 
@@ -91,26 +91,28 @@ class Game < ApplicationRecord
   end
 
   def handle_move(move_params, user)
-    piece = move(move_params)
+    user_piece = move(move_params)
 
     if human.present?
-      send_new_move_email(piece, user)
+      send_new_move_email(user_piece, user)
     else
-      # have robot move
-      move = pieces.count.odd? ? 'a6' : 'a3'
-      start_index = pieces.count.odd? ? 9 : 17
-      pieces.find_by(startIndex: start_index).update(currentPosition: move)
+      turn = moves.count.even? ? 'white' : 'black'
+      ai_piece = pieces.where(color: turn).all.reject do |game_piece|
+        game_piece.valid_moves.empty?
+      end.sample
+
+      ai_piece.update(currentPosition: ai_piece.valid_moves.sample)
+      move(ai_piece.attributes.symbolize_keys) # this is sloppy
+      ai_piece.update(currentPosition: ai_piece.currentPosition)
     end
   end
 
   def move(move_params)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
-
     move_params[:hasMoved] = true
     piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
     handle_castle(move_params, piece) if piece.pieceType == 'king'
     handle_captured_piece(move_params, piece)
-    # the order is important
     piece.update(move_params)
     create_move(piece)
     piece
