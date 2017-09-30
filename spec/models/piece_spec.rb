@@ -559,6 +559,20 @@ RSpec.describe Piece, type: :model do
         expect(piece.valid_moves).to eq expected
       end
     end
+
+    context 'when there are pieces blocking all of a piece\'s moves' do
+      it 'returns an empty array' do
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = Piece.find_by(currentPosition: 'd1')
+
+        expect(piece.valid_moves).to eq []
+      end
+    end
   end
 
   describe '#handle_moved_two' do
