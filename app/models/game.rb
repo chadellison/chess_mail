@@ -101,9 +101,8 @@ class Game < ApplicationRecord
         game_piece.valid_moves.empty?
       end.sample
 
-      ai_piece.update(currentPosition: ai_piece.valid_moves.sample)
-      move(ai_piece.attributes.symbolize_keys) # this is sloppy
-      ai_piece.update(currentPosition: ai_piece.currentPosition)
+      move(currentPosition: ai_piece.valid_moves.sample,
+           startIndex: ai_piece.startIndex)
     end
   end
 

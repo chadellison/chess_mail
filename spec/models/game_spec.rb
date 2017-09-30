@@ -1220,4 +1220,32 @@ RSpec.describe Game, type: :model do
     xit 'test' do
     end
   end
+
+  describe '#handle_captured_piece' do
+    context 'when there is a piece on the square' do
+      let(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          human: false,
+          challengerColor: 'black'
+        )
+      }
+
+      let(:piece) {
+        game.pieces.find_by(currentPosition: 'd2')
+      }
+
+      before do
+        piece.update(currentPosition: 'd4')
+        game.pieces.find_by(currentPosition: 'e7').update(currentPosition: 'e5')
+      end
+
+      it 'removes that piece from the game' do
+        move_params = { currentPosition: "d5", startIndex: 12, hasMoved: true }
+        expect(game.handle_captured_piece(move_params, piece))
+      end
+    end
+  end
 end
