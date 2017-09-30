@@ -353,7 +353,7 @@ RSpec.describe Piece, type: :model do
         piece = game.pieces.create(color: 'white', currentPosition: 'a3', pieceType: 'rook')
         game.pieces.create(color: 'black', currentPosition: 'a4', pieceType: 'rook')
 
-        expect(piece.valid_destination?('a4')).to be true
+        expect(piece.valid_destination?('a4', game.pieces)).to be true
       end
     end
 
@@ -379,7 +379,7 @@ RSpec.describe Piece, type: :model do
           startIndex: 32
         )
 
-        expect(piece.valid_destination?('a4')).to be true
+        expect(piece.valid_destination?('a4', game.pieces)).to be true
       end
     end
 
@@ -402,7 +402,25 @@ RSpec.describe Piece, type: :model do
           startIndex: 32
         )
 
-        expect(piece.valid_destination?('a7')).to be false
+        expect(piece.valid_destination?('a7', game.pieces)).to be false
+      end
+    end
+
+    context 'when the destination is the opponent king' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+
+      it 'returns true' do
+        piece = game.pieces.find_by(startIndex: 26)
+        game.pieces.find_by(startIndex: 5).update(currentPosition: 'd6')
+        piece.update(currentPosition: 'e4')
+
+        expect(piece.valid_destination?('d6', game.pieces)).to be true
       end
     end
   end
@@ -555,6 +573,49 @@ RSpec.describe Piece, type: :model do
         )
 
         expected = ['e7']
+
+        expect(piece.valid_moves).to eq expected
+      end
+    end
+
+    context 'when the king is in checkmate' do
+      it 'returns an empty array' do
+        allow_any_instance_of(Game).to receive(:add_pieces).and_return(nil)
+
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.create(
+          pieceType: 'king',
+          color: 'black',
+          startIndex: 5,
+          currentPosition: 'e8'
+        )
+        game.pieces.create(
+          pieceType: 'king',
+          color: 'white',
+          startIndex: 29,
+          currentPosition: 'e1'
+        )
+
+        game.pieces.create(
+          pieceType: 'queen',
+          color: 'white',
+          startIndex: 28,
+          currentPosition: 'e7'
+        )
+
+        game.pieces.create(
+          pieceType: 'knight',
+          color: 'white',
+          startIndex: 26,
+          currentPosition: 'd5'
+        )
+
+        expected = []
 
         expect(piece.valid_moves).to eq expected
       end

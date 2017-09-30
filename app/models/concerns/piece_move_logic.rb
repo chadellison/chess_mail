@@ -146,8 +146,8 @@ module PieceMoveLogic
     end
   end
 
-  def valid_destination?(destination)
-    destination_piece = game.pieces.find_by(currentPosition: destination)
+  def valid_destination?(destination, game_pieces)
+    destination_piece = game_pieces.detect { |piece| piece.currentPosition == destination }
 
     if destination_piece.present?
       destination_piece.color != color
@@ -199,25 +199,25 @@ module PieceMoveLogic
 
     occupied_spaces = game_pieces.map(&:currentPosition)
     opponent_pieces = game_pieces.reject { |game_piece| game_piece.color == allied_color }
-
     opponent_pieces.none? do |game_piece|
       game_piece.moves_for_piece.include?(king.currentPosition) &&
         game_piece.valid_move_path?(king.currentPosition, occupied_spaces) &&
-        game_piece.valid_destination?(king.currentPosition) &&
+        game_piece.valid_destination?(king.currentPosition, game_pieces) &&
         game_piece.valid_for_piece?(king.currentPosition, game_pieces)
     end
   end
 
   def pieces_with_next_move(move)
-    game.pieces.map do |game_piece|
-      if game_piece.startIndex == startIndex
-        updated_piece = Piece.new(game_piece.attributes)
-        updated_piece.currentPosition = move
-        updated_piece
-      else
-        game_piece
-      end
-    end
+    game.pieces.reject { |game_piece| game_piece.currentPosition == move }
+        .map do |game_piece|
+          if game_piece.startIndex == startIndex
+            updated_piece = Piece.new(game_piece.attributes)
+            updated_piece.currentPosition = move
+            updated_piece
+          else
+            game_piece
+          end
+        end
   end
 
   def valid_for_piece?(next_move, game_pieces)
