@@ -23,12 +23,14 @@ class Piece < ApplicationRecord
   end
 
   def valid_moves
-    moves_for_piece.select do |move|
-      valid_move_path?(move, game.pieces.pluck(:currentPosition)) &&
-        valid_destination?(move, game.pieces) &&
-        valid_for_piece?(move, game.pieces) &&
-        king_is_safe?(color, pieces_with_next_move(move))
-    end
+    moves_for_piece.select { |move| valid_move?(move) }
+  end
+
+  def valid_move?(move)
+    valid_move_path?(move, game.pieces.pluck(:currentPosition)) &&
+      valid_destination?(move, game.pieces) &&
+      valid_for_piece?(move, game.pieces) &&
+      king_is_safe?(color, pieces_with_next_move(move))
   end
 
   def handle_moved_two(next_move)

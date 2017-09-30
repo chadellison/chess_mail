@@ -147,7 +147,9 @@ module PieceMoveLogic
   end
 
   def valid_destination?(destination, game_pieces)
-    destination_piece = game_pieces.detect { |piece| piece.currentPosition == destination }
+    game_pieces.reload unless game_pieces.class == Array
+    
+    destination_piece = game_pieces.to_a.detect { |piece| piece.currentPosition == destination }
 
     if destination_piece.present?
       destination_piece.color != color
@@ -290,7 +292,7 @@ module PieceMoveLogic
   end
 
   def advance_pawn?(next_move, game_pieces)
-    if next_move[1].to_i == currentPosition[1].to_i + 2
+    if next_move[1].to_i == currentPosition[1].to_i + 2 || next_move[1].to_i == currentPosition[1].to_i - 2
       move_two?(next_move, game_pieces)
     else
       advance_pawn_row(1) == next_move[1] && empty_square?(next_move, game_pieces)

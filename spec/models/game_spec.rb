@@ -493,7 +493,7 @@ RSpec.describe Game, type: :model do
       end
 
       it 'removes that piece from the game' do
-        move_params = { currentPosition: 'e5', startIndex: '20' }
+        move_params = { currentPosition: 'e5', startIndex: '20', pieceType: 'pawn' }
         expect { game.handle_move(move_params, user) }.to change {
           game.pieces.count }.by(-1)
 
@@ -501,7 +501,7 @@ RSpec.describe Game, type: :model do
       end
 
       it 'places the new piece on the square' do
-        move_params = { currentPosition: 'e5', startIndex: '20' }
+        move_params = { currentPosition: 'e5', startIndex: '20', pieceType: 'pawn' }
         game.handle_move(move_params, user)
         expect(game.pieces.find_by(startIndex: 20).currentPosition).to eq 'e5'
       end
@@ -531,7 +531,7 @@ RSpec.describe Game, type: :model do
       end
 
       it 'removes the opponent pawn from the adjacent position' do
-        move_params = { currentPosition: 'd3', startIndex: '13' }
+        move_params = { currentPosition: 'd3', startIndex: '13', pieceType: 'pawn' }
         expect { game.handle_move(move_params, user) }.to change {
           game.pieces.count }.by(-1)
 
@@ -539,7 +539,7 @@ RSpec.describe Game, type: :model do
       end
 
       it 'places the new piece on the square' do
-        move_params = { currentPosition: 'd3', startIndex: '13' }
+        move_params = { currentPosition: 'd3', startIndex: '13', pieceType: 'pawn' }
         game.handle_move(move_params, user)
         expect(game.pieces.find_by(startIndex: 13).currentPosition).to eq 'd3'
       end
@@ -564,7 +564,7 @@ RSpec.describe Game, type: :model do
       end
 
       it 'updates the movedTwo property to true' do
-        move_params = { currentPosition: 'd4', startIndex: 20 }
+        move_params = { currentPosition: 'd4', startIndex: 20, pieceType: 'pawn' }
         game.handle_move(move_params, user)
 
         expect(game.pieces.find_by(startIndex: 20).movedTwo).to be true
@@ -590,7 +590,7 @@ RSpec.describe Game, type: :model do
       end
 
       it 'updates the movedTwo property to true' do
-        move_params = { currentPosition: 'd3', startIndex: 20 }
+        move_params = { currentPosition: 'd3', startIndex: 20, pieceType: 'pawn' }
         game.handle_move(move_params, user)
 
         expect(game.pieces.find_by(startIndex: 20).movedTwo).to be false
@@ -620,9 +620,8 @@ RSpec.describe Game, type: :model do
       end
 
       it 'updates the position of the rook as well' do
-        move_params = { currentPosition: 'g1', startIndex: 29 }
+        move_params = { currentPosition: 'g1', startIndex: 29, pieceType: 'king' }
         game.handle_move(move_params, user)
-
         expect(game.pieces.find_by(startIndex: 32).currentPosition).to eq 'f1'
       end
     end
@@ -650,7 +649,7 @@ RSpec.describe Game, type: :model do
       end
 
       it 'updates the position of the rook as well' do
-        move_params = { currentPosition: 'c1', startIndex: 29 }
+        move_params = { currentPosition: 'c1', startIndex: 29, pieceType: 'king' }
         game.handle_move(move_params, user)
 
         expect(game.pieces.find_by(startIndex: 25).currentPosition).to eq 'd1'
@@ -680,10 +679,20 @@ RSpec.describe Game, type: :model do
       end
 
       it 'updates the position of the rook as well' do
-        move_params = { currentPosition: 'c8', startIndex: 5 }
+        move_params = { currentPosition: 'c8', startIndex: 5, pieceType: 'king' }
         game.handle_move(move_params, user)
 
         expect(game.pieces.find_by(startIndex: 1).currentPosition).to eq 'd8'
+      end
+    end
+
+    context 'when a pawn moves crosses to the end side and selects a queen' do
+      xit 'test' do
+      end
+    end
+
+    context 'when a pawn does not move to the other side and tries to select a queen' do
+      xit 'test' do
       end
     end
   end
@@ -1246,6 +1255,16 @@ RSpec.describe Game, type: :model do
         move_params = { currentPosition: "d5", startIndex: 12, hasMoved: true }
         expect(game.handle_captured_piece(move_params, piece))
       end
+    end
+  end
+
+  describe '#crossed_pawn?' do
+    xit 'test' do
+    end
+  end
+
+  describe '#valid_piece_type?' do
+    xit 'test' do
     end
   end
 end

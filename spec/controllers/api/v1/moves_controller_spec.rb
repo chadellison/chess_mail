@@ -32,7 +32,8 @@ RSpec.describe Api::V1::MovesController, type: :controller do
         {
           currentPosition: 'd5',
           startIndex: 12,
-          hasMoved: true
+          hasMoved: true,
+          pieceType: 'pawn'
         }
       }
 

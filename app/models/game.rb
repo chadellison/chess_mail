@@ -102,25 +102,46 @@ class Game < ApplicationRecord
       end.sample
 
       move(currentPosition: ai_piece.valid_moves.sample,
-           startIndex: ai_piece.startIndex)
+           startIndex: ai_piece.startIndex,
+           pieceType: ai_piece.pieceType)
     end
   end
 
   def move(move_params)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
-    move_params[:hasMoved] = true
-    piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
-    handle_castle(move_params, piece) if piece.pieceType == 'king'
-    handle_captured_piece(move_params, piece)
-    piece.update(move_params)
-    create_move(piece)
-    piece
+
+    if piece.valid_move?(move_params[:currentPosition]) && valid_piece_type?(move_params)
+      move_params[:hasMoved] = true
+      piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
+      handle_castle(move_params, piece) if piece.pieceType == 'king'
+      handle_captured_piece(move_params, piece)
+      piece.update(move_params)
+      create_move(piece)
+      piece
+    else
+      # return error
+      # raise new ActiveRecord::RecordInvalid
+    end
   end
 
   def create_move(piece)
     move = piece.attributes
     move.delete('id')
     moves.create(move)
+  end
+
+  def crossed_pawn?(move_params)
+    color = pieces.find_by(startIndex: move_params[:startIndex]).color
+
+    if move_params[:pieceType] == 'pawn'
+      color == 'white' && move_params[:currentPosition][1] == '8' ||
+      color == 'black' && move_params[:currentPosition][1] == '1'
+    end
+  end
+
+  def valid_piece_type?(move_params)
+    move_params[:pieceType] == pieces.find_by(startIndex: move_params[:startIndex]).pieceType ||
+      crossed_pawn?(move_params)
   end
 
   def handle_castle(move_params, piece)
