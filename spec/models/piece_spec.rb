@@ -573,6 +573,21 @@ RSpec.describe Piece, type: :model do
         expect(piece.valid_moves).to eq []
       end
     end
+
+    context 'when there are pieces blocking all of a piece\'s moves except one' do
+      it 'returns one position' do
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+
+        game.pieces.find_by(currentPosition: 'd7').update(currentPosition: 'd6')
+        piece = game.pieces.find_by(currentPosition: 'd8')
+
+        expect(piece.valid_moves).to eq ['d7']
+      end
+    end
   end
 
   describe '#handle_moved_two' do
