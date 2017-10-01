@@ -18,6 +18,7 @@ gem 'responders'
 gem 'faker'
 
 group :development, :test do
+  gem 'rb-readline'
   gem 'rspec-rails'
   gem 'simplecov', :require => false
   gem 'pry-rails'
