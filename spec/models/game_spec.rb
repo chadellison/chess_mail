@@ -885,17 +885,52 @@ RSpec.describe Game, type: :model do
       end
 
       context 'when the notation is O-O-O and it is white\'s turn' do
-        xit 'returns c1' do
+        let(:game) do
+          Game.create(
+            challengedEmail: Faker::Name.name,
+            challengedName: Faker::Internet.email,
+            challengerColor: 'white'
+          )
+        end
+
+        it 'returns c1' do
+          expect(game.position_from_notation('O-O-O')).to eq 'c1'
         end
       end
 
       context 'when the notation is O-O and it is black\'s turn' do
-        xit 'returns g8' do
+        let(:game) do
+          Game.create(
+            challengedEmail: Faker::Name.name,
+            challengedName: Faker::Internet.email,
+            challengerColor: 'white'
+          )
+        end
+
+        before do
+          game.moves.create
+        end
+
+        it 'returns g8' do
+          expect(game.position_from_notation('O-O')).to eq 'g8'
         end
       end
 
       context 'when the notation is O-O-O and it is black\'s turn' do
-        xit 'returns c8' do
+        let(:game) do
+          Game.create(
+            challengedEmail: Faker::Name.name,
+            challengedName: Faker::Internet.email,
+            challengerColor: 'white'
+          )
+        end
+
+        before do
+          game.moves.create
+        end
+
+        it 'returns c8' do
+          expect(game.position_from_notation('O-O-O')).to eq 'c8'
         end
       end
     end
