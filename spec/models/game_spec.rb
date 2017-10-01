@@ -686,13 +686,77 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'when a pawn moves crosses to the end side and selects a queen' do
-      xit 'test' do
+    context 'when human is present' do
+      let(:user) {
+        User.create(
+          email: Faker::Internet.email,
+          password: 'password',
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          token: 'token',
+          hashed_email: 'hashed_email'
+        )
+      }
+
+      let(:game) do
+        user.games.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white',
+          human: true
+        )
+      end
+
+      let(:user_piece) {
+        game.pieces.create(
+          currentPosition: 'a7',
+          pieceType: 'rook',
+          color: 'black',
+          startIndex: 5
+        )
+      }
+
+      it 'calls move and send_new_move_email' do
+        move_params = { currentPosition: 'a7', startIndex: 5, pieceType: 'king' }
+        expect_any_instance_of(Game).to receive(:move).with(move_params)
+        expect_any_instance_of(Game).to receive(:send_new_move_email)
+        game.handle_move(move_params, user)
       end
     end
 
-    context 'when a pawn does not move to the other side and tries to select a queen' do
-      xit 'test' do
+    context 'when human is not present' do
+      let(:user) {
+        User.create(
+          email: Faker::Internet.email,
+          password: 'password',
+          firstName: Faker::Name.first_name,
+          lastName: Faker::Name.last_name,
+          token: 'token',
+          hashed_email: 'hashed_email'
+        )
+      }
+
+      let!(:game) do
+        user.games.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white',
+          human: false
+        )
+      end
+
+      let(:user_piece) {
+        game.pieces.create(
+          currentPosition: 'a7',
+          pieceType: 'rook',
+          color: 'black',
+          startIndex: 5
+        )
+      }
+      it 'calls move twice' do
+        move_params = { currentPosition: 'a7', startIndex: 5, pieceType: 'king' }
+        expect_any_instance_of(Game).to receive(:move).twice
+        game.handle_move(move_params, user)
       end
     end
   end
@@ -729,17 +793,111 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#current_turn' do
-    xit 'test' do
+    context 'when the count of moves is even' do
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      it 'it returns white' do
+        expect(game.current_turn).to eq 'white'
+      end
+    end
+
+    context 'when the count of moves is odd' do
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      before do
+        game.moves.create
+      end
+
+      it 'it returns white' do
+        expect(game.current_turn).to eq 'black'
+      end
     end
   end
 
   describe '#piece_type_from_notation' do
-    xit 'test' do
+    context 'when the piece has no capital letters' do
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+      it 'returns pawn' do
+        expect(game.piece_type_from_notation('e4')).to eq 'pawn'
+      end
+    end
+
+    context 'when the piece has an = sign in it' do
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+      it 'returns pawn the piece type that is signified by the last character' do
+        expect(game.piece_type_from_notation('e8=Q')).to eq 'queen'
+      end
+    end
+
+    context 'when the piece has a capital letter and contains no equals sign' do
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      it 'returns pawn the piece type that is signified by the capital character' do
+        expect(game.piece_type_from_notation('Nf7')).to eq 'knight'
+      end
     end
   end
 
   describe '#position_from_notation' do
-    xit 'test' do
+    context 'when the first character of notation is an O' do
+      context 'when the notation is O-O and it is white\'s turn' do
+        let(:game) do
+          Game.create(
+            challengedEmail: Faker::Name.name,
+            challengedName: Faker::Internet.email,
+            challengerColor: 'white'
+          )
+        end
+
+        it 'returns g1' do
+          expect(game.position_from_notation('O-O')).to eq 'g1'
+        end
+      end
+
+      context 'when the notation is O-O-O and it is white\'s turn' do
+        xit 'returns c1' do
+        end
+      end
+
+      context 'when the notation is O-O and it is black\'s turn' do
+        xit 'returns g8' do
+        end
+      end
+
+      context 'when the notation is O-O-O and it is black\'s turn' do
+        xit 'returns c8' do
+        end
+      end
     end
   end
 

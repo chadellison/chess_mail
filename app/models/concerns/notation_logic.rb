@@ -39,7 +39,7 @@ module NotationLogic
   end
 
   def current_turn
-    pieces.count.even? ? 'white' : 'black'
+    moves.count.even? ? 'white' : 'black'
   end
 
   def retrieve_start_index(notation)
