@@ -1050,7 +1050,48 @@ RSpec.describe Piece, type: :model do
   end
 
   describe '#valid_move?' do
-    xit 'test' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    let(:piece) {
+      game.pieces.create(
+        pieceType: 'king',
+        color: 'black',
+        startIndex: 13,
+        currentPosition: 'e7'
+      )
+    }
+
+    it 'calls valid_move_path?' do
+      expect_any_instance_of(Piece).to receive(:valid_move_path?)
+        .with('e5', piece.game.pieces.pluck(:currentPosition))
+      piece.valid_move?('e5')
+    end
+
+    it 'calls valid_destination?' do
+      expect_any_instance_of(Piece).to receive(:valid_destination?)
+        .with('e5', piece.game.pieces)
+
+      piece.valid_move?('e5')
+    end
+
+    it 'calls valid_for_piece?' do
+      expect_any_instance_of(Piece).to receive(:valid_for_piece?)
+        .with('e5', piece.game.pieces)
+
+      piece.valid_move?('e5')
+    end
+
+    it 'calls king_is_safe?' do
+      expect_any_instance_of(Piece).to receive(:king_is_safe?)
+        .with('black', piece.pieces_with_next_move('e5'))
+
+      piece.valid_move?('e5')
     end
   end
 end
