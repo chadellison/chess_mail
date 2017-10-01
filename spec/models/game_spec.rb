@@ -941,11 +941,6 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#find_current_location' do
-    xit 'test' do
-    end
-  end
-
   describe '#create_piece_from_notation' do
     context 'when the notation is e4 on white\'s turn' do
       xit 'creates a piece on the game with a currentPosition of e4' do
@@ -1420,7 +1415,16 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#add_pieces' do
-    xit 'test' do
+    it 'creates 32 pieces for a given game' do
+      game = Game.create(
+        pending: false,
+        challengedName: Faker::Name.name,
+        challengedEmail: Faker::Internet.email,
+        human: false,
+        challengerColor: 'black'
+      )
+
+      expect(game.pieces.count).to eq 32
     end
   end
 
@@ -1430,7 +1434,8 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#handle_en_passant' do
-    xit 'test' do
+    context 'when the piece type is a pawn '
+    it 'test' do
     end
   end
 
