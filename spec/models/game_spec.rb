@@ -1488,7 +1488,35 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#valid_piece_type?' do
-    xit 'test' do
+    let(:game) {
+      Game.create(
+        pending: false,
+        challengedName: Faker::Name.name,
+        challengedEmail: Faker::Internet.email,
+        human: false,
+        challengerColor: 'black'
+      )
+    }
+
+    context 'when the pieceType is equal to the pieceType of the current piece' do
+      it 'returns true' do
+        expect(game.valid_piece_type?({ startIndex: 5, pieceType: 'king' })).to be true
+      end
+    end
+
+    context 'when crossed_pawn? is true' do
+      it 'returns true' do
+        allow_any_instance_of(Game).to receive(:crossed_pawn?)
+          .with({ startIndex: 11, pieceType: 'queen' }).and_return true
+
+        expect(game.valid_piece_type?({ startIndex: 11, pieceType: 'queen' })).to be true
+      end
+    end
+
+    context 'when crossed_pawn? is false and the pieceTypes do not match' do
+      it 'returns false' do
+        expect(game.valid_piece_type?({ startIndex: 11, pieceType: 'queen' })).to be false
+      end
     end
   end
 end

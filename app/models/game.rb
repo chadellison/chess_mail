@@ -135,6 +135,8 @@ class Game < ApplicationRecord
     if move_params[:pieceType] == 'pawn'
       color == 'white' && move_params[:currentPosition][1] == '8' ||
       color == 'black' && move_params[:currentPosition][1] == '1'
+    else
+      false
     end
   end
 
