@@ -698,7 +698,33 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#move' do
-    xit 'test' do
+    context 'when a move is not valid' do
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+
+      it 'raises an exception' do
+        move_params = { currentPosition: 'd5', startIndex: 20, pieceType: 'pawn' }
+        expect { game.move(move_params) }.to raise_exception(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context 'when a pieceType is not valid' do
+      let(:game) do
+        Game.create(
+          challengedEmail: Faker::Name.name,
+          challengedName: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+      end
+      it 'raises an exception' do
+        move_params = { currentPosition: 'd4', startIndex: 20, pieceType: 'queen' }
+        expect { game.move(move_params) }.to raise_exception(ActiveRecord::RecordInvalid)
+      end
     end
   end
 

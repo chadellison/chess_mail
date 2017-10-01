@@ -119,8 +119,7 @@ class Game < ApplicationRecord
       create_move(piece)
       piece
     else
-      # return error
-      # raise new ActiveRecord::RecordInvalid
+      raise ActiveRecord::RecordInvalid
     end
   end
 
