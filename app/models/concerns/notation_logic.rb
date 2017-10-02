@@ -6,12 +6,15 @@ module NotationLogic
     'K' => 'king', 'O' => 'king'
   }.freeze
 
-  def create_piece_from_notation(notation)
-    pieces.find_by(startIndex: retrieve_start_index(notation)).update(
-      currentPosition: position_from_notation(notation),
-      pieceType: piece_type_from_notation(notation),
-      color: current_turn
-    )
+  def create_move_from_notation(notation)
+    position = position_from_notation(notation)
+    start_index = retrieve_start_index(notation)
+    piece = pieces.find_by(startIndex: start_index)
+    piece.update(currentPosition: position, hasMoved: true)
+
+    move_data = piece.attributes
+    move_data.delete('id')
+    moves.create(move_data)
   end
 
   def position_from_notation(notation)
@@ -19,7 +22,7 @@ module NotationLogic
       column = notation == 'O-O' ? 'g' : 'c'
       row = current_turn == 'white' ? '1' : '8'
       column + row
-    elsif notation[-1] == '#'
+    elsif notation[-1] == '#' || notation[-2..-1] == '++'
       notation[-3..-2]
     elsif notation[-2] == '='
       notation[-4..-3]
@@ -44,7 +47,6 @@ module NotationLogic
 
   def retrieve_start_index(notation)
     start_position = find_start_position(notation)
-
     piece_type = piece_type_from_notation(notation)
 
     if piece_type == 'king' || piece_type == 'queen'
@@ -76,14 +78,15 @@ module NotationLogic
         hasMoved: true,
         pieceType: piece_type,
         color: current_turn
-      ).detect { |piece| piece.valid_moves.include?(position_from_notation) }
+      ).detect { |piece| piece.valid_moves.include?(position_from_notation(notation)) }
 
       if previously_moved.present?
         previously_moved.startIndex
       else
         pieces.where(hasMoved: false, pieceType: piece_type, color: current_turn)
-              .detect { |piece| piece.valid_moves.include?(position_from_notation) }
-              .startIndex
+              .detect do |piece|
+                piece.valid_moves.include?(position_from_notation(notation))
+              end.startIndex
       end
     end
   end
