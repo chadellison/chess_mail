@@ -9,12 +9,9 @@ module NotationLogic
   def create_move_from_notation(notation)
     position = position_from_notation(notation)
     start_index = retrieve_start_index(notation)
-    piece = pieces.find_by(startIndex: start_index)
-    piece.update(currentPosition: position, hasMoved: true)
+    piece_type = piece_type_from_notation(notation)
 
-    move_data = piece.attributes
-    move_data.delete('id')
-    moves.create(move_data)
+    move(currentPosition: position, startIndex: start_index, pieceType: piece_type)
   end
 
   def position_from_notation(notation)
@@ -49,7 +46,7 @@ module NotationLogic
     start_position = find_start_position(notation)
     piece_type = piece_type_from_notation(notation)
 
-    if piece_type == 'king' || piece_type == 'queen'
+    if piece_type == 'king'
       pieces.find_by(pieceType: piece_type, color: current_turn).startIndex
     elsif start_position.length == 2
       previously_moved = pieces.where(hasMoved: true, color: current_turn)
@@ -74,6 +71,7 @@ module NotationLogic
         START_INDICES[piece_type][start_position][current_turn]
       end
     elsif start_position.empty?
+      piece_type = 'pawn' if notation.include?('=')
       previously_moved = pieces.where(
         hasMoved: true,
         pieceType: piece_type,

@@ -994,7 +994,7 @@ RSpec.describe Game, type: :model do
         game.moves.create(move_data)
       end
 
-      it 'creates a move on the game with a currentPosition of e4' do
+      it 'creates a move on the game with a currentPosition of b5' do
         expect { game.create_move_from_notation('Bb5') }
           .to change { game.moves.count }.by(1)
 
@@ -1023,7 +1023,7 @@ RSpec.describe Game, type: :model do
         game.moves.create(move_data)
       end
 
-      it 'creates a move on the game with a currentPosition of e4' do
+      it 'creates a move on the game with a currentPosition of c6' do
 
         expect { game.create_move_from_notation('Nc6') }
           .to change { game.moves.count }.by(1)
@@ -1039,32 +1039,35 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'when the notation is Kd8 on white\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of e4' do
-        game = Game.create(
+    context 'when the notation is Kd1 on white\'s turn' do
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        expect { game.create_move_from_notation('Kd8') }
-          .to change { game.pieces.count }.by(1)
+      before do
+        game.pieces.find_by(currentPosition: 'd1').destroy
+      end
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'd8'
+      it 'creates a move on the game with a currentPosition of d1' do
+        expect { game.create_move_from_notation('Kd1') }
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.color)
-          .to eq 'white'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'd1'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
     context 'when the notation is Qa1 on white\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of e4' do
+      it 'creates a move on the game with a currentPosition of a1' do
+        allow_any_instance_of(Game).to receive(:add_pieces)
+
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -1073,22 +1076,40 @@ RSpec.describe Game, type: :model do
           challengerColor: 'black'
         )
 
+        game.pieces.create(
+          startIndex: 28,
+          currentPosition: 'd1',
+          color: 'white',
+          pieceType: 'queen'
+        )
+
+        game.pieces.create(
+          startIndex: 5,
+          currentPosition: 'e8',
+          color: 'black',
+          pieceType: 'king'
+        )
+
+        game.pieces.create(
+          startIndex: 29,
+          currentPosition: 'e1',
+          color: 'white',
+          pieceType: 'king'
+        )
+
         expect { game.create_move_from_notation('Qa1') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'a1'
-
-        expect(game.pieces.last.color)
-          .to eq 'white'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'queen'
+        expect(game.moves.last.currentPosition).to eq 'a1'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'queen'
       end
     end
 
     context 'when the notation is Rd2 on white\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of e4' do
+      it 'creates a move on the game with a currentPosition of d2' do
+        allow_any_instance_of(Game).to receive(:add_pieces)
+
         game = Game.create(
           pending: false,
           challengedName: Faker::Name.name,
@@ -1097,344 +1118,336 @@ RSpec.describe Game, type: :model do
           challengerColor: 'black'
         )
 
+        game.pieces.create(
+          startIndex: 25,
+          currentPosition: 'd1',
+          color: 'white',
+          pieceType: 'rook'
+        )
+
+        game.pieces.create(
+          startIndex: 5,
+          currentPosition: 'e8',
+          color: 'black',
+          pieceType: 'king'
+        )
+
+        game.pieces.create(
+          startIndex: 29,
+          currentPosition: 'e1',
+          color: 'white',
+          pieceType: 'king'
+        )
+
         expect { game.create_move_from_notation('Rd2') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'd2'
-
-        expect(game.pieces.last.color)
-          .to eq 'white'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'rook'
+        expect(game.moves.last.currentPosition).to eq 'd2'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'rook'
       end
     end
 
     context 'when the notation is O-O on white\'s turn' do
-      xit 'creates a piece on the gam with a currentPosition of e4' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
+      before do
+        game.pieces.where(currentPosition: ['f1', 'g1']).destroy_all
+      end
+
+      it 'creates a move on the gam with a currentPosition of g1' do
         expect { game.create_move_from_notation('O-O') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'g1'
-
-        expect(game.pieces.last.color)
-          .to eq 'white'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'g1'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
     context 'when the notation is O-O on black\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of e4' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        game.pieces.create(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'black',
-          startIndex: '20'
-        )
+      before do
+        piece = game.pieces.find_by(startIndex: 20)
+        piece.update(currentPosition: 'd4', hasMoved: true)
+        move_data = piece.attributes
+        move_data.delete('id')
+        game.moves.create(move_data)
+        game.pieces.where(currentPosition: ['f8', 'g8']).destroy_all
+      end
 
+      it 'creates a move on the game with a currentPosition of g8' do
         expect { game.create_move_from_notation('O-O') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'g8'
-
-        expect(game.pieces.last.color)
-          .to eq 'black'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'g8'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
     context 'when the notation is O-O-O on white\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of e4' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
+      before do
+        game.pieces.where(currentPosition: ['d1', 'c1', 'b1']).destroy_all
+      end
+
+      it 'creates a piece on the game with a currentPosition of c1' do
         expect { game.create_move_from_notation('O-O-O') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'c1'
-
-        expect(game.pieces.last.color)
-          .to eq 'white'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'c1'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
     context 'when the notation is O-O-O on black\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of c8' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        game.pieces.create(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'black',
-          startIndex: '20'
-        )
+      before do
+        piece = game.pieces.find_by(startIndex: 20)
+        piece.update(currentPosition: 'd4', hasMoved: true)
+        move_data = piece.attributes
+        move_data.delete('id')
+        game.moves.create(move_data)
+        game.pieces.where(currentPosition: ['b8', 'c8', 'd8']).destroy_all
+      end
 
+      it 'creates a piece on the game with a currentPosition of c8' do
         expect { game.create_move_from_notation('O-O-O') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'c8'
-
-        expect(game.pieces.last.color)
-          .to eq 'black'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'c8'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
-    context 'when the notation is Nxf7 on black\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of f7' do
-        game = Game.create(
+    context 'when the notation is Nxf6 on black\'s turn' do
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        game.pieces.create(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'black',
-          startIndex: '20'
-        )
+      before do
+        piece = game.pieces.find_by(startIndex: 20)
+        piece.update(currentPosition: 'd4', hasMoved: true)
+        move_data = piece.attributes
+        move_data.delete('id')
+        game.moves.create(move_data)
+        game.pieces.find_by(currentPosition: 'd1').update(currentPosition: 'f6')
+      end
 
-        expect { game.create_move_from_notation('Nxf7') }
-          .to change { game.pieces.count }.by(1)
+      it 'creates a move on the game with a currentPosition of f6' do
+        expect { game.create_move_from_notation('Nxf6') }
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'f7'
+        expect(game.moves.last.currentPosition).to eq 'f6'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'knight'
+      end
 
-        expect(game.pieces.last.color)
-          .to eq 'black'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'knight'
+      it 'removes a piece from the game' do
+        expect { game.create_move_from_notation('Nxf6') }
+          .to change { game.pieces.count }.by(-1)
       end
     end
 
-    context 'when the notation is Nxf7 on black\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of f7' do
-        game = Game.create(
+    context 'when the notation is R6e3 on black\'s turn' do
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        game.pieces.create(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'black',
-          startIndex: '20'
-        )
-
-        expect { game.create_move_from_notation('Nxf7') }
-          .to change { game.pieces.count }.by(1)
-
-        expect(game.pieces.last.currentPosition)
-          .to eq 'f7'
-
-        expect(game.pieces.last.color)
-          .to eq 'black'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'knight'
+      before do
+        piece = game.pieces.find_by(startIndex: 20)
+        piece.update(currentPosition: 'd4', hasMoved: true)
+        move_data = piece.attributes
+        move_data.delete('id')
+        game.moves.create(move_data)
+        game.pieces.find_by(currentPosition: 'a8').update(currentPosition: 'e6')
       end
-    end
 
-    context 'when the notation is R6e2 on black\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of e2' do
-        game = Game.create(
-          pending: false,
-          challengedName: Faker::Name.name,
-          challengedEmail: Faker::Internet.email,
-          human: false,
-          challengerColor: 'black'
-        )
+      it 'creates a piece on the game with a currentPosition of e3' do
+        expect { game.create_move_from_notation('R6e3') }
+          .to change { game.moves.count }.by(1)
 
-        game.pieces.create(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'black',
-          startIndex: '20'
-        )
-
-        expect { game.create_move_from_notation('R6e2') }
-          .to change { game.pieces.count }.by(1)
-
-        expect(game.pieces.last.currentPosition)
-          .to eq 'e2'
-
-        expect(game.pieces.last.color)
-          .to eq 'black'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'rook'
+        expect(game.moves.last.currentPosition).to eq 'e3'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'rook'
       end
     end
 
     context 'when the notation is Rdf8 on black\'s turn' do
-      xit 'creates  a piece on the game with a currentPosition of f8' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        game.pieces.find_by(startIndex: 8).update(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'rook',
-          hasMoved: true
-        )
+      before do
+        piece = game.pieces.find_by(startIndex: 20)
+        piece.update(currentPosition: 'd4', hasMoved: true)
+        move_data = piece.attributes
+        move_data.delete('id')
+        game.moves.create(move_data)
+        game.pieces.find_by(startIndex: 5).update(currentPosition: 'd6')
+        game.pieces.where(currentPosition: ['e8', 'f8']).destroy_all
+        game.pieces.find_by(startIndex: 1).update(currentPosition: 'd8', hasMoved: true)
+      end
 
+      it 'creates a move on the game with a currentPosition of f8' do
         expect { game.create_move_from_notation('Rdf8') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.find_by(startIndex: 8).currentPosition)
-          .to eq 'f8'
-
-        expect(game.pieces.find_by(startIndex: 8).color)
-          .to eq 'black'
-
-        expect(game.pieces.find_by(startIndex: 8).pieceType)
-          .to eq 'rook'
+        expect(game.moves.find_by(startIndex: 1).currentPosition).to eq 'f8'
+        expect(game.moves.find_by(startIndex: 1).color).to eq 'black'
+        expect(game.moves.find_by(startIndex: 1).pieceType).to eq 'rook'
       end
     end
 
     context 'when the notation is Rd5# on black\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of d5' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        game.pieces.create(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'rook',
-          startIndex: '8'
-        )
+      before do
+        piece = game.pieces.find_by(startIndex: 20)
+        piece.update(currentPosition: 'd4', hasMoved: true)
+        move_data = piece.attributes
+        move_data.delete('id')
+        game.moves.create(move_data)
+        game.pieces.find_by(startIndex: 8).update(currentPosition: 'a5', hasMoved: true)
+      end
 
+      it 'creates a move on the game with a currentPosition of d5' do
         expect { game.create_move_from_notation('Rd5#') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'd5'
-
-        expect(game.pieces.last.color)
-          .to eq 'black'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'rook'
+        expect(game.moves.last.currentPosition).to eq 'd5'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'rook'
       end
     end
 
     context 'when the notation is d5# on black\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of d5' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        game.pieces.create(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'rook',
-          startIndex: '8'
-        )
+      before do
+        piece = game.pieces.find_by(startIndex: 20)
+        piece.update(currentPosition: 'd4', hasMoved: true)
+        move_data = piece.attributes
+        move_data.delete('id')
+        game.moves.create(move_data)
+      end
 
+      it 'creates a move on the game with a currentPosition of d5' do
         expect { game.create_move_from_notation('d5#') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'd5'
-
-        expect(game.pieces.last.color)
-          .to eq 'black'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'pawn'
+        expect(game.moves.last.currentPosition).to eq 'd5'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'pawn'
       end
     end
 
     context 'when the notation is f1=Q. on black\'s turn' do
-      xit 'creates a piece on the game with a currentPosition of f1' do
-        game = Game.create(
+      let(:game) {
+        Game.create(
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           human: false,
           challengerColor: 'black'
         )
+      }
 
-        game.pieces.create(
-          currentPosition: 'd4',
-          color: 'white',
-          pieceType: 'rook',
-          startIndex: '8'
-        )
+      before do
+        piece = game.pieces.find_by(startIndex: 20)
+        piece.update(currentPosition: 'd4', hasMoved: true)
+        move_data = piece.attributes
+        move_data.delete('id')
+        game.moves.create(move_data)
+        game.pieces.where(currentPosition: ['f1', 'f2']).destroy_all
+        game.pieces.find_by(startIndex: 13).update(currentPosition: 'f2', hasMoved: true)
+      end
 
+      it 'creates a move on the game with a currentPosition of f1' do
         expect { game.create_move_from_notation('f1=Q') }
-          .to change { game.pieces.count }.by(1)
+          .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.last.currentPosition)
-          .to eq 'f1'
+        expect(game.moves.last.currentPosition).to eq 'f1'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'queen'
+        expect(game.moves.last.startIndex).to eq 13
+      end
 
-        expect(game.pieces.last.color)
-          .to eq 'black'
-
-        expect(game.pieces.last.pieceType)
-          .to eq 'queen'
+      it 'updates the pawn on f1 to a queen' do
+        game.create_move_from_notation('f1=Q')
+        expect(game.pieces.find_by(startIndex: 13).pieceType).to eq 'queen'
       end
     end
   end
@@ -1540,7 +1553,11 @@ RSpec.describe Game, type: :model do
 
     context 'when crossed_pawn? is false and the pieceTypes do not match' do
       it 'returns false' do
-        expect(game.valid_piece_type?({ startIndex: 11, pieceType: 'queen' })).to be false
+        expect(game.valid_piece_type?({
+          startIndex: 11,
+          pieceType: 'queen',
+          currentPosition: 'e5'
+        })).to be false
       end
     end
   end

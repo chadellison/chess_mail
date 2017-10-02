@@ -132,7 +132,7 @@ class Game < ApplicationRecord
   def crossed_pawn?(move_params)
     color = pieces.find_by(startIndex: move_params[:startIndex]).color
 
-    if move_params[:pieceType] == 'pawn'
+    if pieces.find_by(startIndex: move_params[:startIndex]).pieceType == 'pawn'
       color == 'white' && move_params[:currentPosition][1] == '8' ||
       color == 'black' && move_params[:currentPosition][1] == '1'
     else
