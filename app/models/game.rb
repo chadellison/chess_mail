@@ -110,7 +110,7 @@ class Game < ApplicationRecord
   def move(move_params)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
 
-    if piece.valid_move?(move_params[:currentPosition]) && valid_piece_type?(move_params)
+    if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
       piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
       handle_castle(move_params, piece) if piece.pieceType == 'king'
