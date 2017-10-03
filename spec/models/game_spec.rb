@@ -1497,6 +1497,11 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#value_from_start_position' do
+    xit 'test' do
+    end
+  end
+
   describe '#handle_captured_piece' do
     context 'when there is a piece on the square' do
       let(:game) {
