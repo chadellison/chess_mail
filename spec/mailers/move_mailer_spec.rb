@@ -19,7 +19,14 @@ RSpec.describe MoveMailer, type: :mailer do
     )
   }
 
-  let(:mail) { MoveMailer.move(recipient, challenged_name, piece) }
+  let(:mail) do
+    MoveMailer.move(
+      recipient,
+      challenged_name,
+      piece.currentPosition,
+      piece.pieceType
+    )
+  end
 
   it 'rendes a to' do
     expect(mail.to).to eq [recipient.email]

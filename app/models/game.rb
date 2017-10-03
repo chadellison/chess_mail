@@ -91,10 +91,10 @@ class Game < ApplicationRecord
   end
 
   def handle_move(move_params, user)
-    user_piece = move(move_params)
+    move(move_params)
 
     if human.present?
-      send_new_move_email(user_piece, user)
+      send_new_move_email(move_params[:currentPosition], move_params[:pieceType], user)
     else
       turn = moves.count.even? ? 'white' : 'black'
       ai_piece = pieces.where(color: turn).all.reject do |game_piece|
@@ -203,10 +203,11 @@ class Game < ApplicationRecord
     ).deliver_later
   end
 
-  def send_new_move_email(piece, user)
+  def send_new_move_email(piece_position, piece_type, user)
     recipient = users.detect { |each_user| each_user != user }
     opponent_name = user.firstName
-    MoveMailer.move(recipient, opponent_name, piece).deliver_later
+    MoveMailer.move(recipient, opponent_name, piece_position, piece_type)
+              .deliver_later
   end
 
   def add_pieces
