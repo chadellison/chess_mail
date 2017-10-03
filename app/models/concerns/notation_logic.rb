@@ -49,15 +49,7 @@ module NotationLogic
     if piece_type == 'king'
       pieces.find_by(pieceType: piece_type, color: current_turn).startIndex
     elsif start_position.length == 2
-      previously_moved = pieces.where(hasMoved: true, color: current_turn)
-                               .order(updated_at: :desc)
-                               .find_by(currentPosition: start_position)
-      if previously_moved.present?
-        previously_moved.startIndex
-      else
-        json_pieces = File.read(Rails.root + './json/pieces.json')
-        JSON.parse(json_pieces)[start_position]['piece']['startIndex']
-      end
+      value_from_start_position
     elsif start_position.length == 1
       value_from_start_indices(notation, piece_type, start_position)
     elsif start_position.empty?
@@ -97,6 +89,19 @@ module NotationLogic
               piece.valid_moves.include?(position_from_notation(notation))
             end.startIndex
     end
+  end
+
+  def value_from_start_position
+    previously_moved = pieces.where(hasMoved: true, color: current_turn)
+                             .order(updated_at: :desc)
+                             .find_by(currentPosition: start_position)
+    if previously_moved.present?
+      previously_moved.startIndex
+    else
+      json_pieces = File.read(Rails.root + './json/pieces.json')
+      JSON.parse(json_pieces)[start_position]['piece']['startIndex']
+    end
+
   end
 
   START_INDICES = {
