@@ -59,27 +59,17 @@ module NotationLogic
         JSON.parse(json_pieces)[start_position]['piece']['startIndex']
       end
     elsif start_position.length == 1
-      previously_moved = pieces.where(
-        hasMoved: true,
-        pieceType: piece_type,
-        color: current_turn
-      ).all.detect { |piece| piece.currentPosition[0] == start_position }
 
-      if previously_moved.present?
-        previously_moved.startIndex
+      if previously_moved_piece(notation, piece_type).present?
+        previously_moved_piece(notation, piece_type).startIndex
       else
         START_INDICES[piece_type][start_position][current_turn]
       end
     elsif start_position.empty?
       piece_type = 'pawn' if notation.include?('=')
-      previously_moved = pieces.where(
-        hasMoved: true,
-        pieceType: piece_type,
-        color: current_turn
-      ).detect { |piece| piece.valid_moves.include?(position_from_notation(notation)) }
 
-      if previously_moved.present?
-        previously_moved.startIndex
+      if previously_moved_piece(notation, piece_type).present?
+        previously_moved_piece(notation, piece_type).startIndex
       else
         pieces.where(hasMoved: false, pieceType: piece_type, color: current_turn)
               .detect do |piece|
@@ -93,6 +83,14 @@ module NotationLogic
     notation.gsub(position_from_notation(notation), '').chars.reject do |char|
       ['#', '=', 'x', char.capitalize].include?(char)
     end.join('')
+  end
+
+  def previously_moved_piece(notation, piece_type)
+    pieces.where(
+      hasMoved: true,
+      pieceType: piece_type,
+      color: current_turn
+    ).detect { |piece| piece.valid_moves.include?(position_from_notation(notation)) }
   end
 
   START_INDICES = {
