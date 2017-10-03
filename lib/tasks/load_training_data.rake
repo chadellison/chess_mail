@@ -23,23 +23,11 @@ def create_training_game(moves)
     outcome = moves[-3..-1]
     condensed_moves = outcome == '1/2' ? moves[0..-8] : moves[0..-4]
 
-    training_game = TrainingGame.create(
+    TrainingGame.create(
       moves: condensed_moves,
       outcome: outcome,
       move_count: moves.split('.')
     )
-
-    # game = Game.create(challengedEmail: Faker::Internet.email, challengedName: Faker::Name.name, challengerColor: 'white')
-    #
-    # outcome = 'black wins' if outcome == '0-1'
-    # outcome = 'white wins' if outcome == '1-0'
-    # outcome = 'draw' if outcome == '1/2'
-    #
-    # game.update(outcome: outcome)
-    #
-    # training_game.moves.split('.').each do |move|
-    #   game.create_move_from_notation(move)
-    # end
     puts(outcome)
   end
 end
