@@ -193,6 +193,8 @@ module PieceMoveLogic
       game_piece.pieceType == 'king' && game_piece.color == allied_color
     end
 
+    return false if king.nil?
+    
     occupied_spaces = game_pieces.map(&:currentPosition)
     opponent_pieces = game_pieces.reject { |game_piece| game_piece.color == allied_color }
     opponent_pieces.none? do |game_piece|

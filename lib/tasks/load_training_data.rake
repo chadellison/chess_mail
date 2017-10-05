@@ -28,6 +28,7 @@ def create_training_game(moves)
       outcome: outcome,
       move_count: moves.split('.')
     )
+
     puts(outcome)
   end
 end
