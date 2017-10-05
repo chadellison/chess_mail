@@ -49,9 +49,9 @@ module NotationLogic
     if piece_type == 'king'
       pieces.find_by(pieceType: piece_type, color: current_turn).startIndex
     elsif start_position.length == 2
-      value_from_start_position
+      pieces.find_by(currentPosition: start_position).startIndex
     elsif start_position.length == 1
-      value_from_start_indices(notation, piece_type, start_position)
+      value_from_column(notation, piece_type, start_position)
     elsif start_position.empty?
       piece_type = 'pawn' if notation.include?('=')
       value_from_moves(notation, piece_type)
@@ -72,12 +72,13 @@ module NotationLogic
     ).detect { |piece| piece.valid_moves.include?(position_from_notation(notation)) }
   end
 
-  def value_from_start_indices(notation, piece_type, start_position)
-    if previously_moved_piece(notation, piece_type).present?
-      previously_moved_piece(notation, piece_type).startIndex
-    else
-      START_INDICES[piece_type][start_position][current_turn]
-    end
+  def value_from_column(notation, piece_type, start_position)
+    pieces.detect do |piece|
+      piece.currentPosition[0] == find_start_position(notation) &&
+      piece.pieceType == piece_type &&
+      piece.color == current_turn &&
+      piece.valid_moves.include?(position_from_notation(notation))
+    end.startIndex
   end
 
   def value_from_moves(notation, piece_type)
@@ -90,92 +91,4 @@ module NotationLogic
             end.startIndex
     end
   end
-
-  def value_from_start_position
-    previously_moved = pieces.where(hasMoved: true, color: current_turn)
-                             .order(updated_at: :desc)
-                             .find_by(currentPosition: start_position)
-    if previously_moved.present?
-      previously_moved.startIndex
-    else
-      json_pieces = File.read(Rails.root + './json/pieces.json')
-      JSON.parse(json_pieces)[start_position]['piece']['startIndex']
-    end
-
-  end
-
-  START_INDICES = {
-    'king' => {
-      'black' => 5,
-      'white' => 29
-    },
-    'queen' => {
-      'black' => 4,
-      'white' => 28
-    },
-    'rook' => {
-      'a' => {
-        'black' => 1,
-        'white' => 25
-      },
-      'h' => {
-        'black' => 8,
-        'white' => 32
-      }
-    },
-    'bishop' => {
-      'c' => {
-        'black' => 3,
-        'white' => 27
-      },
-      'f' => {
-        'black' => 6,
-        'white' => 30
-      }
-    },
-    'knight' => {
-      'b' => {
-        'black' => 2,
-        'white' => 26
-      },
-      'g' => {
-        'black' => 7,
-        'white' => 31
-      }
-    },
-    'pawn' => {
-      'a' => {
-        'black' => 9,
-        'white' => 17
-      },
-      'b' => {
-        'black' => 10,
-        'white' => 18
-      },
-      'c' => {
-        'black' => 11,
-        'white' => 19
-      },
-      'd' => {
-        'black' => 12,
-        'white' => 20
-      },
-      'e' => {
-        'black' => 13,
-        'white' => 21
-      },
-      'f' => {
-        'black' => 14,
-        'white' => 22
-      },
-      'g' => {
-        'black' => 15,
-        'white' => 23
-      },
-      'h' => {
-        'black' => 16,
-        'white' => 24
-      }
-    }
-  }.freeze
 end

@@ -1348,7 +1348,7 @@ RSpec.describe Game, type: :model do
       it 'creates a move on the game with a currentPosition of f8' do
         expect { game.create_move_from_notation('Rdf8') }
           .to change { game.moves.count }.by(1)
-
+        game.reload
         expect(game.moves.find_by(startIndex: 1).currentPosition).to eq 'f8'
         expect(game.moves.find_by(startIndex: 1).color).to eq 'black'
         expect(game.moves.find_by(startIndex: 1).pieceType).to eq 'rook'
@@ -1493,11 +1493,6 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#previously_moved_piece' do
-    xit 'test' do
-    end
-  end
-
-  describe '#value_from_start_position' do
     xit 'test' do
     end
   end

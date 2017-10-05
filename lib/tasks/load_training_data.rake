@@ -3,7 +3,7 @@ task load_training_data: :environment do
   puts 'loading training data'
 
   16.times do |n|
-    File.read("#{Rails.root}/training_data/game_set#{n + 1}.pgn")
+    File.read("#{Rails.root}/training_data/game_set#{16}.pgn")
         .gsub(/\[.*?\]/, 'game')
         .split('game')
         .map { |moves| moves.gsub("\r\n", ' ') }
@@ -23,12 +23,17 @@ def create_training_game(moves)
     outcome = moves[-3..-1]
     condensed_moves = outcome == '1/2' ? moves[0..-8] : moves[0..-4]
 
-    TrainingGame.create(
+    tg = TrainingGame.create(
       moves: condensed_moves,
       outcome: outcome,
       move_count: moves.split('.')
     )
+puts tg.id.to_s + "**********************************"
+    game = Game.create(challengedName: "a", challengedEmail: "b", challengerColor: "c")
 
+    tg.moves.split(".").each do |m|
+      game.create_move_from_notation(m)
+    end
     puts(outcome)
   end
 end
