@@ -2,10 +2,7 @@ module PieceMoveLogic
   extend ActiveSupport::Concern
 
   def moves_for_rook
-    moves_up +
-      moves_down +
-      moves_left +
-      moves_right
+    moves_up + moves_down + moves_left + moves_right
   end
 
   def moves_for_bishop
@@ -194,7 +191,7 @@ module PieceMoveLogic
     end
 
     return false if king.nil?
-    
+
     occupied_spaces = game_pieces.map(&:currentPosition)
     opponent_pieces = game_pieces.reject { |game_piece| game_piece.color == allied_color }
     opponent_pieces.none? do |game_piece|
