@@ -185,8 +185,8 @@ module PieceMoveLogic
   end
 
   def king_is_safe?(allied_color, game_pieces)
-    king = game_pieces.detect do |game_piece|
-      game_piece.pieceType == 'king' && game_piece.color == allied_color
+    king = game_pieces.detect do |piece|
+      piece.pieceType == 'king' && piece.color == allied_color
     end
 
     return false if king.nil?
@@ -202,15 +202,13 @@ module PieceMoveLogic
   end
 
   def pieces_with_next_move(move)
-    game.pieces.reject { |game_piece| game_piece.currentPosition == move }
-        .map do |game_piece|
-          if game_piece.startIndex == startIndex
-            updated_piece = Piece.new(game_piece.attributes)
-            updated_piece.currentPosition = move
-            updated_piece
-          else
-            game_piece
+    game.pieces.reject { |piece| piece.currentPosition == move }
+        .map do |piece|
+          if piece.startIndex == startIndex
+            piece = Piece.new(piece.attributes)
+            piece.currentPosition = move
           end
+          piece
         end
   end
 
@@ -234,7 +232,8 @@ module PieceMoveLogic
       through_check_moves = pieces_with_next_move('f' + next_move[1])
     end
 
-    [rook.present? && rook.hasMoved.blank?, hasMoved.blank?,
+    [
+      rook.present? && rook.hasMoved.blank?, hasMoved.blank?,
       king_is_safe?(color, game.pieces),
       king_is_safe?(color, through_check_moves)
     ].all?
