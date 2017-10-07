@@ -8,7 +8,7 @@ module NotationLogic
 
   def create_move_from_notation(notation)
     position = position_from_notation(notation)
-    start_index = retrieve_start_index(notation)
+    start_index = retrieve_start_index(notation, pieces)
     piece_type = piece_type_from_notation(notation)
 
     move(currentPosition: position, startIndex: start_index, pieceType: piece_type)
@@ -42,19 +42,21 @@ module NotationLogic
     moves.count.even? ? 'white' : 'black'
   end
 
-  def retrieve_start_index(notation)
+  def retrieve_start_index(notation, game_pieces)
     start_position = find_start_position(notation)
     piece_type = piece_type_from_notation(notation)
 
     if piece_type == 'king'
-      pieces.find_by(pieceType: piece_type, color: current_turn).startIndex
+      game_pieces.detect do |piece|
+        piece.pieceType == piece_type && piece.color == current_turn
+      end.startIndex
     elsif start_position.length == 2
-      pieces.find_by(currentPosition: start_position).startIndex
+      game_pieces.detect { |piece| piece.currentPosition == start_position }.startIndex
     elsif start_position.length == 1
-      value_from_column(notation, piece_type, start_position)
+      value_from_column(notation, piece_type, start_position, game_pieces)
     elsif start_position.empty?
       piece_type = 'pawn' if notation.include?('=')
-      value_from_moves(notation, piece_type)
+      value_from_moves(notation, piece_type, game_pieces)
     end
   end
 
@@ -64,31 +66,36 @@ module NotationLogic
     end.join('')
   end
 
-  def previously_moved_piece(notation, piece_type)
-    pieces.where(
-      hasMoved: true,
-      pieceType: piece_type,
-      color: current_turn
-    ).detect { |piece| piece.valid_moves.include?(position_from_notation(notation)) }
-  end
-
-  def value_from_column(notation, piece_type, start_position)
+  def previously_moved_piece(notation, piece_type, game_pieces)
     pieces.detect do |piece|
-      piece.currentPosition[0] == find_start_position(notation) &&
+      piece.hasMoved.present? &&
       piece.pieceType == piece_type &&
       piece.color == current_turn &&
       piece.valid_moves.include?(position_from_notation(notation))
+    end
+  end
+
+  def value_from_column(notation, piece_type, start_position, game_pieces)
+    game_pieces.detect do |piece|
+      [piece.currentPosition[0] == find_start_position(notation),
+        piece.pieceType == piece_type,
+        piece.color == current_turn,
+        piece.valid_moves.include?(position_from_notation(notation))
+      ].all?
     end.startIndex
   end
 
-  def value_from_moves(notation, piece_type)
-    if previously_moved_piece(notation, piece_type).present?
-      previously_moved_piece(notation, piece_type).startIndex
+  def value_from_moves(notation, piece_type, game_pieces)
+    if previously_moved_piece(notation, piece_type, game_pieces).present?
+      previously_moved_piece(notation, piece_type, game_pieces).startIndex
     else
-      pieces.where(hasMoved: false, pieceType: piece_type, color: current_turn)
-            .detect do |piece|
-              piece.valid_moves.include?(position_from_notation(notation))
-            end.startIndex
+      game_pieces.detect do |piece|
+        [piece.hasMoved.blank?,
+          piece.pieceType == piece_type,
+          piece.color == current_turn,
+          piece.valid_moves.include?(position_from_notation(notation))
+        ].all?
+      end.startIndex
     end
   end
 end

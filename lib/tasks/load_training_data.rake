@@ -3,7 +3,7 @@ task load_training_data: :environment do
   puts 'loading training data'
 
   16.times do |n|
-    File.read("#{Rails.root}/training_data/game_set#{16}.pgn")
+    File.read("#{Rails.root}/training_data/game_set#{n + 1}.pgn")
         .gsub(/\[.*?\]/, 'game')
         .split('game')
         .map { |moves| moves.gsub("\r\n", ' ') }

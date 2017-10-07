@@ -1566,4 +1566,14 @@ RSpec.describe Game, type: :model do
       end
     end
   end
+
+  describe '#value_from_column' do
+    xit 'test' do
+    end
+  end
+
+  describe '#value_from_moves' do
+    xit 'test' do
+    end
+  end
 end
