@@ -6,9 +6,9 @@ module NotationLogic
     'K' => 'king', 'O' => 'king'
   }.freeze
 
-  def create_move_from_notation(notation)
+  def create_move_from_notation(notation, game_pieces)
     position = position_from_notation(notation)
-    start_index = retrieve_start_index(notation, pieces)
+    start_index = retrieve_start_index(notation, game_pieces)
     piece_type = piece_type_from_notation(notation)
 
     move(currentPosition: position, startIndex: start_index, pieceType: piece_type)
