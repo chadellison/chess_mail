@@ -67,7 +67,7 @@ module NotationLogic
   end
 
   def previously_moved_piece(notation, piece_type, game_pieces)
-    pieces.detect do |piece|
+    game_pieces.detect do |piece|
       [
         piece.hasMoved.present?,
         piece.pieceType == piece_type,
