@@ -29,7 +29,7 @@ def create_training_game(moves)
       move_count: moves.split('.')
     )
 puts tg.id.to_s + "**********************************"
-    game = Game.create(challengedName: "a", challengedEmail: "b", challengerColor: "c")
+    game = Game.new(challengedName: "a", challengedEmail: "b", challengerColor: "c")
 
     tg.moves.split(".").each do |m|
       game.create_move_from_notation(m)

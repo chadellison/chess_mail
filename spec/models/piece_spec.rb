@@ -734,7 +734,7 @@ RSpec.describe Piece, type: :model do
       it 'returns false when the next move is a castle' do
         king = game.pieces.find_by(startIndex: 29)
 
-        expect(king.valid_for_piece?('g1', game.pieces)).to be false
+        expect(king.valid_for_piece?('g1', game.pieces.reload)).to be false
       end
     end
 
@@ -1092,6 +1092,11 @@ RSpec.describe Piece, type: :model do
         .with('black', piece.pieces_with_next_move('e5'))
 
       piece.valid_move?('e5')
+    end
+  end
+
+  describe '#forward_two?' do
+    xit 'test' do
     end
   end
 end

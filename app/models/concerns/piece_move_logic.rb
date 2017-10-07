@@ -139,7 +139,6 @@ module PieceMoveLogic
   end
 
   def valid_destination?(destination, game_pieces)
-    game_pieces.reload unless game_pieces.class == Array
     destination_piece = game_pieces.to_a.detect { |piece| piece.currentPosition == destination }
 
     if destination_piece.present?
@@ -193,12 +192,12 @@ module PieceMoveLogic
     return false if king.nil?
 
     occupied_spaces = game_pieces.map(&:currentPosition)
-    opponent_pieces = game_pieces.reject { |game_piece| game_piece.color == allied_color }
-    opponent_pieces.none? do |game_piece|
-      game_piece.moves_for_piece.include?(king.currentPosition) &&
-        game_piece.valid_move_path?(king.currentPosition, occupied_spaces) &&
-        game_piece.valid_destination?(king.currentPosition, game_pieces) &&
-        game_piece.valid_for_piece?(king.currentPosition, game_pieces)
+    opponent_pieces = game_pieces.reject { |piece| piece.color == allied_color }
+    opponent_pieces.none? do |piece|
+      piece.moves_for_piece.include?(king.currentPosition) &&
+        piece.valid_move_path?(king.currentPosition, occupied_spaces) &&
+        piece.valid_destination?(king.currentPosition, game_pieces) &&
+        piece.valid_for_piece?(king.currentPosition, game_pieces)
     end
   end
 
@@ -227,7 +226,7 @@ module PieceMoveLogic
 
   def castle?(next_move, game_pieces)
     column = next_move[0] == 'c' ? 'a' : 'h'
-    rook = game_pieces.find_by(currentPosition: (column + next_move[1]))
+    rook = game_pieces.detect { |piece| piece.currentPosition == (column + next_move[1]) }
 
     if next_move[0] == 'c'
       through_check_moves = pieces_with_next_move('d' + next_move[1])
@@ -258,22 +257,22 @@ module PieceMoveLogic
   end
 
   def can_en_pessant?(next_move, game_pieces)
-    game_pieces.any? do |game_piece|
-      game_piece.currentPosition == (next_move[0] + currentPosition[1]) &&
-      game_piece.movedTwo?
+    game_pieces.any? do |piece|
+      piece.currentPosition == (next_move[0] + currentPosition[1]) &&
+        piece.movedTwo?
     end
   end
 
   def empty_square?(space, game_pieces)
-    game_pieces.detect do |game_piece|
-      game_piece.currentPosition == space
-    end.blank?
+    game_pieces.detect { |piece| piece.currentPosition == space }.blank?
   end
 
   def move_two?(next_move, game_pieces)
-    empty_square?(next_move[0] + advance_pawn_row(1), game_pieces) &&
-    empty_square?(next_move[0] + advance_pawn_row(2), game_pieces) &&
-    hasMoved.blank?
+    [
+      empty_square?(next_move[0] + advance_pawn_row(1), game_pieces),
+      empty_square?(next_move[0] + advance_pawn_row(2), game_pieces),
+      hasMoved.blank?
+    ].all?
   end
 
   def advance_pawn_row(amount)
@@ -285,10 +284,15 @@ module PieceMoveLogic
   end
 
   def advance_pawn?(next_move, game_pieces)
-    if next_move[1].to_i == currentPosition[1].to_i + 2 || next_move[1].to_i == currentPosition[1].to_i - 2
+    if forward_two?(next_move, game_pieces)
       move_two?(next_move, game_pieces)
     else
       advance_pawn_row(1) == next_move[1] && empty_square?(next_move, game_pieces)
     end
+  end
+
+  def forward_two?(next_move, game_pieces)
+    next_move[1].to_i == currentPosition[1].to_i + 2 ||
+      next_move[1].to_i == currentPosition[1].to_i - 2
   end
 end
