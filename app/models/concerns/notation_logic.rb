@@ -11,7 +11,74 @@ module NotationLogic
     start_index = retrieve_start_index(notation, game_pieces)
     piece_type = piece_type_from_notation(notation)
 
-    move(currentPosition: position, startIndex: start_index, pieceType: piece_type)
+    piece = game_pieces.detect { |piece| piece.startIndex == start_index }
+    piece.hasMoved = true
+    piece = do_move_two(position, piece) if piece.pieceType == 'pawn'
+    game_pieces = castle(position, piece, game_pieces) if piece.pieceType == 'king'
+    game_pieces = capture_piece(position, piece, game_pieces)
+    piece.currentPosition = position
+    piece.pieceType = piece_type
+
+    move = Move.new(piece.attributes)
+    moves << move
+
+    game_pieces.map do |game_piece|
+      game_piece = piece if game_piece.startIndex == piece.startIndex
+      game_piece
+    end
+  end
+
+  def capture_piece(position, piece, game_pieces)
+    remove_piece = game_pieces.detect { |game_piece| game_piece.currentPosition == position }
+    remove_piece = do_en_passant(position, piece) if can_do_en_passant?(position, piece, game_pieces)
+
+    game_pieces = game_pieces.reject { |game_piece| game_piece.startIndex == remove_piece.startIndex } if remove_piece.present?
+    game_pieces
+  end
+
+  def can_do_en_passant?(position, piece, game_pieces)
+    [
+      piece.pieceType == 'pawn',
+      piece.currentPosition[0] != position[0],
+      game_pieces.detect { |game_piece| game_piece.currentPosition == position }.blank?
+    ].all?
+  end
+
+  def do_en_passant(position, piece, game_pieces)
+    captured_position = position[0] + piece.currentPosition[1]
+    game_pieces.detect do |game_piece|
+      game_piece.currentPosition == captured_position
+    end
+  end
+
+  def do_move_two(next_move, piece)
+    piece.movedTwo = true if (next_move[1].to_i - piece.currentPosition[1].to_i).abs == 2
+    piece
+  end
+
+  def castle(position, piece, game_pieces)
+    column_difference = piece.currentPosition[0].ord - position[0].ord
+    row = piece.color == 'white' ? '1' : '8'
+
+    if column_difference == -2
+      game_pieces = game_pieces.map do |game_piece|
+        if game_piece.currentPosition == ('h' + row)
+          game_piece.currentPosition = 'f' + row
+        end
+        game_piece
+      end
+    end
+
+    if column_difference == 2
+      game_pieces = game_pieces.map do |game_piece|
+        if game_piece.currentPosition == ('a' + row)
+          game_piece.currentPosition = 'd' + row
+        end
+        game_piece
+      end
+    end
+
+    game_pieces
   end
 
   def position_from_notation(notation)

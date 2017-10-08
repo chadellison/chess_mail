@@ -965,7 +965,7 @@ RSpec.describe Game, type: :model do
       it 'updates the piece\'s currentPosition to e4' do
         game.create_move_from_notation('e4', game.pieces)
 
-        expect(game.pieces.find_by(startIndex: 21).currentPosition).to eq 'e4'
+        expect(game.pieces.detect { |piece| piece.startIndex == 21 }.currentPosition).to eq 'e4'
       end
     end
 
@@ -998,7 +998,8 @@ RSpec.describe Game, type: :model do
         expect { game.create_move_from_notation('Bb5', game.pieces) }
           .to change { game.moves.count }.by(1)
 
-        expect(game.pieces.find_by(startIndex: 30).currentPosition).to eq 'b5'
+        expect(game.pieces.detect { |piece| piece.startIndex == 30 }
+          .currentPosition).to eq 'b5'
         expect(game.moves.last.color).to eq 'white'
         expect(game.moves.last.pieceType).to eq 'bishop'
       end
@@ -1288,8 +1289,8 @@ RSpec.describe Game, type: :model do
       end
 
       it 'removes a piece from the game' do
-        expect { game.create_move_from_notation('Nxf6', game.pieces) }
-          .to change { game.pieces.count }.by(-1)
+        expect(game.create_move_from_notation('Nxf6', game.pieces).length)
+          .to eq 31
       end
     end
 
@@ -1447,7 +1448,8 @@ RSpec.describe Game, type: :model do
 
       it 'updates the pawn on f1 to a queen' do
         game.reload.create_move_from_notation('f1=Q', game.pieces)
-        expect(game.pieces.find_by(startIndex: 13).pieceType).to eq 'queen'
+        expect(game.pieces.detect { |piece| piece.startIndex == 13 }.pieceType)
+          .to eq 'queen'
       end
     end
   end
