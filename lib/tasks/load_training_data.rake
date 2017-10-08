@@ -41,8 +41,14 @@ def create_training_game(moves, json_pieces)
 
       start_time = Time.now
 
-      training_game.moves.split('.').each do |move|
-        game.pieces = game.create_move_from_notation(move, game.pieces)
+      training_game.moves.split('.').each do |notation|
+        move = game.create_move_from_notation(notation, game.pieces)
+        game.moves << move
+
+        game.pieces = game.pieces.map do |piece|
+          piece = Piece.new(move.attributes) if piece.startIndex == move.startIndex
+          piece
+        end
       end
 
       end_time = Time.now

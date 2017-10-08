@@ -19,13 +19,8 @@ module NotationLogic
     piece.currentPosition = position
     piece.pieceType = piece_type
 
-    move = Move.new(piece.attributes)
-    moves << move
-
-    game_pieces.map do |game_piece|
-      game_piece = piece if game_piece.startIndex == piece.startIndex
-      game_piece
-    end
+    self.pieces = game_pieces
+    Move.new(piece.attributes)
   end
 
   def capture_piece(position, piece, game_pieces)
