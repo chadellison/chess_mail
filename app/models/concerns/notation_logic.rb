@@ -30,7 +30,7 @@ module NotationLogic
 
   def capture_piece(position, piece, game_pieces)
     remove_piece = game_pieces.detect { |game_piece| game_piece.currentPosition == position }
-    remove_piece = do_en_passant(position, piece) if can_do_en_passant?(position, piece, game_pieces)
+    remove_piece = do_en_passant(position, piece, game_pieces) if can_do_en_passant?(position, piece, game_pieces)
 
     game_pieces = game_pieces.reject { |game_piece| game_piece.startIndex == remove_piece.startIndex } if remove_piece.present?
     game_pieces
@@ -106,7 +106,7 @@ module NotationLogic
   end
 
   def current_turn
-    moves.count.even? ? 'white' : 'black'
+    moves.length.even? ? 'white' : 'black'
   end
 
   def retrieve_start_index(notation, game_pieces)
@@ -145,28 +145,44 @@ module NotationLogic
   end
 
   def value_from_column(notation, piece_type, start_position, game_pieces)
-    game_pieces.detect do |piece|
+    game_piece = game_pieces.select do |piece|
       [
-        piece.currentPosition[0] == find_start_position(notation),
+        piece.currentPosition[0] == start_position,
         piece.pieceType == piece_type,
         piece.color == current_turn,
         piece.valid_moves.include?(position_from_notation(notation))
       ].all?
-    end.startIndex
+    end
+    if game_piece.size > 1 || game_piece.empty?
+      puts notation
+      puts piece_type
+      puts start_position
+      binding.pry
+    end
+
+    game_piece.first.startIndex
   end
 
   def value_from_moves(notation, piece_type, game_pieces)
     if previously_moved_piece(notation, piece_type, game_pieces).present?
       previously_moved_piece(notation, piece_type, game_pieces).startIndex
     else
-      game_pieces.detect do |piece|
+      game_piece = game_pieces.select do |piece|
         [
           piece.hasMoved.blank?,
           piece.pieceType == piece_type,
           piece.color == current_turn,
           piece.valid_moves.include?(position_from_notation(notation))
         ].all?
-      end.startIndex
+      end
+
+      if game_piece.size > 1 || game_piece.empty?
+        puts notation
+        puts piece_type
+        binding.pry
+      end
+
+      game_piece.first.startIndex
     end
   end
 end

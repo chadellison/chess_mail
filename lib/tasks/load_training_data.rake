@@ -23,23 +23,32 @@ def create_training_game(moves)
     outcome = moves[-3..-1]
     condensed_moves = outcome == '1/2' ? moves[0..-8] : moves[0..-4]
 
-    tg = TrainingGame.create(
+    training_game = TrainingGame.new(
       moves: condensed_moves,
       outcome: outcome,
       move_count: moves.split('.')
     )
-    puts tg.id.to_s + '**********************************'
-    game = Game.new
 
-    json_pieces = JSON.parse(File.read(Rails.root + 'json/pieces.json'))
+    if training_game.save
+      puts training_game.id.to_s + '**********************************'
+      game = Game.new
 
-    game.pieces = json_pieces.deep_symbolize_keys.values.map do |json_piece|
-      Piece.new(json_piece[:piece])
+      json_pieces = JSON.parse(File.read(Rails.root + 'json/pieces.json'))
+
+      game.pieces = json_pieces.deep_symbolize_keys.values.map do |json_piece|
+        Piece.new(json_piece[:piece])
+      end
+
+      start_time = Time.now
+
+      training_game.moves.split('.').each do |move|
+        game.pieces = game.create_move_from_notation(move, game.pieces)
+      end
+
+      end_time = Time.now
+
+      puts "Duration for game: #{end_time - start_time}"
+      puts(training_game.outcome)
     end
-
-    tg.moves.split('.').each do |m|
-      game.pieces = game.create_move_from_notation(m, game.pieces)
-    end
-    puts(outcome)
   end
 end

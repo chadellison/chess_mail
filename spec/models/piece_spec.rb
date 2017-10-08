@@ -231,7 +231,26 @@ RSpec.describe Piece, type: :model do
   end
 
   describe '#horizontal_collision?' do
-    xit 'returns an array of all possible moves for a pawn (of either color) in a given position' do
+    context 'when a piece is in the way of the move path of another' do
+      let(:piece) {
+        Piece.new(currentPosition: 'a1', pieceType: 'rook')
+      }
+
+      it 'returns true' do
+        occupied_spaces = ['d1']
+        expect(piece.horizontal_collision?('e1', occupied_spaces)).to be true
+      end
+    end
+
+    context 'when a piece is not in the way of another' do
+      let(:piece) {
+        Piece.new(currentPosition: 'f1', pieceType: 'rook')
+      }
+
+      it 'returns false' do
+        occupied_spaces = ['d1']
+        expect(piece.horizontal_collision?('e1', occupied_spaces)).to be false
+      end
     end
   end
 
