@@ -28,11 +28,17 @@ def create_training_game(moves)
       outcome: outcome,
       move_count: moves.split('.')
     )
-puts tg.id.to_s + "**********************************"
-    game = Game.new(challengedName: "a", challengedEmail: "b", challengerColor: "c")
+    puts tg.id.to_s + '**********************************'
+    game = Game.new
 
-    tg.moves.split(".").each do |m|
-      game.create_move_from_notation(m)
+    json_pieces = JSON.parse(File.read(Rails.root + 'json/pieces.json'))
+
+    game.pieces = json_pieces.deep_symbolize_keys.values.map do |json_piece|
+      Piece.new(json_piece[:piece])
+    end
+
+    tg.moves.split('.').each do |m|
+      game.pieces = game.create_move_from_notation(m, game.pieces)
     end
     puts(outcome)
   end

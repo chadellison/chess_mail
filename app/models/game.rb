@@ -160,7 +160,7 @@ class Game < ApplicationRecord
 
   def handle_captured_piece(move_params, piece)
     captured_piece = pieces.find_by(currentPosition: move_params[:currentPosition])
-    captured_piece = handle_en_passant(move_params, piece) if en_passant?(move_params, piece)
+    captured_piece = handle_en_passant(move_params, piece) if en_passant?(move_params[:currentPosition], piece)
 
     captured_piece.destroy if captured_piece.present?
   end
@@ -170,11 +170,11 @@ class Game < ApplicationRecord
     captured_piece = pieces.find_by(currentPosition: captured_position)
   end
 
-  def en_passant?(move_params, piece)
+  def en_passant?(position, piece)
     [
       piece.pieceType == 'pawn',
-      piece.currentPosition[0] != move_params[:currentPosition][0],
-      pieces.find_by(currentPosition: move_params[:currentPosition]).blank?
+      piece.currentPosition[0] != position[0],
+      pieces.find_by(currentPosition: position).blank?
     ].all?
   end
 
