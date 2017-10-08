@@ -953,18 +953,20 @@ RSpec.describe Game, type: :model do
         )
       }
 
-      it 'creates a move on the game with a currentPosition of e4' do
-        actual_move = game.create_move_from_notation('e4', game.pieces)
+      it 'creates a piece on the game with a currentPosition of e4' do
 
-        expect(actual_move.currentPosition).to eq 'e4'
-        expect(actual_move.color).to eq 'white'
-        expect(actual_move.pieceType).to eq 'pawn'
+        expect { game.create_move_from_notation('e4', game.pieces) }
+          .to change { game.moves.count }.by(1)
+
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'pawn'
       end
 
       it 'updates the piece\'s currentPosition to e4' do
-        game.create_move_from_notation('e4', game.pieces)
+        game.create_move_from_notation('e4', game.pieces.reload)
 
-        expect(game.pieces.detect { |piece| piece.startIndex == 21 }.currentPosition).to eq 'e4'
+        expect(game.reload.pieces.detect { |piece| piece.startIndex == 21 }
+          .currentPosition).to eq 'e4'
       end
     end
 
@@ -993,12 +995,14 @@ RSpec.describe Game, type: :model do
         game.moves.create(move_data)
       end
 
-      it 'creates a move with a currentPosition of b5' do
-        actual_move = game.create_move_from_notation('Bb5', game.pieces)
+      it 'creates a move on the game with a currentPosition of b5' do
+        expect { game.create_move_from_notation('Bb5', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'b5'
-        expect(actual_move.color).to eq 'white'
-        expect(actual_move.pieceType).to eq 'bishop'
+        expect(game.pieces.reload.find_by(startIndex: 30)
+          .currentPosition).to eq 'b5'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'bishop'
       end
     end
 
@@ -1021,12 +1025,19 @@ RSpec.describe Game, type: :model do
         game.moves.create(move_data)
       end
 
-      it 'creates a move with a currentPosition of c6' do
-        actual_move = game.create_move_from_notation('Nc6', game.pieces)
+      it 'creates a move on the game with a currentPosition of c6' do
 
-        expect(actual_move.currentPosition).to eq 'c6'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'knight'
+        expect { game.create_move_from_notation('Nc6', game.pieces) }
+          .to change { game.moves.count }.by(1)
+
+        expect(game.moves.last.currentPosition)
+          .to eq 'c6'
+
+        expect(game.moves.last.color)
+          .to eq 'black'
+
+        expect(game.moves.last.pieceType)
+          .to eq 'knight'
       end
     end
 
@@ -1045,17 +1056,18 @@ RSpec.describe Game, type: :model do
         game.pieces.find_by(currentPosition: 'd1').destroy
       end
 
-      it 'creates a move with a currentPosition of d1' do
-        actual_move = game.create_move_from_notation('Kd1', game.pieces)
+      it 'creates a move on the game with a currentPosition of d1' do
+        expect { game.reload.create_move_from_notation('Kd1', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'd1'
-        expect(actual_move.color).to eq 'white'
-        expect(actual_move.pieceType).to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'd1'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
     context 'when the notation is Qa1 on white\'s turn' do
-      it 'creates a move with a currentPosition of a1' do
+      it 'creates a move on the game with a currentPosition of a1' do
         allow_any_instance_of(Game).to receive(:add_pieces)
 
         game = Game.create(
@@ -1087,11 +1099,12 @@ RSpec.describe Game, type: :model do
           pieceType: 'king'
         )
 
-        actual_move = game.create_move_from_notation('Qa1', game.pieces)
+        expect { game.create_move_from_notation('Qa1', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'a1'
-        expect(actual_move.color).to eq 'white'
-        expect(actual_move.pieceType).to eq 'queen'
+        expect(game.moves.last.currentPosition).to eq 'a1'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'queen'
       end
     end
 
@@ -1128,11 +1141,12 @@ RSpec.describe Game, type: :model do
           pieceType: 'king'
         )
 
-        actual_move = game.create_move_from_notation('Rd2', game.pieces)
+        expect { game.create_move_from_notation('Rd2', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'd2'
-        expect(actual_move.color).to eq 'white'
-        expect(actual_move.pieceType).to eq 'rook'
+        expect(game.moves.last.currentPosition).to eq 'd2'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'rook'
       end
     end
 
@@ -1151,12 +1165,13 @@ RSpec.describe Game, type: :model do
         game.pieces.where(currentPosition: ['f1', 'g1']).destroy_all
       end
 
-      it 'creates a move with a currentPosition of g1' do
-        actual_move = game.create_move_from_notation('O-O', game.pieces)
+      it 'creates a move on the gam with a currentPosition of g1' do
+        expect { game.reload.create_move_from_notation('O-O', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'g1'
-        expect(actual_move.color).to eq 'white'
-        expect(actual_move.pieceType).to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'g1'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
@@ -1181,11 +1196,12 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a move on the game with a currentPosition of g8' do
-        actual_move = game.create_move_from_notation('O-O', game.pieces)
+        expect { game.reload.create_move_from_notation('O-O', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'g8'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'g8'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
@@ -1205,11 +1221,12 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a piece on the game with a currentPosition of c1' do
-        actual_move = game.create_move_from_notation('O-O-O', game.pieces)
+        expect { game.reload.create_move_from_notation('O-O-O', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'c1'
-        expect(actual_move.color).to eq 'white'
-        expect(actual_move.pieceType).to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'c1'
+        expect(game.moves.last.color).to eq 'white'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
@@ -1234,11 +1251,12 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a piece on the game with a currentPosition of c8' do
-        actual_move = game.create_move_from_notation('O-O-O', game.pieces)
+        expect { game.reload.create_move_from_notation('O-O-O', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'c8'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'king'
+        expect(game.moves.last.currentPosition).to eq 'c8'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'king'
       end
     end
 
@@ -1263,16 +1281,17 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a move on the game with a currentPosition of f6' do
-        actual_move = game.create_move_from_notation('Nxf6', game.pieces)
+        expect { game.create_move_from_notation('Nxf6', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'f6'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'knight'
+        expect(game.moves.last.currentPosition).to eq 'f6'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'knight'
       end
 
       it 'removes a piece from the game' do
         game.create_move_from_notation('Nxf6', game.pieces)
-        expect(game.pieces.length).to eq 31
+        expect(game.reload.pieces.length).to eq 31
       end
     end
 
@@ -1297,11 +1316,12 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a piece on the game with a currentPosition of e3' do
-        actual_move = game.create_move_from_notation('R6e3', game.pieces)
+        expect { game.create_move_from_notation('R6e3', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'e3'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'rook'
+        expect(game.moves.last.currentPosition).to eq 'e3'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'rook'
       end
     end
 
@@ -1327,12 +1347,13 @@ RSpec.describe Game, type: :model do
         game.pieces.find_by(startIndex: 1).update(currentPosition: 'd8', hasMoved: true)
       end
 
-      it 'creates a move a currentPosition of f8' do
-        actual_move = game.create_move_from_notation('Rdf8', game.pieces.reload)
-
-        expect(actual_move.currentPosition).to eq 'f8'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'rook'
+      it 'creates a move on the game with a currentPosition of f8' do
+        expect { game.reload.create_move_from_notation('Rdf8', game.pieces) }
+          .to change { game.moves.count }.by(1)
+        game.reload
+        expect(game.moves.find_by(startIndex: 1).currentPosition).to eq 'f8'
+        expect(game.moves.find_by(startIndex: 1).color).to eq 'black'
+        expect(game.moves.find_by(startIndex: 1).pieceType).to eq 'rook'
       end
     end
 
@@ -1357,11 +1378,12 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a move on the game with a currentPosition of d5' do
-        actual_move = game.create_move_from_notation('Rd5#', game.pieces)
+        expect { game.create_move_from_notation('Rd5#', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'd5'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'rook'
+        expect(game.moves.last.currentPosition).to eq 'd5'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'rook'
       end
     end
 
@@ -1385,11 +1407,12 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a move on the game with a currentPosition of d5' do
-        actual_move = game.create_move_from_notation('d5#', game.pieces)
+        expect { game.create_move_from_notation('d5#', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'd5'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'pawn'
+        expect(game.moves.last.currentPosition).to eq 'd5'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'pawn'
       end
     end
 
@@ -1415,20 +1438,18 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a move on the game with a currentPosition of f1' do
-        actual_move = game.create_move_from_notation('f1=Q', game.pieces.reload)
+        expect { game.reload.create_move_from_notation('f1=Q', game.pieces) }
+          .to change { game.moves.count }.by(1)
 
-        expect(actual_move.currentPosition).to eq 'f1'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'queen'
-        expect(actual_move.startIndex).to eq 13
+        expect(game.moves.last.currentPosition).to eq 'f1'
+        expect(game.moves.last.color).to eq 'black'
+        expect(game.moves.last.pieceType).to eq 'queen'
+        expect(game.moves.last.startIndex).to eq 13
       end
 
       it 'updates the pawn on f1 to a queen' do
-        actual_move = game.create_move_from_notation('f1=Q', game.pieces.reload)
-
-        expect(actual_move.currentPosition).to eq 'f1'
-        expect(actual_move.color).to eq 'black'
-        expect(actual_move.pieceType).to eq 'queen'
+        game.reload.create_move_from_notation('f1=Q', game.pieces)
+        expect(game.pieces.reload.find_by(startIndex: 13).pieceType).to eq 'queen'
       end
     end
   end
