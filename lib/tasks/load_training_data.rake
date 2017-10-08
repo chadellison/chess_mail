@@ -2,6 +2,8 @@ desc "load_training_data"
 task load_training_data: :environment do
   puts 'loading training data'
 
+  json_pieces = JSON.parse(File.read(Rails.root + 'json/pieces.json'))
+
   16.times do |n|
     File.read("#{Rails.root}/training_data/game_set#{n + 1}.pgn")
         .gsub(/\[.*?\]/, 'game')
@@ -9,7 +11,7 @@ task load_training_data: :environment do
         .map { |moves| moves.gsub("\r\n", ' ') }
         .reject(&:blank?)
         .map { |moves| make_substitutions(moves) }[1..-1]
-        .each { |moves| create_training_game(moves) }
+        .each { |moves| create_training_game(moves, json_pieces) }
   end
 end
 
@@ -18,7 +20,7 @@ def make_substitutions(moves)
        .reject { |move| move.include?('.') }.join('.')
 end
 
-def create_training_game(moves)
+def create_training_game(moves, json_pieces)
   if ['0-1', '1-0', '1/2'].include?(moves[-3..-1])
     outcome = moves[-3..-1]
     condensed_moves = outcome == '1/2' ? moves[0..-8] : moves[0..-4]
@@ -32,8 +34,6 @@ def create_training_game(moves)
     if training_game.save
       puts training_game.id.to_s + '**********************************'
       game = Game.new
-
-      json_pieces = JSON.parse(File.read(Rails.root + 'json/pieces.json'))
 
       game.pieces = json_pieces.deep_symbolize_keys.values.map do |json_piece|
         Piece.new(json_piece[:piece])
