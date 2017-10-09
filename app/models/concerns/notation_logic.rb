@@ -15,16 +15,16 @@ module NotationLogic
   end
 
   def position_from_notation(notation)
-    if notation[0] == 'O'
+    stripped_notation = notation.chars.reject do |char|
+      ['Q', 'N', 'R', 'B', '=', '#', '+'].include?(char)
+    end.join
+
+    if stripped_notation[0] == 'O'
       column = notation == 'O-O' ? 'g' : 'c'
       row = current_turn == 'white' ? '1' : '8'
       column + row
-    elsif notation[-1] == '#' || notation[-2..-1] == '++'
-      notation[-3..-2]
-    elsif notation[-2] == '='
-      notation[-4..-3]
     else
-      notation[-2..-1]
+      stripped_notation[-2..-1]
     end
   end
 
@@ -32,7 +32,7 @@ module NotationLogic
     if notation.gsub(/[^a-z\s]/i, '').chars.none? { |char| char.capitalize == char }
       'pawn'
     elsif notation.include?('=')
-      PIECE_TYPE[notation[-1]]
+      PIECE_TYPE[notation.sub('#', '')[-1]]
     else
       PIECE_TYPE[notation[0]]
     end
