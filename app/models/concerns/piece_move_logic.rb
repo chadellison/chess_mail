@@ -263,7 +263,7 @@ module PieceMoveLogic
   end
 
   def empty_square?(space, game_pieces)
-    game_pieces.detect { |piece| piece.currentPosition == space }.blank?
+    game_pieces.none? { |piece| piece.currentPosition == space }
   end
 
   def move_two?(next_move, game_pieces)
