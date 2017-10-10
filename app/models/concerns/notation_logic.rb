@@ -45,6 +45,7 @@ module NotationLogic
   def retrieve_start_index(notation, game_pieces)
     start_position = find_start_position(notation)
     piece_type = piece_type_from_notation(notation)
+    piece_type = 'pawn' if notation.include?('=')
 
     if piece_type == 'king'
       game_pieces.find_by(pieceType: piece_type, color: current_turn).startIndex
@@ -53,7 +54,6 @@ module NotationLogic
     elsif start_position.length == 1
       value_from_column(notation, piece_type, start_position, game_pieces)
     elsif start_position.empty?
-      piece_type = 'pawn' if notation.include?('=')
       value_from_moves(notation, piece_type, game_pieces)
     end
   end

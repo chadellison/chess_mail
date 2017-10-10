@@ -36,6 +36,8 @@ def create_training_game(moves)
     game = Game.new
     game.save(validate: false)
 
+    puts condensed_moves
+
     start_time = Time.now
 
     condensed_moves.split('.').each do |notation|
@@ -46,7 +48,7 @@ def create_training_game(moves)
 
     end_time = Time.now
 
-    puts "Duration for game: #{end_time - start_time}"
+    puts "Duration for game: #{end_time - start_time}\n"
     puts(outcome)
   end
 end
