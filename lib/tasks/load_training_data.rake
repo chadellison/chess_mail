@@ -33,11 +33,8 @@ def create_training_game(moves)
     end
 
     puts '*****************************************************'
-    game = Game.create(
-      challengedName: Faker::Name.name,
-      challengedEmail: Faker::Internet.email,
-      challengerColor: 'white'
-    )
+    game = Game.new
+    game.save(validate: false)
 
     start_time = Time.now
 
