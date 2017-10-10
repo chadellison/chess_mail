@@ -1,2 +1,0 @@
-class TrainingGame < ApplicationRecord
-end
