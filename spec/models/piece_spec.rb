@@ -791,7 +791,27 @@ RSpec.describe Piece, type: :model do
   end
 
   describe '#can_en_pessant?' do
-    xit 'test' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    let(:piece) {
+      game.pieces.find_by(currentPosition: 'c2')
+    }
+
+    context 'when the adjacent peice is an ally' do
+      before do
+        game.pieces.find_by(currentPosition: 'd2').update(currentPosition: 'd4', movedTwo: true)
+        piece.update(currentPosition: 'c4')
+      end
+
+      it 'returns false' do
+        expect(piece.can_en_pessant?('d5', game.pieces.reload)).to be false
+      end
     end
   end
 

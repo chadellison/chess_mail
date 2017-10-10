@@ -257,8 +257,11 @@ module PieceMoveLogic
 
   def can_en_pessant?(next_move, game_pieces)
     game_pieces.any? do |piece|
-      piece.currentPosition == (next_move[0] + currentPosition[1]) &&
-        piece.movedTwo?
+      [
+        piece.currentPosition == (next_move[0] + currentPosition[1]),
+        piece.movedTwo?,
+        piece.color != color
+      ].all?
     end
   end
 
