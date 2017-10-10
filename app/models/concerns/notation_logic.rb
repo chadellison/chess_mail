@@ -66,17 +66,6 @@ module NotationLogic
     end.join('')
   end
 
-  def previously_moved_piece(notation, piece_type, game_pieces)
-    game_pieces.detect do |piece|
-      [
-        piece.hasMoved.present?,
-        piece.pieceType == piece_type,
-        piece.color == current_turn,
-        piece.valid_moves.include?(position_from_notation(notation))
-      ].all?
-    end
-  end
-
   def value_from_column(notation, piece_type, start_position, game_pieces)
     game_piece = game_pieces.select do |piece|
       [
@@ -97,25 +86,20 @@ module NotationLogic
   end
 
   def value_from_moves(notation, piece_type, game_pieces)
-    if previously_moved_piece(notation, piece_type, game_pieces).present?
-      previously_moved_piece(notation, piece_type, game_pieces).startIndex
-    else
-      game_piece = game_pieces.select do |piece|
-        [
-          piece.hasMoved.blank?,
-          piece.pieceType == piece_type,
-          piece.color == current_turn,
-          piece.valid_moves.include?(position_from_notation(notation))
-        ].all?
-      end
-
-      if game_piece.size > 1 || game_piece.empty?
-        puts notation
-        puts piece_type
-        binding.pry
-      end
-
-      game_piece.first.startIndex
+    game_piece = game_pieces.select do |piece|
+      [
+        piece.pieceType == piece_type,
+        piece.color == current_turn,
+        piece.valid_moves.include?(position_from_notation(notation))
+      ].all?
     end
+
+    if game_piece.size > 1 || game_piece.empty?
+      puts notation
+      puts piece_type
+      binding.pry
+    end
+
+    game_piece.first.startIndex
   end
 end
