@@ -62,14 +62,16 @@ module NotationLogic
 
   def find_start_position(notation)
     notation.gsub(position_from_notation(notation), '').chars.reject do |char|
-      ['#', '=', 'x', char.capitalize].include?(char)
+      ['#', '=', 'x', 'K', 'Q', 'B', 'R', 'N'].include?(char)
     end.join('')
   end
 
   def value_from_column(notation, piece_type, start_position, game_pieces)
+    index = ('a'..'h').include?(start_position) ? 0 : 1
+
     game_piece = game_pieces.select do |piece|
       [
-        piece.currentPosition[0] == start_position,
+        piece.currentPosition[index] == start_position,
         piece.pieceType == piece_type,
         piece.color == current_turn,
         piece.valid_moves.include?(position_from_notation(notation))
