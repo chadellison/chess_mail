@@ -256,13 +256,13 @@ module PieceMoveLogic
   end
 
   def can_en_pessant?(next_move, game_pieces)
-    game_pieces.any? do |piece|
-      [
-        piece.currentPosition == (next_move[0] + currentPosition[1]),
-        piece.movedTwo?,
-        piece.color != color
-      ].all?
-    end
+    opponent_color = color == 'white' ? 'black' : 'white'
+
+    game_pieces.where(
+      currentPosition: (next_move[0] + currentPosition[1]),
+      movedTwo: true,
+      color: opponent_color
+    ).present?
   end
 
   def empty_square?(space, game_pieces)

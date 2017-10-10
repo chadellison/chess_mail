@@ -47,11 +47,9 @@ module NotationLogic
     piece_type = piece_type_from_notation(notation)
 
     if piece_type == 'king'
-      game_pieces.detect do |piece|
-        piece.pieceType == piece_type && piece.color == current_turn
-      end.startIndex
+      game_pieces.find_by(pieceType: piece_type, color: current_turn).startIndex
     elsif start_position.length == 2
-      game_pieces.detect { |piece| piece.currentPosition == start_position }.startIndex
+      game_pieces.find_by(currentPosition: start_position).startIndex
     elsif start_position.length == 1
       value_from_column(notation, piece_type, start_position, game_pieces)
     elsif start_position.empty?
@@ -69,23 +67,15 @@ module NotationLogic
   def value_from_column(notation, piece_type, start_position, game_pieces)
     index = ('a'..'h').include?(start_position) ? 0 : 1
 
-    game_pieces.detect do |piece|
-      [
-        piece.currentPosition[index] == start_position,
-        piece.pieceType == piece_type,
-        piece.color == current_turn,
+    game_pieces.where(pieceType: piece_type, color: current_turn).detect do |piece|
+      piece.currentPosition[index] == start_position &&
         piece.valid_moves.include?(position_from_notation(notation))
-      ].all?
     end.startIndex
   end
 
   def value_from_moves(notation, piece_type, game_pieces)
-    game_pieces.detect do |piece|
-      [
-        piece.pieceType == piece_type,
-        piece.color == current_turn,
-        piece.valid_moves.include?(position_from_notation(notation))
-      ].all?
+    game_pieces.where(pieceType: piece_type, color: current_turn).detect do |piece|
+      piece.valid_moves.include?(position_from_notation(notation))
     end.startIndex
   end
 end
