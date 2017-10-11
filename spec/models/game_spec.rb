@@ -1573,4 +1573,37 @@ RSpec.describe Game, type: :model do
     xit 'test' do
     end
   end
+
+  describe '#checkmate?' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+    }
+
+    context 'when the king is in checkmate' do
+      before do
+        game.pieces.find_by(currentPosition: 'e2').update(currentPosition: 'd4')
+        game.pieces.find_by(currentPosition: 'e7').update(currentPosition: 'd5')
+        game.pieces.find_by(currentPosition: 'd1').update(currentPosition: 'f7')
+        game.pieces.find_by(currentPosition: 'b8').update(currentPosition: 'c6')
+        game.pieces.find_by(currentPosition: 'f1').update(currentPosition: 'c4')
+        game.pieces.find_by(currentPosition: 'g8').update(currentPosition: 'f6')
+      end
+
+      it 'returns true' do
+        allow_any_instance_of(Game).to receive(:current_turn)
+          .and_return('black')
+        expect(game.checkmate?).to be true
+      end
+    end
+
+    context 'when the king is not in checkmate' do
+      it 'returns false' do
+        expect(game.checkmate?).to be false
+      end
+    end
+  end
 end

@@ -101,9 +101,11 @@ class Game < ApplicationRecord
         game_piece.valid_moves.empty?
       end.sample
 
-      move(currentPosition: ai_piece.valid_moves.sample,
-           startIndex: ai_piece.startIndex,
-           pieceType: ai_piece.pieceType)
+      move(
+        currentPosition: ai_piece.valid_moves.sample,
+        startIndex: ai_piece.startIndex,
+        pieceType: ai_piece.pieceType
+      )
     end
   end
 
@@ -140,6 +142,12 @@ class Game < ApplicationRecord
     end
   end
 
+  def checkmate?
+    pieces.where(color: current_turn).all? do |piece|
+      piece.valid_moves.blank?
+    end && !pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces)
+  end
+
   def valid_piece_type?(move_params)
     move_params[:pieceType] == pieces.find_by(startIndex: move_params[:startIndex]).pieceType ||
       crossed_pawn?(move_params)
@@ -160,7 +168,9 @@ class Game < ApplicationRecord
 
   def handle_captured_piece(move_params, piece)
     captured_piece = pieces.find_by(currentPosition: move_params[:currentPosition])
-    captured_piece = handle_en_passant(move_params, piece) if en_passant?(move_params[:currentPosition], piece)
+    if en_passant?(move_params[:currentPosition], piece)
+      captured_piece = handle_en_passant(move_params, piece)
+    end
 
     captured_piece.destroy if captured_piece.present?
   end

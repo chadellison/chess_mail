@@ -2,7 +2,7 @@ desc "load_training_data"
 task load_training_data: :environment do
   puts 'loading training data'
 
-  File.read("#{Rails.root}/training_data/game_set#{ARGV[1]}.pgn")
+  File.read("#{Rails.root}/training_data/game_set#{ENV["FILE_COUNT"]}.pgn")
       .gsub(/\[.*?\]/, 'game')
       .split('game')
       .map { |moves| moves.gsub("\r\n", ' ') }
@@ -18,23 +18,16 @@ end
 
 def create_training_game(moves)
   if ['0-1', '1-0', '1/2'].include?(moves[-3..-1])
-    outcome = moves[-3..-1]
-    condensed_moves = outcome == '1/2' ? moves[0..-8] : moves[0..-4]
+    result = moves[-3..-1]
+    condensed_moves = result == '1/2' ? moves[0..-8] : moves[0..-4]
 
-    case outcome
-    when '0-1'
-      outcome = 'black wins'
-    when '1-0'
-      outcome = 'white wins'
-    else
-      outcome = 'draw'
-    end
+    outcome = find_outcome(result)
 
-    puts '*****************************************************'
+    puts "\n*****************************************************"
+    puts condensed_moves
+
     game = Game.new
     game.save(validate: false)
-
-    puts condensed_moves
 
     start_time = Time.now
 
@@ -46,7 +39,19 @@ def create_training_game(moves)
 
     end_time = Time.now
 
-    puts "Duration for game: #{end_time - start_time}\n"
+    puts "Duration for game: #{end_time - start_time}"
     puts(outcome)
+  end
+
+end
+
+def find_outcome(result)
+  case result
+  when '0-1'
+    'black wins'
+  when '1-0'
+    'white wins'
+  else
+    'draw'
   end
 end
