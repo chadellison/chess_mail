@@ -2,15 +2,13 @@ desc "load_training_data"
 task load_training_data: :environment do
   puts 'loading training data'
 
-  16.times do |n|
-    File.read("#{Rails.root}/training_data/game_set#{n + 1}.pgn")
-        .gsub(/\[.*?\]/, 'game')
-        .split('game')
-        .map { |moves| moves.gsub("\r\n", ' ') }
-        .reject(&:blank?)
-        .map { |moves| make_substitutions(moves) }[1..-1]
-        .each { |moves| create_training_game(moves) }
-  end
+  File.read("#{Rails.root}/training_data/game_set#{ARGV[0]}.pgn")
+      .gsub(/\[.*?\]/, 'game')
+      .split('game')
+      .map { |moves| moves.gsub("\r\n", ' ') }
+      .reject(&:blank?)
+      .map { |moves| make_substitutions(moves) }[1..-1]
+      .each { |moves| create_training_game(moves) }
 end
 
 def make_substitutions(moves)
