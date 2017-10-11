@@ -2,7 +2,7 @@ desc "load_training_data"
 task load_training_data: :environment do
   puts 'loading training data'
 
-  File.read("#{Rails.root}/training_data/game_set#{ARGV[0]}.pgn")
+  File.read("#{Rails.root}/training_data/game_set#{ARGV[1]}.pgn")
       .gsub(/\[.*?\]/, 'game')
       .split('game')
       .map { |moves| moves.gsub("\r\n", ' ') }
