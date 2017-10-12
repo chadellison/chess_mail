@@ -96,16 +96,7 @@ class Game < ApplicationRecord
     if human.present?
       send_new_move_email(move_params[:currentPosition], move_params[:pieceType], user)
     else
-      ai_piece = pieces.where(color: current_turn).all.reject do |game_piece|
-        game_piece.valid_moves.empty?
-      end.sample
-
-      ai_piece.currentPosition = ai_piece.valid_moves.sample
-      move(
-        currentPosition: ai_piece.valid_moves.sample,
-        startIndex: ai_piece.startIndex,
-        pieceType: ai_piece.pieceType
-      )
+      ai_move
     end
   end
 
@@ -121,6 +112,19 @@ class Game < ApplicationRecord
     else
       raise ActiveRecord::RecordInvalid
     end
+  end
+
+  def ai_move
+    ai_piece = pieces.where(color: current_turn).all.reject do |game_piece|
+      game_piece.valid_moves.empty?
+    end.sample
+
+    ai_piece.currentPosition = ai_piece.valid_moves.sample
+    move(
+      currentPosition: ai_piece.currentPosition,
+      startIndex: ai_piece.startIndex,
+      pieceType: ai_piece.pieceType
+    )
   end
 
   def create_move(piece)

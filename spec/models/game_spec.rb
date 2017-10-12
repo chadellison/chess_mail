@@ -753,9 +753,11 @@ RSpec.describe Game, type: :model do
           startIndex: 5
         )
       }
-      it 'calls move twice' do
+      it 'calls ai_move' do
         move_params = { currentPosition: 'a7', startIndex: 5, pieceType: 'king' }
-        expect_any_instance_of(Game).to receive(:move).twice
+        allow_any_instance_of(Game).to receive(:move).with(move_params)
+        expect_any_instance_of(Game).to receive(:ai_move)
+        
         game.handle_move(move_params, user)
       end
     end
