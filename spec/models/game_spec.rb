@@ -1606,4 +1606,14 @@ RSpec.describe Game, type: :model do
       end
     end
   end
+
+  describe '#update_move_signature' do
+    xit 'test' do
+    end
+  end
+
+  describe '#update_board' do
+    xit 'test' do
+    end
+  end
 end

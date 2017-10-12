@@ -96,11 +96,11 @@ class Game < ApplicationRecord
     if human.present?
       send_new_move_email(move_params[:currentPosition], move_params[:pieceType], user)
     else
-      turn = moves.count.even? ? 'white' : 'black'
-      ai_piece = pieces.where(color: turn).all.reject do |game_piece|
+      ai_piece = pieces.where(color: current_turn).all.reject do |game_piece|
         game_piece.valid_moves.empty?
       end.sample
 
+      ai_piece.currentPosition = ai_piece.valid_moves.sample
       move(
         currentPosition: ai_piece.valid_moves.sample,
         startIndex: ai_piece.startIndex,
@@ -114,11 +114,9 @@ class Game < ApplicationRecord
 
     if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
-      piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
-      handle_castle(move_params, piece) if piece.pieceType == 'king'
-      handle_captured_piece(move_params, piece)
-      piece.update(move_params)
+      update_board(move_params, piece)
       create_move(piece)
+      update_move_signature(move_params)
       piece
     else
       raise ActiveRecord::RecordInvalid
@@ -131,12 +129,26 @@ class Game < ApplicationRecord
     moves.create(move)
   end
 
+  def update_board(move_params, piece)
+    piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
+    handle_castle(move_params, piece) if piece.pieceType == 'king'
+    handle_captured_piece(move_params, piece)
+    piece.update(move_params)
+  end
+
+  def update_move_signature(move_params)
+    updated_signature = "#{move_signature} #{move_params[:startIndex]}" \
+                          ":#{move_params[:currentPosition]}"
+
+    update_attribute(:move_signature, updated_signature)
+  end
+
   def crossed_pawn?(move_params)
     color = pieces.find_by(startIndex: move_params[:startIndex]).color
 
     if pieces.find_by(startIndex: move_params[:startIndex]).pieceType == 'pawn'
       color == 'white' && move_params[:currentPosition][1] == '8' ||
-      color == 'black' && move_params[:currentPosition][1] == '1'
+        color == 'black' && move_params[:currentPosition][1] == '1'
     else
       false
     end
@@ -145,7 +157,8 @@ class Game < ApplicationRecord
   def checkmate?
     pieces.where(color: current_turn).all? do |piece|
       piece.valid_moves.blank?
-    end && !pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces)
+    end &&
+      !pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces)
   end
 
   def valid_piece_type?(move_params)
