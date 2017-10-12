@@ -127,7 +127,7 @@ module PieceMoveLogic
   end
 
   def valid_move_path?(destination, occupied_spaces)
-    if ['king', 'knight'].include?(pieceType)
+    if pieceType == 'knight'
       true
     elsif currentPosition[0] == destination[0]
       !vertical_collision?(destination, occupied_spaces)
