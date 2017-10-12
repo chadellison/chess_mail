@@ -188,7 +188,6 @@ module PieceMoveLogic
     king = game_pieces.detect do |piece|
       piece.pieceType == 'king' && piece.color == allied_color
     end
-
     return false if king.nil?
 
     occupied_spaces = game_pieces.map(&:currentPosition)

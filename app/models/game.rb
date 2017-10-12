@@ -115,7 +115,7 @@ class Game < ApplicationRecord
   end
 
   def ai_move
-    ai_piece = pieces.where(color: current_turn).all.reject do |game_piece|
+    ai_piece = pieces.reload.where(color: current_turn).all.reject do |game_piece|
       game_piece.valid_moves.empty?
     end.sample
 
