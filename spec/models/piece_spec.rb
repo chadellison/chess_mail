@@ -517,6 +517,23 @@ RSpec.describe Piece, type: :model do
         expect(piece.king_is_safe?('black', game.pieces)).to be false
       end
     end
+
+    context 'when the king is in check from a knight' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white'
+        )
+      }
+
+      it 'returns false' do
+        game.pieces.find_by(startIndex: 2).update(currentPosition: 'f3')
+
+        piece = game.pieces.find_by(color: 'white', pieceType: 'king')
+        expect(piece.king_is_safe?('white', game.pieces)).to be false
+      end
+    end
   end
 
   describe '#pieces_with_next_move' do
