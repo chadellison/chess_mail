@@ -169,21 +169,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '#send_confirmation_email' do
-    user = User.create(
-      email: 'CapitalEmail.com',
-      password: Faker::Internet.password,
-      firstName: Faker::Name.first_name,
-      lastName: Faker::Name.last_name
-    )
-    it 'calls confirmation on ConfirmationMailer' do
-      allow(nil).to receive(:deliver_later)
-      expect(ConfirmationMailer).to receive(:confirmation)
-
-      user.send_confirmation_email
-    end
-  end
-
   describe '#serialized_user_games' do
     xit 'test' do
     end

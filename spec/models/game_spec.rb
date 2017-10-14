@@ -940,7 +940,44 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#retrieve_start_index' do
-    xit 'test' do
+    let(:game) {
+      Game.create(
+        pending: false,
+        challengedName: Faker::Name.name,
+        challengedEmail: Faker::Internet.email,
+        human: false,
+        challengerColor: 'black'
+      )
+    }
+
+    context 'when the piece type is a king' do
+      it 'returns the startIndex of the king' do
+        expect(game.retrieve_start_index('Ke2', game.pieces)).to eq 29
+      end
+    end
+
+    context 'when the notation has a start position with a row and column' do
+      it 'returns the startIndex of the piece on that square' do
+        expect(game.retrieve_start_index('b7b5', game.pieces)).to eq 10
+      end
+    end
+
+    context 'when the start position is only one character' do
+      it 'calls value_from_column' do
+        expect_any_instance_of(Game).to receive(:value_from_column)
+          .with('Rad4', 'rook', 'a', game.pieces)
+
+        game.retrieve_start_index('Rad4', game.pieces)
+      end
+    end
+
+    context 'when the start position is empty' do
+      it 'calls value_from_column' do
+        expect_any_instance_of(Game).to receive(:value_from_moves)
+          .with('Bd4', 'bishop', game.pieces)
+
+        game.retrieve_start_index('Bd4', game.pieces)
+      end
     end
   end
 
@@ -1029,7 +1066,6 @@ RSpec.describe Game, type: :model do
       end
 
       it 'creates a move on the game with a currentPosition of c6' do
-
         expect { game.create_move_from_notation('Nc6', game.pieces) }
           .to change { game.moves.count }.by(1)
 
@@ -1472,13 +1508,35 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#find_start_position' do
-    xit 'test' do
+    context 'when the notation does not include a start position' do
+      it 'returns an empty string' do
+        game = Game.new
+
+        expect(game.find_start_position('d4')).to eq ''
+      end
+    end
+
+    context 'when the notation includes a column' do
+      it 'returns the letter of that column' do
+        game = Game.new
+
+        expect(game.find_start_position('exd4')).to eq 'e'
+      end
+    end
+
+    context 'when the notation includes a row and a column' do
+      it 'returns both coordinates' do
+        game = Game.new
+
+        expect(game.find_start_position('Ra2a4')).to eq 'a2'
+      end
     end
   end
 
   describe '#handle_en_passant' do
-    context 'when the piece type is a pawn '
-    it 'test' do
+    context 'when the piece type is a pawn ' do
+      it 'test' do
+      end
     end
   end
 

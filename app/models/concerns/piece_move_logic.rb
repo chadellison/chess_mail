@@ -188,7 +188,7 @@ module PieceMoveLogic
     king = game_pieces.detect do |piece|
       piece.pieceType == 'king' && piece.color == allied_color
     end
-    return false if king.nil?
+    return false if king.nil? || kings_too_close?(game_pieces)
 
     occupied_spaces = game_pieces.map(&:currentPosition)
     opponent_pieces = game_pieces.reject do |piece|
@@ -201,6 +201,16 @@ module PieceMoveLogic
         piece.valid_destination?(king.currentPosition, game_pieces) &&
         piece.valid_for_piece?(king.currentPosition, game_pieces)
     end
+  end
+
+  def kings_too_close?(game_pieces)
+    positions = game_pieces.select { |piece| piece.pieceType == 'king' }
+                       .map(&:currentPosition)
+
+    [
+      (positions.first[0].ord - positions.last[0].ord).abs,
+      (positions.first[1].to_i - positions.last[1].to_i).abs
+    ].all? { |value| value < 2 }
   end
 
   def pieces_with_next_move(move)
