@@ -757,7 +757,7 @@ RSpec.describe Game, type: :model do
         move_params = { currentPosition: 'a7', startIndex: 5, pieceType: 'king' }
         allow_any_instance_of(Game).to receive(:move).with(move_params)
         expect_any_instance_of(Game).to receive(:ai_move)
-        
+
         game.handle_move(move_params, user)
       end
     end
@@ -1616,6 +1616,41 @@ RSpec.describe Game, type: :model do
 
   describe '#update_board' do
     xit 'test' do
+    end
+  end
+
+  describe '#ai_move' do
+    context 'when the move signature matches a previous game winning game' do
+      xit 'returns a move that matches that game\'s next move' do
+      end
+    end
+  end
+
+  describe '#random_move' do
+    context 'when the move signature matches a previous game winning game' do
+      xit 'returns a move that matches that game\'s next move' do
+      end
+    end
+  end
+
+  describe '#winning_game' do
+    context 'when the move signature matches a previous game winning game' do
+      xit 'returns a move that matches that game\'s next move' do
+      end
+    end
+  end
+
+  describe '#drawn_game' do
+    context 'when the move signature matches a previous game winning game' do
+      xit 'returns a move that matches that game\'s next move' do
+      end
+    end
+  end
+
+  describe '#similar_game' do
+    context 'when the move signature matches a previous game winning game' do
+      xit 'returns a move that matches that game\'s next move' do
+      end
     end
   end
 end

@@ -9,6 +9,9 @@ class Game < ApplicationRecord
   after_commit :add_pieces, on: :create
 
   scope :not_archived, ->(archived_game_ids) { where.not(id: archived_game_ids) }
+  scope :similar_game, ->(move_signature) { where('move_signature LIKE ?', "#{move_signature}%") }
+  scope :winning_game, ->(color) { where(outcome: color + 'wins') }
+  scope :drawn_game, -> { where(outcome: 'draw') }
 
   include NotationLogic
 
@@ -19,6 +22,34 @@ class Game < ApplicationRecord
         meta: { count: games.count }
       }
     end
+  end
+
+  def ai_move
+    # if not checkmate or draw
+    game = Game.similar_game(move_signature)
+    game = game.drawn_game if game.drawn_game.present?
+    game = game.winning_game(current_turn) if game.winning_game(current_turn).present?
+
+    next_move = game.all.sample.moves[moves.count] if game.present?
+    next_move = random_move unless next_move.present?
+
+    move(
+      currentPosition: next_move.currentPosition,
+      startIndex: next_move.startIndex,
+      pieceType: next_move.pieceType
+    )
+  end
+
+  def random_move
+    ai_piece = pieces.reload.where(color: current_turn).all.reject do |game_piece|
+      game_piece.valid_moves.empty?
+    end.sample
+
+    Move.new(
+      currentPosition: ai_piece.valid_moves.sample,
+      startIndex: ai_piece.startIndex,
+      pieceType: ai_piece.pieceType
+    )
   end
 
   def serialize_game(user_email)
@@ -112,19 +143,6 @@ class Game < ApplicationRecord
     else
       raise ActiveRecord::RecordInvalid
     end
-  end
-
-  def ai_move
-    ai_piece = pieces.reload.where(color: current_turn).all.reject do |game_piece|
-      game_piece.valid_moves.empty?
-    end.sample
-
-    ai_piece.currentPosition = ai_piece.valid_moves.sample
-    move(
-      currentPosition: ai_piece.currentPosition,
-      startIndex: ai_piece.startIndex,
-      pieceType: ai_piece.pieceType
-    )
   end
 
   def create_move(piece)
