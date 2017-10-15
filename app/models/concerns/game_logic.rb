@@ -54,10 +54,21 @@ module GameLogic
   end
 
   def checkmate?
+    no_valid_moves? &&
+      !pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces)
+  end
+
+  def stalemate?
+    [
+      no_valid_moves && pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces),
+      moves.last(6).map { |move| move.startIndex + move.currentPosition }.uniq.count < 3
+    ].any?
+  end
+
+  def no_valid_moves?
     pieces.where(color: current_turn).all? do |piece|
       piece.valid_moves.blank?
-    end &&
-      !pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces)
+    end
   end
 
   def valid_piece_type?(move_params)

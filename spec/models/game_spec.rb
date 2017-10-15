@@ -1668,6 +1668,11 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#stalemate?' do
+    xit 'test' do
+    end
+  end
+
   describe '#update_move_signature' do
     let(:game) {
       Game.create(
