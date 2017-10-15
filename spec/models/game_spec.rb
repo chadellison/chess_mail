@@ -1669,12 +1669,42 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#update_move_signature' do
-    xit 'test' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white',
+        move_signature: ' 3:a4'
+      )
+    }
+
+    it 'it adds the start index and next move to the move signature' do
+      move_params = { startIndex: 4, currentPosition: 'd5' }
+      game.update_move_signature(move_params)
+
+      expect(game.move_signature).to eq ' 3:a4 4:d5'
     end
   end
 
   describe '#update_board' do
-    xit 'test' do
+    let(:game) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white',
+        move_signature: ' 3:a4'
+      )
+    }
+
+    it 'calls handle_captured_piece' do
+      move_params = { startIndex: 4, currentPosition: 'd5', pieceType: 'queen' }
+      piece = game.pieces.find_by(startIndex: 4)
+
+      expect_any_instance_of(Game).to receive(:handle_captured_piece)
+        .with(move_params, piece)
+
+      game.update_board(move_params, piece)
+      expect(game.pieces.find_by(startIndex: 4).currentPosition).to eq 'd5'
     end
   end
 
@@ -1693,16 +1723,52 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#winning_game' do
-    context 'when the move signature matches a previous game winning game' do
-      xit 'returns a move that matches that game\'s next move' do
-      end
+    let!(:win) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white',
+        outcome: 'white wins'
+      )
+    }
+
+    let!(:draw) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white',
+        outcome: 'draw'
+      )
+    }
+
+    it 'returns winning games of the given color' do
+      expect(Game.winning_game('white').last).to eq win
+      expect(Game.winning_game('white').count).to eq 1
     end
   end
 
   describe '#drawn_game' do
-    context 'when the move signature matches a previous game winning game' do
-      xit 'returns a move that matches that game\'s next move' do
-      end
+    let!(:wins) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white',
+        outcome: 'white wins'
+      )
+    }
+
+    let!(:draw) {
+      Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white',
+        outcome: 'draw'
+      )
+    }
+
+    it 'games with the outcome of draw' do
+      expect(Game.drawn_game.last).to eq draw
+      expect(Game.drawn_game.count).to eq 1
     end
   end
 

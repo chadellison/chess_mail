@@ -67,15 +67,19 @@ module NotationLogic
   def value_from_column(notation, piece_type, start_position, game_pieces)
     index = ('a'..'h').include?(start_position) ? 0 : 1
 
-    game_pieces.where(pieceType: piece_type, color: current_turn).detect do |piece|
+    a = game_pieces.where(pieceType: piece_type, color: current_turn).detect do |piece|
       piece.currentPosition[index] == start_position &&
         piece.valid_moves.include?(position_from_notation(notation))
-    end.startIndex
+    end
+    binding.pry if a.nil?
+    a.startIndex
   end
 
   def value_from_moves(notation, piece_type, game_pieces)
-    game_pieces.where(pieceType: piece_type, color: current_turn).detect do |piece|
+    a = game_pieces.where(pieceType: piece_type, color: current_turn).detect do |piece|
       piece.valid_moves.include?(position_from_notation(notation))
-    end.startIndex
+    end
+    binding.pry if a.nil?
+    a.startIndex
   end
 end
