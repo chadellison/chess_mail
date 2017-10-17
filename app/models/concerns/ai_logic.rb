@@ -2,7 +2,6 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    # if not checkmate or stalemate
     game = Game.similar_game(move_signature)
     game = game.drawn_game if game.drawn_game.present?
     game = game.winning_game(current_turn) if game.winning_game(current_turn).present?

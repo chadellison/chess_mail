@@ -4,11 +4,20 @@ module GameLogic
   def handle_move(move_params, user)
     move(move_params)
 
-    if human.present?
+    if checkmate? || stalemate?
+      update(outcome: find_outcome)
+    elsif human.present?
       send_new_move_email(move_params[:currentPosition], move_params[:pieceType], user)
     else
       ai_move
     end
+  end
+
+  def find_outcome
+    game_outcome = 'draw' if stalemate?
+    opponent_color = current_turn == 'white' ? 'black' : 'white'
+
+    game_outcome = opponent_color if checkmate?
   end
 
   def move(move_params)
@@ -60,8 +69,10 @@ module GameLogic
 
   def stalemate?
     [
-      no_valid_moves && pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces),
-      moves.last(6).map { |move| move.startIndex + move.currentPosition }.uniq.count < 3
+      no_valid_moves? && pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces),
+      moves.count > 9 &&
+        moves.last(10).map { |move| move.startIndex.to_s + move.currentPosition }
+             .uniq.count < 5
     ].any?
   end
 

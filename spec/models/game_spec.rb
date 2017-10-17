@@ -1783,4 +1783,9 @@ RSpec.describe Game, type: :model do
       end
     end
   end
+
+  describe '#find_outcome' do
+    xit 'returns a move that matches that game\'s next move' do
+    end
+  end
 end
