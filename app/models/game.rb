@@ -9,7 +9,9 @@ class Game < ApplicationRecord
   after_commit :add_pieces, on: :create
 
   scope :not_archived, ->(archived_game_ids) { where.not(id: archived_game_ids) }
-  scope :similar_game, ->(move_signature) { where('move_signature LIKE ?', "#{move_signature}%") }
+  scope :similar_game, (lambda do |move_signature|
+    where('move_signature LIKE ?', "#{move_signature}%").where.not(human: true)
+  end)
   scope :winning_game, ->(color) { where(outcome: color + ' wins') }
   scope :drawn_game, -> { where(outcome: 'draw') }
 

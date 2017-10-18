@@ -1714,16 +1714,19 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#ai_move' do
-    context 'when the move signature matches a previous game winning game' do
+    context 'when the move signature matches a previous winning game' do
+      xit 'returns a move that matches that game\'s next move' do
+      end
+    end
+
+    context 'when the move signature matches a previous drawn game' do
       xit 'returns a move that matches that game\'s next move' do
       end
     end
   end
 
   describe '#random_move' do
-    context 'when the move signature matches a previous game winning game' do
-      xit 'returns a move that matches that game\'s next move' do
-      end
+    xit 'test' do
     end
   end
 
@@ -1785,6 +1788,16 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#find_outcome' do
+    xit 'returns a move that matches that game\'s next move' do
+    end
+  end
+
+  describe '#non_loss_move' do
+    xit 'returns a move that matches that game\'s next move' do
+    end
+  end
+
+  describe '#pieces_with_valid_moves' do
     xit 'returns a move that matches that game\'s next move' do
     end
   end

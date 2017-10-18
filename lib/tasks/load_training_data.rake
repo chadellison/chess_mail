@@ -35,7 +35,7 @@ def create_training_game(moves)
       game.create_move_from_notation(notation, game.pieces.reload)
     end
 
-    game.update(outcome: outcome)
+    game.update_attribute(:outcome, outcome)
 
     end_time = Time.now
 
