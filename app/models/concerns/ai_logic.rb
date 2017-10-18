@@ -36,13 +36,29 @@ module AiLogic
       bad_move = lost_game.moves[moves.count]
       bad_move.startIndex + ':' + bad_move.currentPosition
     end
-    potential_moves = pieces_with_valid_moves
 
-    non_losing_moves = potential_moves.reject do |potential_move|
-      bad_moves.include?("#{potential_move.startIndex}:#{potential_move.currentPosition}")
+    potential_moves = {}
+    all_moves = pieces_with_valid_moves
+
+    all_moves.each do |piece|
+      move_set = piece.valid_moves.reject do |move|
+        bad_moves.include?("#{piece.startIndex}:#{move}")
+      end
+
+      potential_moves[piece.startIndex] = move_set if move_set.present?
     end
 
-    non_losing_moves.sample
+    startIndex = potential_moves.keys.sample
+
+    if startIndex.present?
+      Move.new(
+        currentPosition: potential_moves[startIndex].sample,
+        startIndex: startIndex,
+        pieceType: all_moves.detect { |piece| piece.startIndex == startIndex }.pieceType
+      )
+    else
+      false
+    end
   end
 
   def pieces_with_valid_moves
