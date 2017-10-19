@@ -1750,8 +1750,8 @@ RSpec.describe Game, type: :model do
     }
 
     it 'returns winning games of the given color' do
-      expect(Game.winning_game('white').last).to eq win
-      expect(Game.winning_game('white').count).to eq 1
+      expect(Game.winning_games('white').last).to eq win
+      expect(Game.winning_games('white').count).to eq 1
     end
   end
 
@@ -1775,8 +1775,8 @@ RSpec.describe Game, type: :model do
     }
 
     it 'games with the outcome of draw' do
-      expect(Game.drawn_game.last).to eq draw
-      expect(Game.drawn_game.count).to eq 1
+      expect(Game.drawn_games.last).to eq draw
+      expect(Game.drawn_games.count).to eq 1
     end
   end
 

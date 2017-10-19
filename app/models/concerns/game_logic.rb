@@ -63,12 +63,12 @@ module GameLogic
   end
 
   def checkmate?
-    @checkmate ||= no_valid_moves? &&
+    no_valid_moves? &&
       !pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces)
   end
 
   def stalemate?
-    @stalemate ||= [
+    [
       no_valid_moves? && pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces),
       moves.count > 9 &&
         moves.last(10).map { |move| move.startIndex.to_s + move.currentPosition }

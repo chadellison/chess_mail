@@ -86,10 +86,9 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
       it 'approves the user and returns a 204 status' do
         user = User.find_by(token: token)
-        ENV['host'] = 'localhost:3000'
 
         get :approve, params: { token: token }, format: :json
-        expect(response).to redirect_to('localhost:3000')
+        expect(response).to redirect_to(ENV['host'])
         expect(user.reload.approved).to be true
       end
     end

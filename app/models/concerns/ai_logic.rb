@@ -2,14 +2,17 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    games = Game.similar_game(move_signature)
+    games = Game.similar_games(move_signature)
+    winning_games = games.winning_games(current_turn)
+    drawn_games = games.drawn_games unless winning_games.present?
+    non_loss = non_loss_move(games) unless [winning_games.present?, drawn_games.present?].any?
 
-    if games.winning_game(current_turn).present?
-      next_move = game.winning_game(current_turn).all.sample.moves[moves.count]
-    elsif games.drawn_game.present?
-      next_move = game.drawn_game.all.sample.moves[moves.count]
-    elsif non_loss_move(games).present?
-      next_move = non_loss_move(games)
+    if winning_games.present?
+      next_move = winning_games.all.sample.moves[moves.count]
+    elsif drawn_games.present?
+      next_move = drawn_games.all.sample.moves[moves.count]
+    elsif non_loss.present?
+      next_move = non_loss
     else
       next_move = random_move
     end
