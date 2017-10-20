@@ -32,7 +32,7 @@ module AiLogic
   def non_loss_move(games)
     bad_moves = games.where.not(outcome: current_turn + ' wins').map do |lost_game|
       bad_move = lost_game.moves[moves.count]
-      bad_move.startIndex + ':' + bad_move.currentPosition
+      bad_move.startIndex.to_s + ':' + bad_move.currentPosition
     end
 
     potential_moves = {}

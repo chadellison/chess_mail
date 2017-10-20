@@ -22,7 +22,7 @@ module GameLogic
 
   def move(move_params)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
-
+# binding.pry if !piece.valid_moves.include?(move_params[:currentPosition])
     if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
       update_board(move_params, piece)
@@ -64,15 +64,16 @@ module GameLogic
 
   def checkmate?
     no_valid_moves? &&
-      !pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces)
+      !pieces.find_by(color: current_turn)
+             .king_is_safe?(current_turn, pieces.reload)
   end
 
   def stalemate?
     [
-      no_valid_moves? && pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces),
+      no_valid_moves? && pieces.find_by(color: current_turn)
+                               .king_is_safe?(current_turn, pieces.reload),
       moves.count > 9 &&
-        moves.last(10).map { |move| move.startIndex.to_s + move.currentPosition }
-             .uniq.count < 5
+        moves.last(10).map { |move| move.startIndex.to_s + move.currentPosition }.uniq.count < 5
     ].any?
   end
 
