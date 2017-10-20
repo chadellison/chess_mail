@@ -22,7 +22,7 @@ module GameLogic
 
   def move(move_params)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
-# binding.pry if !piece.valid_moves.include?(move_params[:currentPosition])
+
     if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
       update_board(move_params, piece)
