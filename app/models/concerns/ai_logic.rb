@@ -2,15 +2,38 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
+    start_time = Time.now
     games = Game.similar_games(move_signature)
+    end_time = Time.now
+    puts "find similar_games = #{end_time - start_time}"
+
+    start_time = Time.now
     winning_games = games.winning_games(current_turn)
+    end_time = Time.now
+
+    puts "find winning_games = #{end_time - start_time}"
+
+    start_time = Time.now
     drawn_games = games.drawn_games unless winning_games.present?
+    end_time = Time.now
+
+    puts "find drawn_games = #{end_time - start_time}" unless winning_games.present?
+
+    start_time = Time.now
     non_loss = non_loss_move(games) unless winning_games.present? || drawn_games.present?
+    end_time = Time.now
+
+    puts "find non_loss = #{end_time - start_time}" unless winning_games.present? || drawn_games.present?
 
     next_move = winning_games.all.sample.moves[moves.count] if winning_games.present?
     next_move = drawn_games.all.sample.moves[moves.count] if drawn_games.present?
     next_move = non_loss if non_loss.present?
+
+    start_time = Time.now
     next_move = random_move unless next_move.present?
+    end_time = Time.now
+
+    puts "random_move = #{end_time - start_time}" unless winning_games.present? || drawn_games.present? || non_loss.present?
 
     move(
       currentPosition: next_move.currentPosition,
@@ -30,9 +53,11 @@ module AiLogic
   end
 
   def non_loss_move(games)
+    return false if games.blank?
+
     bad_moves = games.where.not(outcome: current_turn + ' wins').map do |lost_game|
       bad_move = lost_game.moves[moves.count]
-      bad_move.startIndex.to_s + ':' + bad_move.currentPosition
+      "#{bad_move.startIndex}:#{bad_move.currentPosition}"
     end
 
     potential_moves = {}
@@ -54,8 +79,6 @@ module AiLogic
         startIndex: startIndex,
         pieceType: all_moves.detect { |piece| piece.startIndex == startIndex }.pieceType
       )
-    else
-      false
     end
   end
 
