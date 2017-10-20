@@ -1730,7 +1730,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#winning_game' do
+  describe '#winning_games' do
     let!(:win) {
       Game.create(
         challengedEmail: Faker::Internet.email,
@@ -1755,7 +1755,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#drawn_game' do
+  describe '#drawn_games' do
     let!(:wins) {
       Game.create(
         challengedEmail: Faker::Internet.email,
@@ -1774,15 +1774,29 @@ RSpec.describe Game, type: :model do
       )
     }
 
-    it 'games with the outcome of draw' do
+    it 'returns games with the outcome of draw' do
       expect(Game.drawn_games.last).to eq draw
       expect(Game.drawn_games.count).to eq 1
     end
   end
 
-  describe '#similar_game' do
-    context 'when the move signature matches a previous game winning game' do
-      xit 'returns a move that matches that game\'s next move' do
+  describe '#similar_games' do
+    let(:move_signature) { ' 9:a6 18:b4' }
+
+    before do
+      3.times do |n|
+        game = Game.new
+        game.save(validate: false)
+        game.update_attribute(:human, false)
+        game.update_attribute(:move_signature, move_signature) if n.even?
+      end
+    end
+
+    context 'when the move signature matches previous games' do
+      it 'returns games that match that game\'s move signature' do
+        expect(Game.similar_games(move_signature).count).to eq 2
+        expect(Game.similar_games(move_signature).map(&:move_signature))
+          .to eq [move_signature, move_signature]
       end
     end
   end

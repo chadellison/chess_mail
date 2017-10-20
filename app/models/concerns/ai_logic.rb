@@ -5,17 +5,12 @@ module AiLogic
     games = Game.similar_games(move_signature)
     winning_games = games.winning_games(current_turn)
     drawn_games = games.drawn_games unless winning_games.present?
-    non_loss = non_loss_move(games) unless [winning_games.present?, drawn_games.present?].any?
+    non_loss = non_loss_move(games) unless winning_games.present? || drawn_games.present?
 
-    if winning_games.present?
-      next_move = winning_games.all.sample.moves[moves.count]
-    elsif drawn_games.present?
-      next_move = drawn_games.all.sample.moves[moves.count]
-    elsif non_loss.present?
-      next_move = non_loss
-    else
-      next_move = random_move
-    end
+    next_move = winning_games.all.sample.moves[moves.count] if winning_games.present?
+    next_move = drawn_games.all.sample.moves[moves.count] if drawn_games.present?
+    next_move = non_loss if non_loss.present?
+    next_move = random_move unless next_move.present?
 
     move(
       currentPosition: next_move.currentPosition,

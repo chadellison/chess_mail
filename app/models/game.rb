@@ -10,7 +10,7 @@ class Game < ApplicationRecord
 
   scope :not_archived, ->(archived_game_ids) { where.not(id: archived_game_ids) }
   scope :similar_games, (lambda do |move_signature|
-    where('move_signature LIKE ?', "#{move_signature}%").where.not(human: true)
+    where('move_signature LIKE ?', "#{move_signature}%").where(human: false)
   end)
   scope :winning_games, ->(color) { where(outcome: color + ' wins') }
   scope :drawn_games, -> { where(outcome: 'draw') }

@@ -28,6 +28,7 @@ def create_training_game(moves)
 
     game = Game.new
     game.save(validate: false)
+    game.update_attribute(:human, false)
 
     start_time = Time.now
 
