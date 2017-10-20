@@ -1799,6 +1799,14 @@ RSpec.describe Game, type: :model do
           .to eq [move_signature, move_signature]
       end
     end
+
+    context 'when the move signature matches previous games\' beginnings' do
+      it 'returns games that match that game\'s move signature' do
+        expect(Game.similar_games(' 9:a6').count).to eq 2
+        expect(Game.similar_games(move_signature).map(&:move_signature))
+          .to eq [move_signature, move_signature]
+      end
+    end
   end
 
   describe '#find_outcome' do
