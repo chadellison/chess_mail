@@ -57,7 +57,6 @@ module AiLogic
     end
 
     count += 1
-
     if game_piece.valid_moves.present? && game_moves.present?
       { game_piece => game_moves }
     else
