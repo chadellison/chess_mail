@@ -20,7 +20,7 @@ module AiLogic
   end
 
   def random_move
-    ai_piece = pieces_with_valid_moves.sample
+    ai_piece = piece_with_valid_moves.keys.first
 
     Move.new(
       currentPosition: ai_piece.valid_moves.sample,
