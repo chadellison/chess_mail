@@ -39,7 +39,8 @@ module AiLogic
     count = 0
     piece_with_moves = piece_with_valid_moves(bad_moves, count)
 
-    game_piece = piece_with_moves.keys.first
+    game_piece = piece_with_moves.keys.first if piece_with_moves.present?
+
     if game_piece.present?
       Move.new(
         currentPosition: piece_with_moves[game_piece].sample,
