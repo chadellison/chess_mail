@@ -77,7 +77,7 @@ class Game < ApplicationRecord
   end
 
   def setup(user)
-    if human == true
+    if human.present?
       add_challenged_player
       send_challenge_email(user)
     else
@@ -86,14 +86,7 @@ class Game < ApplicationRecord
         challengedEmail: Faker::Internet.email,
         challengedName: Faker::Name.first_name
       )
-      pieces.create(
-        pieceType: 'pawn',
-        color: 'white',
-        currentPosition: 'd4',
-        hasMoved: true,
-        movedTwo: true,
-        startIndex: 20
-      ) if pieces.empty? && challengerColor == 'black'
+      ai_move if challengerColor == 'black'
     end
   end
 

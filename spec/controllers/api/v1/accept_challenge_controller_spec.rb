@@ -127,6 +127,7 @@ RSpec.describe Api::V1::AcceptChallengeController, type: :controller do
         end
 
         it 'does not set the pending attribute on the game to false' do
+          ENV['host'] = 'host'
           bad_token = 'bad_token'
           params = { id: game.id, token: bad_token, from_email: true }
 
@@ -175,6 +176,7 @@ RSpec.describe Api::V1::AcceptChallengeController, type: :controller do
           end
 
           it 'sets the pending attribute on the game to false' do
+            ENV['host'] = 'host'
             game.users << challengedUser
             params = {
               id: game.id, token: challengedUser.token, from_email: true
