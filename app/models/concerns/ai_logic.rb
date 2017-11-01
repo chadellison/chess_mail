@@ -36,8 +36,7 @@ module AiLogic
       "#{bad_move.startIndex}:#{bad_move.currentPosition}"
     end
 
-    count = 0
-    piece_with_moves = piece_with_valid_moves(bad_moves, count)
+    piece_with_moves = piece_with_valid_moves(bad_moves)
 
     game_piece = piece_with_moves.keys.first if piece_with_moves.present?
 
@@ -50,7 +49,7 @@ module AiLogic
     end
   end
 
-  def piece_with_valid_moves(bad_moves, count)
+  def piece_with_valid_moves(bad_moves = [], count = 0)
     game_piece = pieces.reload.where(color: current_turn).order("RANDOM()").first
 
     game_moves = game_piece.valid_moves.reject do |move|
