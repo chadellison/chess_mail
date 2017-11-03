@@ -4,7 +4,9 @@ task train_ai: :environment do
     game = Game.new
     game.save(validate: false)
     game.update_attribute(:human, false)
-start_time = Time.now
+
+    start_time = Time.now
+
     until game.checkmate? || game.stalemate? || game.moves.count >= 100
       binding.pry if game.checkmate? || game.stalemate?
       start_time = Time.now
@@ -17,7 +19,9 @@ start_time = Time.now
       puts outcome if outcome.present?
       game.update_attributes(outcome: outcome) if outcome.present?
     end
+
   end_time = Time.now
   puts "game time *************** #{end_time - start_time}"
+
   end
 end

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       resources :moves, only: [:create]
       resources :game_over, only: [:update]
       resources :accept_challenge, only: [:show]
+      resources :analytics, only: [:index]
       get 'users', to: 'users#approve'
     end
   end

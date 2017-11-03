@@ -2,13 +2,32 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    games = Game.similar_games(move_signature)
-    winning_games = games.winning_games(current_turn)
-    drawn_games = games.drawn_games unless winning_games.present?
-    non_loss = non_loss_move(games) unless winning_games.present? || drawn_games.present?
+    start_time = Time.now
+    signatures = pieces.where(color: current_turn).map do |piece|
+      piece.valid_moves.map do |valid_move|
+        "#{move_signature} #{piece.startIndex}:#{valid_move}"
+      end
+    end.flatten
+end_time = Time.now
 
-    next_move = winning_games.all.sample.moves[moves.count] if winning_games.present?
-    next_move = drawn_games.all.sample.moves[moves.count] if drawn_games.present?
+puts "******* get signatures ********* #{end_time - start_time}"
+
+    start_time = Time.now
+    best_move_signature = signatures.reject do |signature|
+      calculate_win_ratio(signature) <= 0
+    end.max_by { |signature| calculate_win_ratio(signature) }
+
+end_time = Time.now
+
+puts "******* best move signature ********* #{end_time - start_time}"
+
+start_time = Time.now
+    non_loss = non_loss_move(Game.similar_games(move_signature)) unless best_move_signature.present?
+    end_time = Time.now
+
+puts "******* non loss time ********* #{end_time - start_time}"
+binding.pry if Game.similar_games(best_move_signature).first.nil? && best_move_signature.present?
+    next_move = Game.similar_games(best_move_signature).first.moves[moves.count] if best_move_signature.present?
     next_move = non_loss if non_loss.present?
     next_move = random_move unless next_move.present?
 
@@ -20,7 +39,7 @@ module AiLogic
   end
 
   def random_move
-    ai_piece = piece_with_valid_moves.keys.first
+    ai_piece = pieces.shuffle.detect { |piece| piece.valid_moves.present? }
 
     Move.new(
       currentPosition: ai_piece.valid_moves.sample,
@@ -66,5 +85,15 @@ module AiLogic
         piece_with_valid_moves(bad_moves, count)
       end
     end
+  end
+
+  def calculate_win_ratio(signature)
+    games = Game.similar_games(signature)
+    wins = games.winning_games(current_turn).count.to_f
+    return 0 if wins == 0
+
+    opponent_color = current_turn == 'white' ? 'black' : 'white'
+    losses = games.winning_games(opponent_color).count.to_f
+    wins / losses
   end
 end
