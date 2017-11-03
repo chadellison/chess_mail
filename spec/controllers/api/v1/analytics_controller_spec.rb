@@ -4,7 +4,7 @@ RSpec.describe Api::V1::AnalyticsController, type: :controller do
   describe '#show' do
     context 'with the proper parameters' do
       it 'returns a 200 status' do
-        get :index, params: { moves: [].to_json }, format: :json
+        patch :analysis, params: { moves: [].to_json }, format: :json
 
         expect(response.status).to eq 200
       end
@@ -44,7 +44,7 @@ RSpec.describe Api::V1::AnalyticsController, type: :controller do
           currentPosition: 'd4'
         }
 
-        get :index, params: { moves: [move].to_json }, format: :json
+        patch :analysis, params: { moves: [move].to_json }, format: :json
 
         expect(JSON.parse(response.body)['data']['attributes']['whiteWins']).to eq 2
         expect(JSON.parse(response.body)['data']['attributes']['blackWins']).to eq 1

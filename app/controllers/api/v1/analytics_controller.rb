@@ -3,14 +3,14 @@ module Api
     class AnalyticsController < Api::V1::BaseController
       respond_to :json
 
-      def index
-        render json: Analysis.serialize(JSON.parse(move_params[:moves]))
+      def analysis
+        render json: Analysis.serialize(move_params[:moveSignature])
       end
 
       private
 
       def move_params
-        params.permit(:moves)
+        params.require(:moves).permit(:moveSignature)
       end
     end
   end

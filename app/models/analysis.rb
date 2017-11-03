@@ -1,11 +1,6 @@
 class Analysis
   class << self
-    def move_signature(moves)
-      moves.map { |move| " #{move['startIndex']}:#{move['currentPosition']}" }.join
-    end
-
-    def serialize(moves)
-      signature = move_signature(moves)
+    def serialize(signature)
       {
         data: {
           type: 'move_signature',
