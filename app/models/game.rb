@@ -10,9 +10,9 @@ class Game < ApplicationRecord
 
   scope :not_archived, ->(archived_game_ids) { where.not(id: archived_game_ids) }
   scope :similar_games, (lambda do |move_signature|
-    where('move_signature LIKE ?', "#{move_signature}%").where(human: false)
+    where('move_signature LIKE ?', "#{move_signature}%").where(robot: true)
   end)
-  scope :winning_games, ->(color) { where(outcome: color + ' wins') }
+  scope :winning_games, ->(color) { where(outcome: color + ' wins', challengerColor: nil) }
   scope :drawn_games, -> { where(outcome: 'draw') }
 
   include NotationLogic
@@ -77,7 +77,7 @@ class Game < ApplicationRecord
   end
 
   def setup(user)
-    if human.present?
+    if robot.blank?
       add_challenged_player
       send_challenge_email(user)
     else

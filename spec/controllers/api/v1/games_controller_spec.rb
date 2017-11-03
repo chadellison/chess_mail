@@ -478,7 +478,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
               challengedName: 'robot',
               challengedEmail: 'robot',
               challengerColor: 'white',
-              human: false
+              robot: true
             },
             token: user.token
           }

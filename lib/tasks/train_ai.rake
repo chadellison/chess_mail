@@ -3,7 +3,7 @@ task train_ai: :environment do
   ENV["COUNT"].to_i.times do
     game = Game.new
     game.save(validate: false)
-    game.update_attribute(:human, false)
+    game.update_columns(human: false, robot: true)
 
     start_time = Time.now
 

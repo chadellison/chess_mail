@@ -686,7 +686,7 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'when human is present' do
+    context 'when robot is not present' do
       let(:user) {
         User.create(
           email: Faker::Internet.email,
@@ -698,12 +698,11 @@ RSpec.describe Game, type: :model do
         )
       }
 
-      let(:game) do
+      let!(:game) do
         user.games.create(
           challengedEmail: Faker::Name.name,
           challengedName: Faker::Internet.email,
-          challengerColor: 'white',
-          human: true
+          challengerColor: 'white'
         )
       end
 
@@ -717,6 +716,9 @@ RSpec.describe Game, type: :model do
       }
 
       it 'calls move and send_new_move_email' do
+        allow_any_instance_of(Game).to receive(:stalemate?).and_return(false)
+        allow_any_instance_of(Game).to receive(:checkmate?).and_return(false)
+
         move_params = { currentPosition: 'a7', startIndex: 5, pieceType: 'king' }
         expect_any_instance_of(Game).to receive(:move).with(move_params)
         expect_any_instance_of(Game).to receive(:send_new_move_email)
@@ -724,7 +726,7 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'when human is not present' do
+    context 'when robot is present' do
       let(:user) {
         User.create(
           email: Faker::Internet.email,
@@ -741,7 +743,7 @@ RSpec.describe Game, type: :model do
           challengedEmail: Faker::Name.name,
           challengedName: Faker::Internet.email,
           challengerColor: 'white',
-          human: false
+          robot: true
         )
       end
 
@@ -755,6 +757,9 @@ RSpec.describe Game, type: :model do
       }
 
       it 'calls ai_move' do
+        allow_any_instance_of(Game).to receive(:stalemate?).and_return(false)
+        allow_any_instance_of(Game).to receive(:checkmate?).and_return(false)
+        
         move_params = { currentPosition: 'a7', startIndex: 5, pieceType: 'king' }
         allow_any_instance_of(Game).to receive(:move).with(move_params)
         expect_any_instance_of(Game).to receive(:ai_move)
@@ -945,7 +950,7 @@ RSpec.describe Game, type: :model do
         pending: false,
         challengedName: Faker::Name.name,
         challengedEmail: Faker::Internet.email,
-        human: false,
+        robot: true,
         challengerColor: 'black'
       )
     }
@@ -988,7 +993,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1016,7 +1021,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1052,7 +1057,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1086,7 +1091,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1113,7 +1118,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
 
@@ -1155,7 +1160,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
 
@@ -1195,7 +1200,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1220,7 +1225,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1250,7 +1255,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1275,7 +1280,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1305,7 +1310,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1340,7 +1345,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1370,7 +1375,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1402,7 +1407,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1432,7 +1437,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1461,7 +1466,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1499,7 +1504,7 @@ RSpec.describe Game, type: :model do
         pending: false,
         challengedName: Faker::Name.name,
         challengedEmail: Faker::Internet.email,
-        human: false,
+        robot: true,
         challengerColor: 'black'
       )
 
@@ -1562,7 +1567,7 @@ RSpec.describe Game, type: :model do
           pending: false,
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
-          human: false,
+          robot: true,
           challengerColor: 'black'
         )
       }
@@ -1594,7 +1599,7 @@ RSpec.describe Game, type: :model do
         pending: false,
         challengedName: Faker::Name.name,
         challengedEmail: Faker::Internet.email,
-        human: false,
+        robot: true,
         challengerColor: 'black'
       )
     }
@@ -1732,11 +1737,9 @@ RSpec.describe Game, type: :model do
 
   describe '#winning_games' do
     let!(:win) {
-      Game.create(
-        challengedEmail: Faker::Internet.email,
-        challengedName: Faker::Name.name,
-        challengerColor: 'white',
-        outcome: 'white wins'
+      Game.new(
+        outcome: 'white wins',
+        robot: true
       )
     }
 
@@ -1750,6 +1753,7 @@ RSpec.describe Game, type: :model do
     }
 
     it 'returns winning games of the given color' do
+      win.save(validate: false)
       expect(Game.winning_games('white').last).to eq win
       expect(Game.winning_games('white').count).to eq 1
     end
@@ -1787,7 +1791,7 @@ RSpec.describe Game, type: :model do
       3.times do |n|
         game = Game.new
         game.save(validate: false)
-        game.update_attribute(:human, false)
+        game.update_attribute(:robot, true)
         game.update_attribute(:move_signature, move_signature) if n.even?
       end
     end

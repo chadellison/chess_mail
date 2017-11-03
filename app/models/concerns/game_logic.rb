@@ -6,7 +6,7 @@ module GameLogic
 
     if checkmate? || stalemate?
       update(outcome: find_outcome)
-    elsif human.present?
+    elsif robot.blank?
       send_new_move_email(move_params[:currentPosition], move_params[:pieceType], user)
     else
       ai_move
@@ -70,11 +70,20 @@ module GameLogic
 
   def stalemate?
     [
-      no_valid_moves? && pieces.find_by(color: current_turn)
-                               .king_is_safe?(current_turn, pieces.reload),
-      moves.count > 9 &&
-        moves.last(10).map { |move| move.startIndex.to_s + move.currentPosition }.uniq.count < 5
+      only_knight_or_bishop?,
+      no_valid_moves? && pieces.find_by(color: current_turn).king_is_safe?(current_turn, pieces.reload),
+      moves.count > 9 && moves.last(8).map { |move| move.startIndex.to_s + move.currentPosition }.uniq.count < 5,
     ].any?
+  end
+
+  def only_knight_or_bishop?
+    black_pieces = pieces.where(color: 'black').pluck(:pieceType)
+    white_pieces = pieces.where(color: 'white').pluck(:pieceType)
+
+    [black_pieces, white_pieces].all? do |pieces_left|
+      pieces_left.count == 2 && pieces_left.include?('knight') ||
+        pieces_left.include?('bishop')
+    end
   end
 
   def no_valid_moves?

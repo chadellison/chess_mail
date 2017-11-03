@@ -10,31 +10,22 @@ RSpec.describe Api::V1::AnalyticsController, type: :controller do
       end
 
       it 'returns a hash with the number of wins, losses, and drawn games' do
-        game1 = Game.create(
-          challengedName: Faker::Name.name,
-          challengedEmail: Faker::Internet.email,
-          challengerColor: 'white',
+        game1 = Game.new(
           outcome: 'white wins',
           move_signature: ' 20:d4',
-          human: false
+          robot: true
         )
 
-        game2 = Game.create(
-          challengedName: Faker::Name.name,
-          challengedEmail: Faker::Internet.email,
-          challengerColor: 'white',
+        game2 = Game.new(
           outcome: 'white wins',
           move_signature: ' 20:d4',
-          human: false
+          robot: true
         )
 
-        game3 = Game.create(
-          challengedName: Faker::Name.name,
-          challengedEmail: Faker::Internet.email,
-          challengerColor: 'white',
+        game3 = Game.new(
           outcome: 'black wins',
           move_signature: ' 20:d4',
-          human: false
+          robot: true
         )
 
         move = {
@@ -43,6 +34,8 @@ RSpec.describe Api::V1::AnalyticsController, type: :controller do
           color: 'white',
           currentPosition: 'd4'
         }
+
+        [game1, game2, game3].each { |game| game.save(validate: false) }
 
         patch :analysis, params: { moves: { moveSignature: ' 20:d4' } }, format: :json
 

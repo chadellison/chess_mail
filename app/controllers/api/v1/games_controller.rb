@@ -38,7 +38,7 @@ module Api
 
       def game_params
         params.require(:game).permit(:challengedName, :challengedEmail,
-                                     :challengerColor, :human)
+                                     :challengerColor, :human, :robot)
       end
 
       def validate_challenged_email

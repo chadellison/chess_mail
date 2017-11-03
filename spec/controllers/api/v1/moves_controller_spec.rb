@@ -52,6 +52,9 @@ RSpec.describe Api::V1::MovesController, type: :controller do
       end
 
       it 'calls send_new_move_email' do
+        allow_any_instance_of(Game).to receive(:stalemate?).and_return(false)
+        allow_any_instance_of(Game).to receive(:checkmate?).and_return(false)
+        
         expect_any_instance_of(Game).to receive(:send_new_move_email)
         post :create, params: { game_id: game.id, token: user.token,
                                 move: move_params }, format: :json
