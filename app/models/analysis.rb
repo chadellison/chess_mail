@@ -10,9 +10,9 @@ class Analysis
         data: {
           type: 'move_signature',
           attributes: {
-            white: Game.similar_games(signature).winning_games('white').count,
-            black: Game.similar_games(signature).winning_games('black').count,
-            draw: Game.similar_games(signature).drawn_games.count
+            whiteWins: Game.similar_games(signature).winning_games('white').count,
+            blackWins: Game.similar_games(signature).winning_games('black').count,
+            draws: Game.similar_games(signature).drawn_games.count
           }
         }
       }

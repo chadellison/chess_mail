@@ -46,9 +46,9 @@ RSpec.describe Api::V1::AnalyticsController, type: :controller do
 
         get :index, params: { moves: [move].to_json }, format: :json
 
-        expect(JSON.parse(response.body)['data']['attributes']['white']).to eq 2
-        expect(JSON.parse(response.body)['data']['attributes']['black']).to eq 1
-        expect(JSON.parse(response.body)['data']['attributes']['draw']).to eq 0
+        expect(JSON.parse(response.body)['data']['attributes']['whiteWins']).to eq 2
+        expect(JSON.parse(response.body)['data']['attributes']['blackWins']).to eq 1
+        expect(JSON.parse(response.body)['data']['attributes']['draws']).to eq 0
       end
     end
   end
