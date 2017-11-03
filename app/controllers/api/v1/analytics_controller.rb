@@ -4,16 +4,14 @@ module Api
       respond_to :json
 
       def index
-        binding.pry
-        move_signature = move_params[:moves].map do |move| " #{move.startIndex}:#{move.currentPosition}" end.join
-
+        move_signature = JSON.parse(move_params[:moves]).map do |move| " #{move['startIndex']}:#{move['currentPosition']}" end.join
         serialized_game_analysis = {
           data: {
             type: 'move_signature',
             attributes: {
-              white: Game.similar_games(move_signature).winning_games('white'),
-              black: Game.similar_games(move_signature).winning_games('white'),
-              draw: Game.similar_games(move_signature).drawn_games
+              white: Game.similar_games(move_signature).winning_games('white').count,
+              black: Game.similar_games(move_signature).winning_games('black').count,
+              draw: Game.similar_games(move_signature).drawn_games.count
             }
           }
         }
