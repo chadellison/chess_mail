@@ -13,8 +13,8 @@ end_time = Time.now
 puts "******* get signatures ********* #{end_time - start_time}"
 
     start_time = Time.now
-    best_move_signature = signatures.reject do |signature|
-      calculate_win_ratio(signature) <= 0
+    best_move_signature = signatures.select do |signature|
+      calculate_win_ratio(signature) > 1
     end.max_by { |signature| calculate_win_ratio(signature) }
 
 end_time = Time.now
