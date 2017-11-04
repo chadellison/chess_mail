@@ -12,7 +12,7 @@ class Game < ApplicationRecord
   scope :similar_games, (lambda do |move_signature|
     where('move_signature LIKE ?', "#{move_signature}%").where(robot: true)
   end)
-  scope :winning_games, ->(color) { where(outcome: color + ' wins', challengerColor: nil) }
+  scope :winning_games, ->(color) { where(outcome: color + ' wins', challengerColor: [nil, color]) }
   scope :drawn_games, -> { where(outcome: 'draw') }
 
   include NotationLogic
