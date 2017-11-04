@@ -2,39 +2,39 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    start_time = Time.now
-    signatures = pieces.where(color: current_turn).map do |piece|
-      piece.valid_moves.map do |valid_move|
-        "#{move_signature} #{piece.startIndex}:#{valid_move}"
-      end
-    end.flatten
-end_time = Time.now
+    non_loss = non_loss_move
 
-puts "******* get signatures ********* #{end_time - start_time}"
+    next_move = Game.similar_games(best_move_signature)
+                    .order('Random()')
+                    .last.moves[moves.count] if best_move_signature.present?
 
-    start_time = Time.now
-    best_move_signature = signatures.select do |signature|
-      calculate_win_ratio(signature) > 1
-    end.max_by { |signature| calculate_win_ratio(signature) }
-
-end_time = Time.now
-
-puts "******* best move signature ********* #{end_time - start_time}"
-
-start_time = Time.now
-    non_loss = non_loss_move unless best_move_signature.present?
-    end_time = Time.now
-
-puts "******* non loss time ********* #{end_time - start_time}"
-    next_move = Game.similar_games(best_move_signature).first.moves[moves.count] if best_move_signature.present?
-    next_move = non_loss if non_loss.present?
-    next_move = random_move unless next_move.present?
+    next_move = winning_game.moves[moves.count] if next_move.blank? && winning_game.present?
+    next_move = non_loss if next_move.blank? && non_loss.present?
+    next_move = random_move if next_move.blank?
 
     move(
       currentPosition: next_move.currentPosition,
       startIndex: next_move.startIndex,
       pieceType: next_move.pieceType
     )
+  end
+
+  def best_move_signature
+    signatures = pieces.where(color: current_turn).map do |piece|
+      piece.valid_moves.map do |valid_move|
+        "#{move_signature} #{piece.startIndex}:#{valid_move}"
+      end
+    end.flatten
+
+    best_move_signature = signatures.select do |signature|
+      calculate_win_ratio(signature) > 1
+    end.max_by { |signature| calculate_win_ratio(signature) }
+  end
+
+  def winning_game
+    Game.similar_games(move_signature)
+        .winning_games(current_turn)
+        .order("RANDOM()").last
   end
 
   def random_move
