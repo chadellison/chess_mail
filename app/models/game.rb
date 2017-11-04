@@ -98,9 +98,9 @@ class Game < ApplicationRecord
 
   def handle_resign(user)
     if current_player_color(user.email) == 'white'
-      update(outcome: 'black wins!')
+      update(outcome: 'black wins')
     else
-      update(outcome: 'white wins!')
+      update(outcome: 'white wins')
     end
   end
 

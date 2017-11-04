@@ -457,14 +457,14 @@ RSpec.describe Game, type: :model do
     context 'when the current player is white' do
       it 'updates the game so that black wins' do
         game.handle_resign(user)
-        expect(game.outcome).to eq 'black wins!'
+        expect(game.outcome).to eq 'black wins'
       end
     end
 
     context 'when the current player is black' do
       it 'updates the game so that white wins' do
         game.handle_resign(challenged_user)
-        expect(game.outcome).to eq 'white wins!'
+        expect(game.outcome).to eq 'white wins'
       end
     end
   end

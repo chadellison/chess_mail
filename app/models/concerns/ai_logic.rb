@@ -22,11 +22,10 @@ end_time = Time.now
 puts "******* best move signature ********* #{end_time - start_time}"
 
 start_time = Time.now
-    non_loss = non_loss_move(Game.similar_games(move_signature)) unless best_move_signature.present?
+    non_loss = non_loss_move unless best_move_signature.present?
     end_time = Time.now
 
 puts "******* non loss time ********* #{end_time - start_time}"
-binding.pry if Game.similar_games(best_move_signature).first.nil? && best_move_signature.present?
     next_move = Game.similar_games(best_move_signature).first.moves[moves.count] if best_move_signature.present?
     next_move = non_loss if non_loss.present?
     next_move = random_move unless next_move.present?
@@ -39,7 +38,7 @@ binding.pry if Game.similar_games(best_move_signature).first.nil? && best_move_s
   end
 
   def random_move
-    ai_piece = pieces.shuffle.detect { |piece| piece.valid_moves.present? }
+    ai_piece = pieces.where(color: current_turn).shuffle.detect { |piece| piece.valid_moves.present? }
 
     Move.new(
       currentPosition: ai_piece.valid_moves.sample,
@@ -48,18 +47,20 @@ binding.pry if Game.similar_games(best_move_signature).first.nil? && best_move_s
     )
   end
 
-  def non_loss_move(games)
-    return false if games.blank?
-    bad_moves = games.where.not(outcome: current_turn + ' wins').map do |lost_game|
+  def non_loss_move
+    lost_games = Game.similar_games(move_signature).where(outcome: opponent_color + ' wins')
+    return false if lost_games.blank?
+
+    bad_moves = lost_games.map do |lost_game|
       bad_move = lost_game.moves[moves.count]
       "#{bad_move.startIndex}:#{bad_move.currentPosition}"
-    end
+    end.uniq
 
     piece_with_moves = piece_with_valid_moves(bad_moves)
 
-    game_piece = piece_with_moves.keys.first if piece_with_moves.present?
+    if piece_with_moves.present? && piece_with_moves.keys.first.present?
+      game_piece = piece_with_moves.keys.first
 
-    if game_piece.present?
       Move.new(
         currentPosition: piece_with_moves[game_piece].sample,
         startIndex: game_piece.startIndex,
@@ -69,7 +70,8 @@ binding.pry if Game.similar_games(best_move_signature).first.nil? && best_move_s
   end
 
   def piece_with_valid_moves(bad_moves = [], count = 0)
-    game_piece = pieces.reload.where(color: current_turn).order("RANDOM()").first
+    moves.reload
+    game_piece = pieces.where(color: current_turn).order("RANDOM()").first
 
     game_moves = game_piece.valid_moves.reject do |move|
       bad_moves.include?("#{game_piece.startIndex}:#{move}")
@@ -87,12 +89,15 @@ binding.pry if Game.similar_games(best_move_signature).first.nil? && best_move_s
     end
   end
 
+  def opponent_color
+    current_turn == 'white' ? 'black' : 'white'
+  end
+
   def calculate_win_ratio(signature)
     games = Game.similar_games(signature)
     wins = games.winning_games(current_turn).count.to_f
     return 0 if wins == 0
 
-    opponent_color = current_turn == 'white' ? 'black' : 'white'
     losses = games.winning_games(opponent_color).count.to_f
     wins / losses
   end
