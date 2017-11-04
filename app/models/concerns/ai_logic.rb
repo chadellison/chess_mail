@@ -2,14 +2,12 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    non_loss = non_loss_move
-
     next_move = Game.similar_games(best_move_signature)
                     .order('Random()')
                     .last.moves[moves.count] if best_move_signature.present?
 
     next_move = winning_game.moves[moves.count] if next_move.blank? && winning_game.present?
-    next_move = non_loss if next_move.blank? && non_loss.present?
+    next_move = non_loss_move if next_move.blank?
     next_move = random_move if next_move.blank?
 
     move(
@@ -20,6 +18,7 @@ module AiLogic
   end
 
   def best_move_signature
+    moves.reload
     signatures = pieces.where(color: current_turn).map do |piece|
       piece.valid_moves.map do |valid_move|
         "#{move_signature} #{piece.startIndex}:#{valid_move}"
