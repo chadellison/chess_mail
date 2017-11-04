@@ -89,7 +89,7 @@ module AiLogic
   end
 
   def opponent_color
-    current_turn == 'white' ? 'black' : 'white'
+    reload.current_turn == 'white' ? 'black' : 'white'
   end
 
   def calculate_win_ratio(signature)
