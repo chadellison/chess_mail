@@ -412,7 +412,8 @@ RSpec.describe Game, type: :model do
           opponentGravatar: Digest::MD5.hexdigest(challengedEmail.downcase.strip),
           isChallenger: true,
           outcome: nil,
-          human: true
+          human: true,
+          robot: nil
         },
         included: []
       }
@@ -759,7 +760,7 @@ RSpec.describe Game, type: :model do
       it 'calls ai_move' do
         allow_any_instance_of(Game).to receive(:stalemate?).and_return(false)
         allow_any_instance_of(Game).to receive(:checkmate?).and_return(false)
-        
+
         move_params = { currentPosition: 'a7', startIndex: 5, pieceType: 'king' }
         allow_any_instance_of(Game).to receive(:move).with(move_params)
         expect_any_instance_of(Game).to receive(:ai_move)

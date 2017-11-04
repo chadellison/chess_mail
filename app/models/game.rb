@@ -42,7 +42,8 @@ class Game < ApplicationRecord
         opponentGravatar: opponent_gravatar,
         isChallenger: challenger?(user_email),
         outcome: outcome,
-        human: human
+        human: human,
+        robot: robot
       },
       included: moves.order(:updated_at).map(&:serialize_move)
     }

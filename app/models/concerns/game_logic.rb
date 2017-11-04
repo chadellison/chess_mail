@@ -81,8 +81,8 @@ module GameLogic
     white_pieces = pieces.where(color: 'white').pluck(:pieceType)
 
     [black_pieces, white_pieces].all? do |pieces_left|
-      pieces_left.count == 2 && pieces_left.include?('knight') ||
-        pieces_left.include?('bishop')
+      pieces_left.count == 2 &&
+        (pieces_left.include?('knight') || pieces_left.include?('bishop'))
     end
   end
 
