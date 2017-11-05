@@ -37,13 +37,34 @@ module AiLogic
   end
 
   def random_move
-    ai_piece = pieces.where(color: current_turn).shuffle.detect { |piece| piece.valid_moves.present? }
+    if rand(1..10) > 3
+      random_winning_move
+    else
+      ai_piece = pieces.where(color: current_turn)
+                       .shuffle.detect { |piece| piece.valid_moves.present? }
 
-    Move.new(
-      currentPosition: ai_piece.valid_moves.sample,
-      startIndex: ai_piece.startIndex,
-      pieceType: ai_piece.pieceType
-    )
+      Move.new(
+        currentPosition: ai_piece.valid_moves.sample,
+        startIndex: ai_piece.startIndex,
+        pieceType: ai_piece.pieceType
+      )
+    end
+  end
+
+  def random_winning_move
+    valid_move_for_piece = false
+    ai_move = nil
+
+    until valid_move_for_piece
+      ai_move = Game.winning_games(current_turn)
+                    .order('RANDOM()')
+                    .last.moves[moves.count]
+
+      piece = pieces.find_by(startIndex: ai_move.startIndex)
+      valid_move_for_piece = piece.valid_move?(ai_move.currentPosition)
+    end
+
+    ai_move
   end
 
   def non_loss_move
