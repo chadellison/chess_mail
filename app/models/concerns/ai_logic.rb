@@ -25,9 +25,15 @@ module AiLogic
       end
     end.flatten
 
-    best_move_signature = signatures.select do |signature|
-      calculate_win_ratio(signature) > 1
-    end.max_by { |signature| calculate_win_ratio(signature) }
+    best_move_signature = signatures.max_by do |signature|
+      Game.similar_games(signature).winning_games(current_turn).count
+    end
+
+    if Game.similar_games(best_move_signature).winning_games(current_turn).count < 1
+      best_move_signature = nil
+    end
+
+    best_move_signature
   end
 
   def winning_game
@@ -91,14 +97,5 @@ module AiLogic
 
   def opponent_color
     reload.current_turn == 'white' ? 'black' : 'white'
-  end
-
-  def calculate_win_ratio(signature)
-    games = Game.similar_games(signature)
-    wins = games.winning_games(current_turn).count.to_f
-    return 0 if wins == 0
-
-    losses = games.winning_games(opponent_color).count.to_f
-    wins / losses
   end
 end
