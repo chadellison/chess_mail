@@ -1720,19 +1720,125 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#ai_move' do
-    context 'when the move signature matches a previous winning game' do
-      xit 'returns a move that matches that game\'s next move' do
+    context 'when best move signature is present' do
+      let(:old_game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white',
+          outcome: 'white wins',
+          move_signature: ' 20:d4',
+          robot: true
+        )
+      }
+
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white',
+          robot: true
+        )
+      }
+
+      let(:piece_data) {
+        {
+          startIndex: 20,
+          currentPosition: 'd4',
+          pieceType: 'pawn'
+        }
+      }
+
+      before do
+        old_game.moves.create(piece_data)
+      end
+
+      it 'calls move on a game with the last game\'s move data' do
+        expect_any_instance_of(Game).to receive(:move).with(piece_data)
+
+        game.ai_move
+      end
+
+      it 'calls move on a game with the last game\'s move data' do
+        expect_any_instance_of(Game).not_to receive(:non_loss_move)
+
+        game.ai_move
+      end
+
+      it 'calls move on a game with the last game\'s move data' do
+        expect_any_instance_of(Game).not_to receive(:random_move)
+
+        game.ai_move
       end
     end
 
-    context 'when the move signature matches a previous drawn game' do
-      xit 'returns a move that matches that game\'s next move' do
+    context 'when the best move signature is not present' do
+      let(:old_game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white',
+          move_signature: ' 20:d4',
+          robot: true,
+          outcome: 'draw'
+        )
+      }
+
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white',
+          robot: true
+        )
+      }
+
+      let(:piece_data) {
+        {
+          startIndex: 26,
+          currentPosition: 'c3',
+          pieceType: 'knight'
+        }
+      }
+
+      before do
+        old_game.moves.create(piece_data)
+      end
+
+      it 'calls non_loss_move' do
+        expect_any_instance_of(Game).to receive(:non_loss_move)
+
+        game.ai_move
+      end
+
+      it 'calls does not call random_move' do
+        expect_any_instance_of(Game).not_to receive(:random_move)
+
+        game.ai_move
+      end
+
+      it 'calls move' do
+        expect_any_instance_of(Game).to receive(:move)
+
+        game.ai_move
       end
     end
   end
 
   describe '#random_move' do
-    xit 'test' do
+    it 'returns a move object that is a valid move given the current game' do
+      game = Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white',
+        robot: true
+      )
+
+      move = game.random_move
+      piece = game.pieces.find_by(startIndex: move.startIndex)
+
+      expect(move.class).to eq Move
+      expect(piece.valid_move?(move.currentPosition)).to be true
     end
   end
 
@@ -1820,12 +1926,43 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#non_loss_move' do
+    context 'when piece_with_valid_moves is not present' do
+      xit 'returns nil' do
+      end
+    end
+
     xit 'returns a move that matches that game\'s next move' do
     end
   end
 
-  describe '#pieces_with_valid_moves' do
+  describe '#piece_with_valid_moves' do
     xit 'returns a move that matches that game\'s next move' do
+    end
+  end
+
+  describe '#oppoenent_color' do
+    context 'when it is white\'s turn' do
+      it 'returns black' do
+        game = Game.create(
+          challengedName: Faker::Name.first_name,
+          challengedEmail: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+        expect(game.opponent_color).to eq 'black'
+      end
+    end
+
+    context 'when it is black\'s turn' do
+      it 'returns white' do
+        game = Game.create(
+          challengedName: Faker::Name.first_name,
+          challengedEmail: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+        game.moves.create
+
+        expect(game.opponent_color).to eq 'white'
+      end
     end
   end
 end

@@ -6,7 +6,6 @@ module AiLogic
                     .order('Random()')
                     .last.moves[moves.count] if best_move_signature.present?
 
-    next_move = winning_game.moves[moves.count] if next_move.blank? && winning_game.present?
     next_move = non_loss_move if next_move.blank?
     next_move = random_move if next_move.blank?
 
@@ -25,21 +24,15 @@ module AiLogic
       end
     end.flatten
 
-    best_move_signature = signatures.max_by do |signature|
+    best_signature = signatures.max_by do |signature|
       Game.similar_games(signature).winning_games(current_turn).count
     end
 
-    if Game.similar_games(best_move_signature).winning_games(current_turn).count < 1
-      best_move_signature = nil
+    if Game.similar_games(best_signature).winning_games(current_turn).count < 1
+      best_signature = nil
     end
 
-    best_move_signature
-  end
-
-  def winning_game
-    Game.similar_games(move_signature)
-        .winning_games(current_turn)
-        .order("RANDOM()").last
+    best_signature
   end
 
   def random_move
@@ -54,8 +47,8 @@ module AiLogic
   end
 
   def non_loss_move
-    lost_games = Game.similar_games(move_signature).where(outcome: opponent_color + ' wins')
-    return false if lost_games.blank?
+    lost_games = Game.similar_games(move_signature)
+                     .where(outcome: opponent_color + ' wins')
 
     bad_moves = lost_games.map do |lost_game|
       bad_move = lost_game.moves[moves.count]
