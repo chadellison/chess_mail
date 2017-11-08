@@ -47,15 +47,7 @@ module AiLogic
   end
 
   def non_loss_move
-    lost_games = Game.similar_games(move_signature)
-                     .where(outcome: opponent_color + ' wins')
-
-    bad_moves = lost_games.map do |lost_game|
-      bad_move = lost_game.moves[moves.count]
-      "#{bad_move.startIndex}:#{bad_move.currentPosition}"
-    end.uniq
-
-    piece_with_moves = piece_with_valid_moves(bad_moves)
+    piece_with_moves = piece_with_valid_moves(find_bad_moves)
 
     if piece_with_moves.present? && piece_with_moves.keys.first.present?
       game_piece = piece_with_moves.keys.first
@@ -68,24 +60,31 @@ module AiLogic
     end
   end
 
+  def find_bad_moves
+    lost_games = Game.similar_games(move_signature)
+                     .where(outcome: opponent_color + ' wins')
+
+    lost_games.map do |lost_game|
+      bad_move = lost_game.moves[moves.count]
+      "#{bad_move.startIndex}:#{bad_move.currentPosition}"
+    end.uniq
+  end
+
   def piece_with_valid_moves(bad_moves = [], count = 0)
     moves.reload
-    game_piece = pieces.where(color: current_turn).order("RANDOM()").first
-
-    game_moves = game_piece.valid_moves.reject do |move|
-      bad_moves.include?("#{game_piece.startIndex}:#{move}")
-    end
+    game_piece = pieces.where(color: current_turn).order('RANDOM()').first
+    game_moves = filter_bad_moves(game_piece, bad_moves)
 
     count += 1
     if game_piece.valid_moves.present? && game_moves.present?
       { game_piece => game_moves }
-    else
-      if count > 10
-        false
-      else
-        piece_with_valid_moves(bad_moves, count)
-      end
+    elsif count < 10
+      piece_with_valid_moves(bad_moves, count)
     end
+  end
+
+  def filter_bad_moves(game_piece, bad_moves)
+    game_piece.valid_moves.reject { |move| bad_moves.include?(move) }
   end
 
   def opponent_color

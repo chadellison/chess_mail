@@ -1547,7 +1547,45 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#en_passant?' do
-    xit 'test' do
+    context 'when a pawn can en Passant' do
+      let!(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          robot: true,
+          challengerColor: 'black'
+        )
+      }
+
+      before do
+        game.pieces.find_by(startIndex: 20).update(currentPosition: 'd4')
+        game.pieces.find_by(startIndex: 13).update(currentPosition: 'e4', movedTwo: true)
+      end
+
+      it 'returns true' do
+        piece = game.pieces.find_by(startIndex: 20)
+
+        expect(game.en_passant?('e5', piece)).to be true
+      end
+    end
+
+    context 'when a pawn cannot en Passant' do
+      let!(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          robot: true,
+          challengerColor: 'black'
+        )
+      }
+
+      it 'returns false' do
+        piece = game.pieces.find_by(startIndex: 20)
+
+        expect(game.en_passant?('c7', piece)).to be false
+      end
     end
   end
 
@@ -1755,19 +1793,16 @@ RSpec.describe Game, type: :model do
 
       it 'calls move on a game with the last game\'s move data' do
         expect_any_instance_of(Game).to receive(:move).with(piece_data)
-
         game.ai_move
       end
 
       it 'calls move on a game with the last game\'s move data' do
         expect_any_instance_of(Game).not_to receive(:non_loss_move)
-
         game.ai_move
       end
 
       it 'calls move on a game with the last game\'s move data' do
         expect_any_instance_of(Game).not_to receive(:random_move)
-
         game.ai_move
       end
     end
@@ -1807,19 +1842,16 @@ RSpec.describe Game, type: :model do
 
       it 'calls non_loss_move' do
         expect_any_instance_of(Game).to receive(:non_loss_move)
-
         game.ai_move
       end
 
       it 'calls does not call random_move' do
         expect_any_instance_of(Game).not_to receive(:random_move)
-
         game.ai_move
       end
 
       it 'calls move' do
         expect_any_instance_of(Game).to receive(:move)
-
         game.ai_move
       end
     end
@@ -1839,6 +1871,21 @@ RSpec.describe Game, type: :model do
 
       expect(move.class).to eq Move
       expect(piece.valid_move?(move.currentPosition)).to be true
+    end
+  end
+
+  describe '#piece_with_valid_moves' do
+    context 'when the count is greater than 10 and the piece has no valid moves' do
+      it 'returns nil' do
+        game = Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white',
+          robot: true
+        )
+        allow_any_instance_of(Piece).to receive(:valid_moves).and_return([])
+        expect(game.piece_with_valid_moves([], 11)).to be_nil
+      end
     end
   end
 
@@ -1927,16 +1974,63 @@ RSpec.describe Game, type: :model do
 
   describe '#non_loss_move' do
     context 'when piece_with_valid_moves is not present' do
-      xit 'returns nil' do
+      it 'returns nil' do
+        game = Game.create(
+          challengedName: Faker::Name.first_name,
+          challengedEmail: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+
+        allow_any_instance_of(Game).to receive(:piece_with_valid_moves)
+          .and_return(nil)
+
+        expect(game.non_loss_move).to be_nil
       end
     end
 
-    xit 'returns a move that matches that game\'s next move' do
+    context 'when piece_with_valid_moves is present' do
+      it 'returns a move with the correct move properties' do
+        game = Game.create(
+          challengedName: Faker::Name.first_name,
+          challengedEmail: Faker::Internet.email,
+          challengerColor: 'white'
+        )
+
+        piece = game.pieces.find_by(startIndex: 20)
+        piece_with_moves_hash = { piece => ['d4'] }
+
+        allow_any_instance_of(Game).to receive(:piece_with_valid_moves)
+          .and_return(piece_with_moves_hash)
+
+        result = game.non_loss_move
+
+        expect(result.class).to eq Move
+        expect(result.currentPosition).to eq 'd4'
+        expect(result.startIndex).to eq 20
+        expect(result.pieceType).to eq 'pawn'
+      end
     end
   end
 
-  describe '#piece_with_valid_moves' do
-    xit 'returns a move that matches that game\'s next move' do
+  describe '#find_bad_moves' do
+    it 'returns an array of each move signature that lead to a lost game' do
+      old_game = Game.create(
+        challengedName: Faker::Name.first_name,
+        challengedEmail: Faker::Internet.email,
+        challengerColor: 'white',
+        robot: true,
+        outcome: 'black wins',
+        move_signature: ' 17:a3'
+      )
+
+      old_game.moves.create(startIndex: 17, pieceType: 'pawn', currentPosition: 'a3')
+
+      game = Game.create(
+        challengedName: Faker::Name.first_name,
+        challengedEmail: Faker::Internet.email,
+        challengerColor: 'white'
+      )
+      expect(game.find_bad_moves).to eq ['17:a3']
     end
   end
 
@@ -1963,6 +2057,17 @@ RSpec.describe Game, type: :model do
 
         expect(game.opponent_color).to eq 'white'
       end
+    end
+  end
+
+  describe '#filter_bad_moves' do
+    it 'filters out all moves that are included in the bad moves array' do
+      piece = Piece.new(startIndex: 20)
+      game = Game.new
+      allow_any_instance_of(Piece).to receive(:valid_moves)
+        .and_return(['20:d4', '20:d3'])
+
+      expect(game.filter_bad_moves(piece, ['20:d3'])).to eq ['20:d4']
     end
   end
 end
