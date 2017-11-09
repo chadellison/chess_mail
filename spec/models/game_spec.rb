@@ -1863,7 +1863,8 @@ RSpec.describe Game, type: :model do
         challengedEmail: Faker::Internet.email,
         challengedName: Faker::Name.name,
         challengerColor: 'white',
-        robot: true
+        robot: true,
+        move_signature: ' 20:d4'
       )
 
       move = game.random_move
@@ -2068,6 +2069,11 @@ RSpec.describe Game, type: :model do
         .and_return(['20:d4', '20:d3'])
 
       expect(game.filter_bad_moves(piece, ['20:d3'])).to eq ['20:d4']
+    end
+  end
+
+  describe '#similar_patterned_game' do
+    xit 'test' do
     end
   end
 end
