@@ -6,7 +6,7 @@ module AiLogic
                     .order('Random()')
                     .last.moves[moves.count] if best_move_signature.present?
 
-    patterned_games = similar_pattern_games if next_move.blank?
+    patterned_games = similar_patterned_games if next_move.blank?
     next_move = patterned_games.first.moves[moves.count] if patterned_games.present? && next_move.blank?
     next_move = non_loss_move if next_move.blank?
     next_move = random_move if next_move.blank?
@@ -48,14 +48,14 @@ module AiLogic
     )
   end
 
-  def similar_pattern_games
+  def similar_patterned_games
     games = Game.winning_games(current_turn)
     current_signature = move_signature.to_s.split(' ')
 
     count = (current_signature.count * 0.7).round
 
     count.times do
-      move = current_signature.pop
+      move = current_signature.shuffle.pop
       games = games.where('move_signature LIKE ?', "%#{move}%")
     end
 
