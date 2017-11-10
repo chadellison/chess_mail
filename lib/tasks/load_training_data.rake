@@ -26,9 +26,8 @@ def create_training_game(moves)
     puts "\n*****************************************************"
     puts condensed_moves
 
-    game = Game.new
+    game = Game.new(human: false, robot: true)
     game.save(validate: false)
-    game.update_columns(human: false, robot: true)
 
     start_time = Time.now
 
