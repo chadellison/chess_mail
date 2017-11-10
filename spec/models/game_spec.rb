@@ -821,7 +821,8 @@ RSpec.describe Game, type: :model do
         Game.create(
           challengedEmail: Faker::Name.name,
           challengedName: Faker::Internet.email,
-          challengerColor: 'white'
+          challengerColor: 'white',
+          move_signature: 'd4.'
         )
       end
 
@@ -829,7 +830,7 @@ RSpec.describe Game, type: :model do
         game.moves.create
       end
 
-      it 'it returns white' do
+      it 'it returns black' do
         expect(game.current_turn).to eq 'black'
       end
     end
@@ -912,7 +913,8 @@ RSpec.describe Game, type: :model do
           Game.create(
             challengedEmail: Faker::Name.name,
             challengedName: Faker::Internet.email,
-            challengerColor: 'white'
+            challengerColor: 'white',
+            move_signature: 'd4.'
           )
         end
 
@@ -930,7 +932,8 @@ RSpec.describe Game, type: :model do
           Game.create(
             challengedEmail: Faker::Name.name,
             challengedName: Faker::Internet.email,
-            challengerColor: 'white'
+            challengerColor: 'white',
+            move_signature: 'd4.'
           )
         end
 
@@ -1059,7 +1062,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1227,7 +1231,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1282,7 +1287,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1312,7 +1318,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1347,7 +1354,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1377,7 +1385,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1409,7 +1418,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1439,7 +1449,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1468,7 +1479,8 @@ RSpec.describe Game, type: :model do
           challengedName: Faker::Name.name,
           challengedEmail: Faker::Internet.email,
           robot: true,
-          challengerColor: 'black'
+          challengerColor: 'black',
+          move_signature: 'd4.'
         )
       }
 
@@ -1723,15 +1735,88 @@ RSpec.describe Game, type: :model do
         challengedEmail: Faker::Internet.email,
         challengedName: Faker::Name.name,
         challengerColor: 'white',
-        move_signature: ' 3:a4'
+        move_signature: 'a4.'
       )
     }
 
-    it 'it adds the start index and next move to the move signature' do
-      move_params = { startIndex: 4, currentPosition: 'd5' }
-      game.update_move_signature(move_params)
+    context 'for a pawn move' do
+      it 'it adds the start index and next move to the move signature' do
+        game.moves.create(pieceType: 'pawn', color: 'white', startIndex: 17)
+        move_params = { startIndex: 4, currentPosition: 'd5' }
+        game.update_move_signature(move_params)
 
-      expect(game.move_signature).to eq ' 3:a4 4:d5'
+        expect(game.move_signature).to eq 'a4.d5'
+      end
+    end
+
+    context 'when a pawn kills another piece' do
+      xit 'test' do
+      end
+    end
+
+    context 'for a castle king side' do
+      xit 'test' do
+      end
+    end
+
+    context 'for a castle queen side' do
+      xit 'test' do
+      end
+    end
+
+    context 'for a knight' do
+      xit 'test' do
+      end
+    end
+
+    context 'for a knight when both knights can move on a given position' do
+      xit 'test' do
+      end
+    end
+
+    context 'for a rook when two rooks are on the same column' do
+      xit 'test' do
+      end
+    end
+
+    context 'for a rook when two rooks are on the same row' do
+      xit 'test' do
+      end
+    end
+
+    context 'for a crossed pawn' do
+      xit 'test' do
+      end
+    end
+  end
+
+  describe '#same_piece_types' do
+    xit 'test' do
+    end
+  end
+
+  describe '#create_notation' do
+    xit 'test' do
+    end
+  end
+
+  describe '#start_notation' do
+    xit 'test' do
+    end
+  end
+
+  describe '#similar_pieces' do
+    xit 'test' do
+    end
+  end
+
+  describe '#capture_notation' do
+    xit 'test' do
+    end
+  end
+
+  describe '#upgraded_pawn?' do
+    xit 'test' do
     end
   end
 
@@ -2052,7 +2137,8 @@ RSpec.describe Game, type: :model do
         game = Game.create(
           challengedName: Faker::Name.first_name,
           challengedEmail: Faker::Internet.email,
-          challengerColor: 'white'
+          challengerColor: 'white',
+          move_signature: 'd4.'
         )
         game.moves.create
 

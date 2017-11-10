@@ -25,9 +25,9 @@ module GameLogic
 
     if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
+      update_move_signature(move_params)
       update_board(move_params, piece)
       create_move(piece)
-      update_move_signature(move_params)
       piece
     else
       raise ActiveRecord::RecordInvalid
@@ -48,18 +48,17 @@ module GameLogic
   end
 
   def update_move_signature(move_params)
-    updated_signature = "#{move_signature} #{move_params[:startIndex]}" \
-                          ":#{move_params[:currentPosition]}"
-
-    update_attribute(:move_signature, updated_signature)
+    update_attribute(
+      :move_signature, "#{move_signature}#{create_notation(move_params)}"
+    )
   end
 
   def crossed_pawn?(move_params)
-    color = pieces.find_by(startIndex: move_params[:startIndex]).color
+    piece = pieces.find_by(startIndex: move_params[:startIndex])
 
-    pieces.find_by(startIndex: move_params[:startIndex]).pieceType == 'pawn' &&
-      color == 'white' && move_params[:currentPosition][1] == '8' ||
-      color == 'black' && move_params[:currentPosition][1] == '1'
+    piece.pieceType == 'pawn' &&
+      piece.color == 'white' && move_params[:currentPosition][1] == '8' ||
+      piece.color == 'black' && move_params[:currentPosition][1] == '1'
   end
 
   def checkmate?

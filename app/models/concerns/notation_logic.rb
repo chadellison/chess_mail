@@ -14,6 +14,58 @@ module NotationLogic
     move(currentPosition: position, startIndex: start_index, pieceType: piece_type)
   end
 
+  def create_notation(move_params)
+    piece = pieces.find_by(startIndex: move_params[:startIndex])
+
+    if piece.king_moved_two?(move_params[:currentPosition])
+      return move_params[:currentPosition][0] == 'c' ? 'O-O-O.' : '0-0.'
+    end
+
+    next_move = move_params[:currentPosition]
+    piece_types = same_piece_types(piece, next_move)
+
+    notation = PIECE_TYPE[piece.pieceType].to_s
+    notation += start_notation(piece_types, piece, next_move) if piece_types.count > 1
+    notation += capture_notation(next_move) if occupied_square?(next_move)
+    notation += next_move
+    notation += "#{next_move}=#{PIECE_TYPE[piece.pieceType]}" if upgraded_pawn?(move_params)
+    notation
+  end
+
+  def same_piece_types(piece, next_move)
+    pieces.where(pieceType: piece.pieceType).select do |game_piece|
+      game_piece.valid_move?(next_move) &&
+        game_piece.color == current_turn
+    end
+  end
+
+  def start_notation(same_piece_types, piece, next_move)
+    start = next_move[0] if similar_pieces(0, same_piece_types, piece).count == 1
+    start = next_move[1] if similar_pieces(1, same_piece_types, piece).count == 1 && start.blank?
+    start = next_move if start.blank?
+    start
+  end
+
+  def similar_pieces(index, same_piece_types, piece)
+    same_piece_types.select do |game_piece|
+      game_piece.currentPosition[index] == piece.currentPosition[index]
+    end
+  end
+
+  def capture_notation(coordinates)
+    'x' if occupied_square?(coordinates)
+  end
+
+  def upgraded_pawn?(move_params)
+    moves.where(startIndex: move_params[:startIndex])
+         .pluck(:pieceType)
+         .any? { |type| type != move_params[:pieceType] }
+  end
+
+  def occupied_square?(coordinates)
+    pieces.find_by(currentPosition: coordinates).present?
+  end
+
   def position_from_notation(notation)
     stripped_notation = notation.chars.reject do |char|
       ['Q', 'N', 'R', 'B', '=', '#', '+'].include?(char)
@@ -39,7 +91,7 @@ module NotationLogic
   end
 
   def current_turn
-    moves.count.even? ? 'white' : 'black'
+    move_signature.to_s.split('.').count.even? ? 'white' : 'black'
   end
 
   def retrieve_start_index(notation, game_pieces)
