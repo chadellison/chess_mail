@@ -2,13 +2,13 @@ desc "load_training_data"
 task train_ai: :environment do
   ENV["COUNT"].to_i.times do
     game = Game.new
+    game.human = false
+    game.robot = true
     game.save(validate: false)
-    game.update_columns(human: false, robot: true)
 
     start_time = Time.now
 
-    until game.checkmate? || game.stalemate? || game.moves.count >= 100
-      binding.pry if game.checkmate? || game.stalemate?
+    until game.outcome.present? || game.moves.count >= 100
       start_time = Time.now
       game.ai_move
       end_time = Time.now
@@ -20,8 +20,7 @@ task train_ai: :environment do
       game.update_attributes(outcome: outcome) if outcome.present?
     end
 
-  end_time = Time.now
-  puts "game time *************** #{end_time - start_time}"
-
+    end_time = Time.now
+    puts "game time *************** #{end_time - start_time}"
   end
 end
