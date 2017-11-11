@@ -25,7 +25,8 @@ module GameLogic
 
     if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
-      update_move_signature(move_params)
+      move_params[:notation] = create_notation(move_params) unless move_params[:notation].present?
+      update(move_signature: "#{move_signature}#{move_params[:notation]}")
       update_board(move_params, piece)
       move_params[:movedTwo] = piece.movedTwo
       move_params[:color] = piece.color
@@ -41,12 +42,6 @@ module GameLogic
     handle_castle(move_params, piece) if piece.pieceType == 'king'
     handle_captured_piece(move_params, piece)
     piece.update(move_params)
-  end
-
-  def update_move_signature(move_params)
-    update_attribute(
-      :move_signature, "#{move_signature}#{create_notation(move_params)}"
-    )
   end
 
   def crossed_pawn?(move_params)

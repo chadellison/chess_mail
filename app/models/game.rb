@@ -43,8 +43,7 @@ class Game < ApplicationRecord
         isChallenger: challenger?(user_email),
         outcome: outcome,
         human: human,
-        robot: robot,
-        move_signature: move_signature.to_s.split('.')
+        robot: robot
       },
       included: moves.order(:updated_at).map(&:serialize_move)
     }

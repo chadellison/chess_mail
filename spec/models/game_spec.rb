@@ -413,8 +413,7 @@ RSpec.describe Game, type: :model do
           isChallenger: true,
           outcome: nil,
           human: true,
-          robot: nil,
-          move_signature: []
+          robot: nil
         },
         included: []
       }
@@ -1739,7 +1738,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#update_move_signature' do
+  describe '#create_notation' do
     let(:game) {
       Game.create(
         challengedEmail: Faker::Internet.email,
@@ -1750,12 +1749,7 @@ RSpec.describe Game, type: :model do
     }
 
     context 'for a pawn move' do
-      it 'it adds notation to the move signature' do
-        game.moves.create(pieceType: 'pawn', color: 'white', startIndex: 17)
-        move_params = { startIndex: 12, currentPosition: 'd5', pieceType: 'pawn' }
-        game.update_move_signature(move_params)
-
-        expect(game.move_signature).to eq 'a4.d5.'
+      xit 'test' do
       end
     end
 
@@ -1801,11 +1795,6 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#same_piece_types' do
-    xit 'test' do
-    end
-  end
-
-  describe '#create_notation' do
     xit 'test' do
     end
   end

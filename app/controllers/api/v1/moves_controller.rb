@@ -15,7 +15,8 @@ module Api
       private
 
       def move_params
-        params.require(:move).permit(:currentPosition, :startIndex, :pieceType)
+        params.require(:move).permit(:currentPosition, :startIndex, :pieceType,
+                                     :notation)
       end
     end
   end
