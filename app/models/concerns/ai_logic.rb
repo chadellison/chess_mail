@@ -3,8 +3,8 @@ module AiLogic
 
   def ai_move
     notation = Game.similar_games(best_move_signature)
-                    .order('Random()').last
-                    .move_signature.split('.')[moves.count] if best_move_signature.present?
+                   .order('Random()').last
+                   .move_signature.split('.')[moves.count] if best_move_signature.present?
 
     next_move = create_move_from_notation(notation, pieces) if notation.present?
     next_move = non_loss_move if next_move.blank?
@@ -14,13 +14,12 @@ module AiLogic
   end
 
   def best_move_signature
-    moves.reload
     signatures = pieces.where(color: current_turn).map do |piece|
       piece.valid_moves.map do |valid_move|
         move_data = {
           pieceType: piece.pieceType, currentPosition: valid_move, startIndex: piece.startIndex
         }
-        "#{move_signature}#{create_notation(move_data)}."
+        "#{move_signature}#{create_notation(move_data)}"
       end
     end.flatten
 
@@ -65,8 +64,8 @@ module AiLogic
                      .where(outcome: opponent_color + ' wins')
 
     lost_games.map do |lost_game|
-      bad_move = lost_game.moves[moves.count]
-      "#{bad_move.startIndex}:#{bad_move.currentPosition}"
+      notation = lost_game.move_signature.split('.')[moves.count]
+      position_from_notation(notation)
     end.uniq
   end
 

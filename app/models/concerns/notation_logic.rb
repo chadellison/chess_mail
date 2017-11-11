@@ -24,19 +24,22 @@ module NotationLogic
     next_move = move_params[:currentPosition]
     piece_types = same_piece_types(piece, next_move)
 
-    notation = PIECE_TYPE[piece.pieceType].to_s
+    notation = PIECE_TYPE.invert[piece.pieceType].to_s
     notation += start_notation(piece_types, piece, next_move) if piece_types.count > 1
     notation += capture_notation(next_move) if occupied_square?(next_move)
     notation += next_move
     notation += "#{next_move}=#{PIECE_TYPE[piece.pieceType]}" if upgraded_pawn?(move_params)
     # notation += '+' if piece.king_is_safe?(pieces_with_next_move(next_move), pieces)
-    notation
+    notation + '.'
   end
 
   def same_piece_types(piece, next_move)
     pieces.where(pieceType: piece.pieceType).select do |game_piece|
-      game_piece.valid_move?(next_move) &&
+      [
+        game_piece.moves_for_piece.include?(next_move),
+        game_piece.valid_move?(next_move),
         game_piece.color == current_turn
+      ].all?
     end
   end
 

@@ -27,17 +27,13 @@ module GameLogic
       move_params[:hasMoved] = true
       update_move_signature(move_params)
       update_board(move_params, piece)
-      create_move(piece)
+      move_params[:movedTwo] = piece.movedTwo
+      move_params[:color] = piece.color
+      moves.create(move_params)
       piece
     else
       raise ActiveRecord::RecordInvalid
     end
-  end
-
-  def create_move(piece)
-    move = piece.attributes
-    move.delete('id')
-    moves.create(move)
   end
 
   def update_board(move_params, piece)

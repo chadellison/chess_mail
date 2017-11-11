@@ -1749,12 +1749,12 @@ RSpec.describe Game, type: :model do
     }
 
     context 'for a pawn move' do
-      it 'it adds the start index and next move to the move signature' do
+      it 'it adds notation to the move signature' do
         game.moves.create(pieceType: 'pawn', color: 'white', startIndex: 17)
-        move_params = { startIndex: 4, currentPosition: 'd5' }
+        move_params = { startIndex: 12, currentPosition: 'd5' }
         game.update_move_signature(move_params)
 
-        expect(game.move_signature).to eq 'a4.d5'
+        expect(game.move_signature).to eq 'a4.d5.'
       end
     end
 
@@ -2113,17 +2113,17 @@ RSpec.describe Game, type: :model do
         challengerColor: 'white',
         robot: true,
         outcome: 'black wins',
-        move_signature: ' 17:a3'
+        move_signature: 'd4.'
       )
 
-      old_game.moves.create(startIndex: 17, pieceType: 'pawn', currentPosition: 'a3')
+      old_game.moves.create(startIndex: 20, pieceType: 'pawn', currentPosition: 'd4')
 
       game = Game.create(
         challengedName: Faker::Name.first_name,
         challengedEmail: Faker::Internet.email,
         challengerColor: 'white'
       )
-      expect(game.find_bad_moves).to eq ['17:a3']
+      expect(game.find_bad_moves).to eq ['d4']
     end
   end
 

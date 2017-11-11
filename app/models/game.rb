@@ -1,7 +1,7 @@
 class Game < ApplicationRecord
   has_many :user_games
   has_many :users, through: :user_games
-  has_many :pieces
+  has_many :pieces, dependent: :delete_all
   has_many :moves
 
   validates_presence_of :challengedName, :challengedEmail, :challengerColor
@@ -124,10 +124,12 @@ class Game < ApplicationRecord
   end
 
   def add_pieces
-    json_pieces = JSON.parse(File.read(Rails.root + 'json/pieces.json'))
+    if training_game.blank?
+      json_pieces = JSON.parse(File.read(Rails.root + 'json/pieces.json'))
 
-    json_pieces.deep_symbolize_keys.values.each do |json_piece|
-      pieces.create(json_piece[:piece])
+      json_pieces.deep_symbolize_keys.values.each do |json_piece|
+        pieces.create(json_piece[:piece])
+      end
     end
   end
 end
