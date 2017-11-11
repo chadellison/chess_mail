@@ -6,7 +6,7 @@ task train_ai: :environment do
     game.robot = true
     game.save(validate: false)
 
-    start_time = Time.now
+    initial_start_time = Time.now
 
     until game.outcome.present? || game.moves.count >= 100
       start_time = Time.now
@@ -21,6 +21,6 @@ task train_ai: :environment do
     end
 
     end_time = Time.now
-    puts "game time *************** #{end_time - start_time}"
+    puts "game time *************** #{end_time - initial_start_time}"
   end
 end
