@@ -26,10 +26,9 @@ module NotationLogic
 
     notation = PIECE_TYPE.invert[piece.pieceType].to_s
     notation += start_notation(piece_types, piece, next_move) if piece_types.count > 1
-    notation += capture_notation(next_move) if occupied_square?(next_move)
+    notation += 'x' if occupied_square?(next_move)
     notation += next_move
     notation += "#{next_move}=#{PIECE_TYPE[piece.pieceType]}" if upgraded_pawn?(move_params)
-    # notation += '+' if piece.king_is_safe?(pieces_with_next_move(next_move), pieces)
     notation + '.'
   end
 
@@ -56,14 +55,8 @@ module NotationLogic
     end
   end
 
-  def capture_notation(coordinates)
-    'x' if occupied_square?(coordinates)
-  end
-
   def upgraded_pawn?(move_params)
-    moves.where(startIndex: move_params[:startIndex])
-         .pluck(:pieceType)
-         .any? { |type| type != move_params[:pieceType] }
+    (9..24).include?(move_params[:startIndex]) && move_params[:pieceType] != 'pawn'
   end
 
   def occupied_square?(coordinates)

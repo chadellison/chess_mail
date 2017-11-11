@@ -1751,7 +1751,7 @@ RSpec.describe Game, type: :model do
     context 'for a pawn move' do
       it 'it adds notation to the move signature' do
         game.moves.create(pieceType: 'pawn', color: 'white', startIndex: 17)
-        move_params = { startIndex: 12, currentPosition: 'd5' }
+        move_params = { startIndex: 12, currentPosition: 'd5', pieceType: 'pawn' }
         game.update_move_signature(move_params)
 
         expect(game.move_signature).to eq 'a4.d5.'
