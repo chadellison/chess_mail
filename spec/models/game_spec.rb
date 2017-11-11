@@ -413,7 +413,8 @@ RSpec.describe Game, type: :model do
           isChallenger: true,
           outcome: nil,
           human: true,
-          robot: nil
+          robot: nil,
+          move_signature: []
         },
         included: []
       }

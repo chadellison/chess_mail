@@ -26,10 +26,14 @@ module NotationLogic
 
     notation = PIECE_TYPE.invert[piece.pieceType].to_s
     notation += start_notation(piece_types, piece, next_move) if piece_types.count > 1
-    notation += 'x' if occupied_square?(next_move)
+    notation += captured_position_notation(notation, piece) if occupied_square?(next_move)
     notation += next_move
     notation += "#{next_move}=#{PIECE_TYPE[piece.pieceType]}" if upgraded_pawn?(move_params)
     notation + '.'
+  end
+
+  def captured_position_notation(notation, piece)
+    notation.blank? ? piece.currentPosition[0] + 'x' : 'x'
   end
 
   def same_piece_types(piece, next_move)
