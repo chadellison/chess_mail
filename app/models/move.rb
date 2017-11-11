@@ -11,7 +11,8 @@ class Move < ApplicationRecord
         pieceType: pieceType,
         startIndex: startIndex,
         movedTwo: movedTwo,
-        hasMoved: hasMoved
+        hasMoved: hasMoved,
+        notation: notation
       }
     }
   end
