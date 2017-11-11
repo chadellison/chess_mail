@@ -36,11 +36,7 @@ def create_training_game(moves)
     puts "\n*****************************************************"
     puts condensed_moves
 
-    game = Game.new
-    game.human = false
-    game.robot = true
-    game.move_signature = condensed_moves
-    game.training_game = true
+    game = Game.new(robot: true, human: false, move_signature: condensed_moves, training_game: true)
     game.save(validate: false)
 
     game.update_attribute(:outcome, outcome)
