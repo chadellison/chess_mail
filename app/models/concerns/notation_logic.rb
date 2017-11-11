@@ -7,11 +7,11 @@ module NotationLogic
   }.freeze
 
   def create_move_from_notation(notation, game_pieces)
-    position = position_from_notation(notation)
-    start_index = retrieve_start_index(notation, game_pieces)
-    piece_type = piece_type_from_notation(notation)
-
-    move(currentPosition: position, startIndex: start_index, pieceType: piece_type)
+    {
+      currentPosition: position_from_notation(notation),
+      startIndex: retrieve_start_index(notation, game_pieces),
+      pieceType: piece_type_from_notation(notation)
+    }
   end
 
   def create_notation(move_params)
@@ -29,6 +29,7 @@ module NotationLogic
     notation += capture_notation(next_move) if occupied_square?(next_move)
     notation += next_move
     notation += "#{next_move}=#{PIECE_TYPE[piece.pieceType]}" if upgraded_pawn?(move_params)
+    # notation += '+' if piece.king_is_safe?(pieces_with_next_move(next_move), pieces)
     notation
   end
 

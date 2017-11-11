@@ -2,25 +2,25 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    next_move = Game.similar_games(best_move_signature)
-                    .order('Random()')
-                    .last.moves[moves.count] if best_move_signature.present?
+    notation = Game.similar_games(best_move_signature)
+                    .order('Random()').last
+                    .move_signature.split('.')[moves.count] if best_move_signature.present?
 
+    next_move = create_move_from_notation(notation, pieces) if notation.present?
     next_move = non_loss_move if next_move.blank?
     next_move = random_move if next_move.blank?
 
-    move(
-      currentPosition: next_move.currentPosition,
-      startIndex: next_move.startIndex,
-      pieceType: next_move.pieceType
-    )
+    move(next_move)
   end
 
   def best_move_signature
     moves.reload
     signatures = pieces.where(color: current_turn).map do |piece|
       piece.valid_moves.map do |valid_move|
-        "#{move_signature} #{piece.startIndex}:#{valid_move}"
+        move_data = {
+          pieceType: piece.pieceType, currentPosition: valid_move, startIndex: piece.startIndex
+        }
+        "#{move_signature}#{create_notation(move_data)}."
       end
     end.flatten
 
@@ -39,11 +39,11 @@ module AiLogic
     ai_piece = pieces.where(color: current_turn)
                      .shuffle.detect { |piece| piece.valid_moves.present? }
 
-    Move.new(
+    {
       currentPosition: ai_piece.valid_moves.sample,
       startIndex: ai_piece.startIndex,
       pieceType: ai_piece.pieceType
-    )
+    }
   end
 
   def non_loss_move
@@ -52,11 +52,11 @@ module AiLogic
     if piece_with_moves.present? && piece_with_moves.keys.first.present?
       game_piece = piece_with_moves.keys.first
 
-      Move.new(
+      {
         currentPosition: piece_with_moves[game_piece].sample,
         startIndex: game_piece.startIndex,
         pieceType: game_piece.pieceType
-      )
+      }
     end
   end
 

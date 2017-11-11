@@ -18,6 +18,7 @@ end
 
 def create_training_game(moves)
   if ['0-1', '1-0', '1/2'].include?(moves[-3..-1])
+    start_time = Time.now
     result = moves[-3..-1]
     condensed_moves = result == '1/2' ? moves[0..-8] : moves[0..-4]
 
@@ -29,18 +30,13 @@ def create_training_game(moves)
     game = Game.new
     game.human = false
     game.robot = true
+    game.move_signature = condensed_moves
     game.save(validate: false)
 
-    start_time = Time.now
-
-    condensed_moves.split('.').each do |notation|
-      game.create_move_from_notation(notation, game.pieces.reload)
-    end
 
     game.update_attribute(:outcome, outcome)
 
     end_time = Time.now
-
     puts "Duration for game: #{end_time - start_time}"
     puts(outcome)
   end
