@@ -10,30 +10,36 @@ module NotationLogic
     {
       currentPosition: position_from_notation(notation),
       startIndex: retrieve_start_index(notation, game_pieces),
-      pieceType: piece_type_from_notation(notation)
+      pieceType: piece_type_from_notation(notation),
+      notation: notation.sub('#', '') + '.'
     }
   end
 
   def create_notation(move_params)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
+    next_move = move_params[:currentPosition]
 
     if piece.king_moved_two?(move_params[:currentPosition])
-      return move_params[:currentPosition][0] == 'c' ? 'O-O-O.' : '0-0.'
+      return next_move[0] == 'c' ? 'O-O-O.' : 'O-O.'
     end
 
-    next_move = move_params[:currentPosition]
     piece_types = same_piece_types(piece, next_move)
 
     notation = PIECE_TYPE.invert[piece.pieceType].to_s
     notation += start_notation(piece_types, piece, next_move) if piece_types.count > 1
-    notation += captured_position_notation(notation, piece) if occupied_square?(next_move)
+    notation += captured_position_notation(notation, piece, next_move).to_s
     notation += next_move
     notation += "#{next_move}=#{PIECE_TYPE[piece.pieceType]}" if upgraded_pawn?(move_params)
     notation + '.'
   end
 
-  def captured_position_notation(notation, piece)
-    notation.blank? ? piece.currentPosition[0] + 'x' : 'x'
+  def captured_position_notation(notation, piece, next_move)
+    conditions = [
+      piece.pieceType == 'pawn' && piece.currentPosition[0] != next_move[0],
+      occupied_square?(next_move)
+    ]
+
+    notation.blank? ? piece.currentPosition[0] + 'x' : 'x' if conditions.any?
   end
 
   def same_piece_types(piece, next_move)

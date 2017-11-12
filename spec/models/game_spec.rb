@@ -1008,7 +1008,8 @@ RSpec.describe Game, type: :model do
         expected = {
           pieceType: 'pawn',
           currentPosition: 'e4',
-          startIndex: 21
+          startIndex: 21,
+          notation: 'e4.'
         }
         expect(actual).to eq expected
       end
@@ -1044,7 +1045,8 @@ RSpec.describe Game, type: :model do
         expected = {
           pieceType: 'bishop',
           currentPosition: 'b5',
-          startIndex: 30
+          startIndex: 30,
+          notation: 'Bb5.'
         }
         expect(actual).to eq expected
       end
@@ -1076,7 +1078,8 @@ RSpec.describe Game, type: :model do
         expected = {
           pieceType: 'knight',
           currentPosition: 'c6',
-          startIndex: 2
+          startIndex: 2,
+          notation: 'Nc6.'
         }
         expect(actual).to eq expected
       end
@@ -1102,7 +1105,8 @@ RSpec.describe Game, type: :model do
         expected = {
           currentPosition: 'd1',
           startIndex: 29,
-          pieceType: 'king'
+          pieceType: 'king',
+          notation: 'Kd1.'
         }
 
         expect(actual).to eq expected
@@ -1146,7 +1150,8 @@ RSpec.describe Game, type: :model do
         expected = {
           startIndex: 28,
           currentPosition: 'a1',
-          pieceType: 'queen'
+          pieceType: 'queen',
+          notation: 'Qa1.'
         }
         expect(actual).to eq expected
       end
@@ -1189,7 +1194,8 @@ RSpec.describe Game, type: :model do
         expected = {
           currentPosition: 'd2',
           pieceType: 'rook',
-          startIndex: 25
+          startIndex: 25,
+          notation: 'Rd2.'
         }
         expect(actual).to eq expected
       end
@@ -1215,7 +1221,8 @@ RSpec.describe Game, type: :model do
         expected = {
           startIndex: 29,
           currentPosition: 'g1',
-          pieceType: 'king'
+          pieceType: 'king',
+          notation: 'O-O.'
         }
         expect(actual).to eq expected
       end
@@ -1247,7 +1254,8 @@ RSpec.describe Game, type: :model do
         expected = {
           currentPosition: 'g8',
           startIndex: 5,
-          pieceType: 'king'
+          pieceType: 'king',
+          notation: 'O-O.'
         }
         expect(actual).to eq expected
       end
@@ -1273,7 +1281,8 @@ RSpec.describe Game, type: :model do
         expected = {
           pieceType: 'king',
           currentPosition: 'c1',
-          startIndex: 29
+          startIndex: 29,
+          notation: 'O-O-O.'
         }
 
         expect(actual).to eq expected
@@ -1306,7 +1315,8 @@ RSpec.describe Game, type: :model do
         expected = {
           startIndex: 5,
           pieceType: 'king',
-          currentPosition: 'c8'
+          currentPosition: 'c8',
+          notation: 'O-O-O.'
         }
 
         expect(actual).to eq expected
@@ -1339,7 +1349,8 @@ RSpec.describe Game, type: :model do
         expected = {
           startIndex: 7,
           pieceType: 'knight',
-          currentPosition: 'f6'
+          currentPosition: 'f6',
+          notation: 'Nxf6.'
         }
         expect(actual).to eq expected
       end
@@ -1371,7 +1382,8 @@ RSpec.describe Game, type: :model do
           expected = {
             startIndex: 1,
             pieceType: 'rook',
-            currentPosition: 'e3'
+            currentPosition: 'e3',
+            notation: 'R6e3.'
           }
         expect(actual).to eq expected
       end
@@ -1406,7 +1418,8 @@ RSpec.describe Game, type: :model do
         expected = {
           startIndex: 1,
           pieceType: 'rook',
-          currentPosition: 'f8'
+          currentPosition: 'f8',
+          notation: 'Rdf8.'
         }
 
         expect(actual).to eq expected
@@ -1439,7 +1452,8 @@ RSpec.describe Game, type: :model do
         expected = {
           startIndex: 8,
           pieceType: 'rook',
-          currentPosition: 'd5'
+          currentPosition: 'd5',
+          notation: 'Rd5.'
         }
         expect(actual).to eq expected
       end
@@ -1470,7 +1484,8 @@ RSpec.describe Game, type: :model do
         expected = {
           startIndex: 12,
           pieceType: 'pawn',
-          currentPosition: 'd5'
+          currentPosition: 'd5',
+          notation: 'd5.'
         }
         expect(actual).to eq expected
       end
@@ -1503,7 +1518,8 @@ RSpec.describe Game, type: :model do
         expected = {
           startIndex: 13,
           pieceType: 'queen',
-          currentPosition: 'f1'
+          currentPosition: 'f1',
+          notation: 'f1=Q.'
         }
         expect(actual).to eq expected
       end
@@ -1513,7 +1529,8 @@ RSpec.describe Game, type: :model do
         expected = {
           pieceType: 'queen',
           currentPosition: 'f1',
-          startIndex: 13
+          startIndex: 13,
+          notation: 'f1=Q.'
         }
         expect(actual).to eq expected
       end
@@ -1867,7 +1884,8 @@ RSpec.describe Game, type: :model do
         {
           startIndex: 20,
           currentPosition: 'd4',
-          pieceType: 'pawn'
+          pieceType: 'pawn',
+          notation: 'd4.'
         }
       }
 

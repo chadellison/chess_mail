@@ -2,9 +2,10 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    notation = Game.similar_games(best_move_signature)
+    best_signature = best_move_signature
+    notation = Game.similar_games(best_signature)
                    .order('Random()').last
-                   .move_signature.split('.')[moves.count] if best_move_signature.present?
+                   .move_signature.split('.')[moves.count] if best_signature.present?
 
     next_move = create_move_from_notation(notation, pieces) if notation.present?
     next_move = non_loss_move if next_move.blank?
