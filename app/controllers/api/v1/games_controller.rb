@@ -12,9 +12,7 @@ module Api
       end
 
       def show
-        serialized_game = { data: GameSerializer.serialize(@game, @user.email) }
-
-        respond_with serialized_game
+        render json: { data: GameSerializer.serialize(@game, @user.email) }
       end
 
       def create
