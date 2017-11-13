@@ -42,19 +42,4 @@ class Piece < ApplicationRecord
       update(movedTwo: false)
     end
   end
-
-  def serialize_piece
-    {
-      type: 'piece',
-      id: id,
-      attributes: {
-        color: color,
-        currentPosition: currentPosition,
-        pieceType: pieceType,
-        startIndex: startIndex,
-        movedTwo: movedTwo,
-        hasMoved: hasMoved
-      }
-    }
-  end
 end

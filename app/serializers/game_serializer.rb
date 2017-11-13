@@ -17,7 +17,7 @@ class GameSerializer
           human: game.human,
           robot: game.robot
         },
-        included: game.moves.order(:updated_at).map(&:serialize_move)
+        included: game.moves.order(:updated_at).map { |move| MoveSerializer.serialize(move) }
       }
     end
   end
