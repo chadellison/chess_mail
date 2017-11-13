@@ -8,7 +8,7 @@ module Api
       before_action :validate_challenged_email, only: :create
 
       def index
-        render json: { data: @user.serialized_user_games(params[:page]) }
+        render json: { data: UserSerializer.serialized_user_games(@user, params[:page]) }
       end
 
       def show

@@ -1,13 +1,5 @@
 class GameSerializer
   class << self
-  #   def serialize_games(games, user_email)
-  #     {
-  #       data: games.map { |game| game.serialize_game(user_email) },
-  #       meta: { count: games.count }
-  #     }
-  #   end
-  # end
-
     def serialize(game, user_email)
       opponent_email = game.current_opponent_email(user_email).downcase.strip
       opponent_gravatar = Digest::MD5.hexdigest(opponent_email)

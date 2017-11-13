@@ -10,7 +10,7 @@ module Api
           user.update(token: SecureRandom.hex)
           user.send_confirmation_email
 
-          render json: user.serialize_user, status: 201, location: nil
+          render json: UserSerializer.serialize(user), status: 201, location: nil
         else
           render json: return_errors(user), status: 400
         end

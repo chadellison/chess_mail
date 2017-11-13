@@ -81,65 +81,6 @@ RSpec.describe User, type: :model do
     expect(user.valid?).to be true
   end
 
-  describe 'serialize_user' do
-    it 'returns a json api serialzed user' do
-      token = 'token'
-      hashed_email = Faker::Internet.email
-
-      user = User.create(
-        email: Faker::Internet.email,
-        password: password,
-        firstName: first_name,
-        lastName: last_name,
-        token: token,
-        hashed_email: hashed_email
-      )
-
-      expect(user.serialize_user[:data][:attributes][:hashed_email]).to be_present
-      expect(user.serialize_user[:data][:attributes][:token]).to eq token
-      expect(user.serialize_user[:data][:attributes][:firstName]).to eq first_name
-      expect(user.serialize_user[:data][:attributes][:lastName]).to eq last_name
-    end
-
-    it 'returns a json api serialzed user with their relationships' do
-      token = 'token'
-      hashed_email = Faker::Internet.email
-
-      user = User.create(email: Faker::Internet.email,
-                         password: password,
-                         firstName: first_name,
-                         lastName: last_name,
-                         token: token,
-                         hashed_email: hashed_email)
-
-      user2 = User.new(email: Faker::Internet.email,
-                       password: 'password2',
-                       firstName: 'bob',
-                       lastName: 'jones',
-                       token: 'token2',
-                       hashed_email: 'hashed_email')
-
-      game1 = user.games.create(
-        challengedEmail: Faker::Internet.email,
-        challengedName: Faker::Name.name,
-        challengerColor: 'black'
-      )
-
-      game2 = Game.create
-      game3 = user.games.create(
-        challengedEmail: user2.email,
-        challengedName: user2.firstName,
-        challengerColor: 'white'
-      )
-
-      user2.save
-      serialized_games = [game3, game1].map { |user_game| GameSerializer.serialize(user_game, user.email) }
-      expect(user.serialize_user[:data][:included].length).to eq 2
-      expect(user.serialize_user[:data][:included]).to eq serialized_games
-      expect(user2.serialize_user[:data][:included].length).to eq 1
-    end
-  end
-
   context 'before_save' do
     describe 'hashed_email' do
       it 'returns a hash of the user\'s email' do
@@ -170,19 +111,6 @@ RSpec.describe User, type: :model do
 
   describe '#serialized_user_games' do
     xit 'test' do
-    end
-  end
-
-  describe '#calculate_offset' do
-    it 'returns the page given minus 1 times the quantity passed in' do
-      user = User.create(
-        email: 'CapitalEmail.com',
-        password: Faker::Internet.password,
-        firstName: first_name,
-        lastName: last_name
-      )
-
-      expect(user.calculate_offset('3', '5')).to eq 10
     end
   end
 end
