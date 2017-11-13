@@ -1,4 +1,4 @@
-class Analysis
+class AnalyticsSerializer
   class << self
     def serialize(signature)
       {

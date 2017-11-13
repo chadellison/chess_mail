@@ -19,36 +19,6 @@ class Game < ApplicationRecord
   include AiLogic
   include GameLogic
 
-  class << self
-    def serialize_games(games, user_email)
-      {
-        data: games.map { |game| game.serialize_game(user_email) },
-        meta: { count: games.count }
-      }
-    end
-  end
-
-  def serialize_game(user_email)
-    opponent_email = current_opponent_email(user_email).downcase.strip
-    opponent_gravatar = Digest::MD5.hexdigest(opponent_email)
-
-    {
-      type: 'game',
-      id: id,
-      attributes: {
-        pending: pending,
-        playerColor: current_player_color(user_email),
-        opponentName: current_opponent_name(user_email),
-        opponentGravatar: opponent_gravatar,
-        isChallenger: challenger?(user_email),
-        outcome: outcome,
-        human: human,
-        robot: robot
-      },
-      included: moves.order(:updated_at).map(&:serialize_move)
-    }
-  end
-
   def challenger?(email)
     challengedEmail != email
   end

@@ -47,7 +47,8 @@ class User < ApplicationRecord
                       .offset(calculate_offset(page, quantity))
                       .limit(quantity)
 
-    Game.serialize_games(user_games, email)[:data]
+    user_games.map { |user_game| GameSerializer.serialize(user_game, email) }
+    # GameSerializer.serialize_games(user_games, email)[:data]
   end
 
   def calculate_offset(page, quantity)

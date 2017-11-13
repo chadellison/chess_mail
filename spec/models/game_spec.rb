@@ -365,63 +365,6 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#serialize_games' do
-    it 'calls serialize game on each game' do
-      user_email = Faker::Internet.email
-      user_name = Faker::Name.name
-
-      game = Game.create(
-        human: true,
-        challengedEmail:  user_email,
-        challengedName: user_name,
-        challengerColor: 'white'
-      )
-
-      expect_any_instance_of(Game).to receive(:serialize_game).with(user_email)
-      games = [game]
-
-      Game.serialize_games(games, user_email)
-    end
-  end
-
-  describe '#serialize_game' do
-    it 'serializes a game instance' do
-      user = User.create(
-        firstName: Faker::Name.first_name,
-        lastName: Faker::Name.last_name,
-        email: Faker::Internet.email,
-        password: 'password'
-      )
-
-      challengedEmail = Faker::Internet.email
-      challengedName = Faker::Name.name
-
-      game = Game.create(
-        challengedEmail: challengedEmail,
-        challengedName: challengedName,
-        challengerColor: 'black'
-      )
-
-      result = {
-        type: 'game',
-        id: game.id,
-        attributes: {
-          pending: game.pending,
-          playerColor: 'black',
-          opponentName: challengedName,
-          opponentGravatar: Digest::MD5.hexdigest(challengedEmail.downcase.strip),
-          isChallenger: true,
-          outcome: nil,
-          human: true,
-          robot: nil
-        },
-        included: []
-      }
-
-      expect(game.serialize_game(user.email)).to eq result
-    end
-  end
-
   describe '#handle_resign' do
     let(:firstName) { Faker::Name.first_name }
     let(:lastName) { Faker::Name.last_name }

@@ -8,7 +8,7 @@ module Api
       def create
         game = Game.find(params[:game_id])
         game.handle_move(move_params, @user) unless game.outcome.present?
-        serialized_game = { data: game.reload.serialize_game(@user.email) }
+        serialized_game = { data: GameSerializer.serialize(game.reload, @user.email) }
         render json: serialized_game, status: 201
       end
 

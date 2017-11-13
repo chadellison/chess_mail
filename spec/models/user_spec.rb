@@ -133,8 +133,7 @@ RSpec.describe User, type: :model do
       )
 
       user2.save
-
-      serialized_games = Game.serialize_games([game3, game1], user.email)[:data]
+      serialized_games = [game3, game1].map { |user_game| GameSerializer.serialize(user_game, user.email) }
       expect(user.serialize_user[:data][:included].length).to eq 2
       expect(user.serialize_user[:data][:included]).to eq serialized_games
       expect(user2.serialize_user[:data][:included].length).to eq 1

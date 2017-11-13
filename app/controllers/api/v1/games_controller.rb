@@ -12,7 +12,7 @@ module Api
       end
 
       def show
-        serialized_game = { data: @game.serialize_game(@user.email) }
+        serialized_game = { data: GameSerializer.serialize(@game, @user.email) }
 
         respond_with serialized_game
       end
@@ -22,7 +22,7 @@ module Api
 
         if game.valid?
           game.setup(@user)
-          serialized_game = { data: game.serialize_game(@user.email) }
+          serialized_game = { data: GameSerializer.serialize(game, @user.email) }
           render json: serialized_game, status: 201
         else
           render json: return_errors(game), status: 400

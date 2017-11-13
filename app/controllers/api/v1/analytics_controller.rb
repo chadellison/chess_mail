@@ -4,7 +4,7 @@ module Api
       respond_to :json
 
       def analysis
-        render json: Analysis.serialize(move_params[:moveSignature])
+        render json: AnalyticsSerializer.serialize(move_params[:moveSignature])
       end
 
       private
