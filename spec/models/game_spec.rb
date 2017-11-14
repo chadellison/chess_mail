@@ -1837,16 +1837,19 @@ RSpec.describe Game, type: :model do
       end
 
       it 'calls move on a game with the last game\'s move data' do
+        allow_any_instance_of(Game).to receive(:best_move_signature).and_return('d4.')
         expect_any_instance_of(Game).to receive(:move).with(piece_data)
         game.ai_move
       end
 
-      it 'calls move on a game with the last game\'s move data' do
+      it 'does not call non loss move on a game with the last game\'s move data' do
+        allow_any_instance_of(Game).to receive(:best_move_signature).and_return('d4.')
         expect_any_instance_of(Game).not_to receive(:non_loss_move)
         game.ai_move
       end
 
       it 'calls move on a game with the last game\'s move data' do
+        allow_any_instance_of(Game).to receive(:best_move_signature).and_return('d4.')
         expect_any_instance_of(Game).not_to receive(:random_move)
         game.ai_move
       end
@@ -1886,6 +1889,7 @@ RSpec.describe Game, type: :model do
       end
 
       it 'calls non_loss_move' do
+        allow_any_instance_of(Game).to receive(:best_move_signature).and_return(nil)
         expect_any_instance_of(Game).to receive(:non_loss_move)
         game.ai_move
       end
@@ -1896,6 +1900,25 @@ RSpec.describe Game, type: :model do
       end
 
       it 'calls move' do
+        expect_any_instance_of(Game).to receive(:move)
+        game.ai_move
+      end
+    end
+
+    context 'when the best move signature and non_loss_move are not present' do
+      let(:game) {
+        Game.create(
+          challengedEmail: Faker::Internet.email,
+          challengedName: Faker::Name.name,
+          challengerColor: 'white',
+          robot: true
+        )
+      }
+
+      it 'calls move' do
+        allow_any_instance_of(Game).to receive(:best_move_signature).and_return(nil)
+        allow_any_instance_of(Game).to receive(:non_loss_move).and_return(nil)
+
         expect_any_instance_of(Game).to receive(:move)
         game.ai_move
       end

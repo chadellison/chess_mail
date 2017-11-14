@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171111193733) do
+ActiveRecord::Schema.define(version: 20171114004011) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,6 +61,15 @@ ActiveRecord::Schema.define(version: 20171111193733) do
     t.integer "startIndex"
     t.integer "game_id"
     t.string "notation"
+  end
+
+  create_table "position_analytics", force: :cascade do |t|
+    t.string "pieceType"
+    t.string "position"
+    t.string "outcome"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "space_count", default: 0
   end
 
   create_table "user_games", force: :cascade do |t|

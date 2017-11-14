@@ -1,0 +1,2 @@
+class PositionAnalytic < ApplicationRecord
+end

@@ -42,7 +42,6 @@ def create_training_game(moves)
     game.update_attribute(:outcome, outcome)
     puts(outcome)
   end
-
 end
 
 def find_outcome(result)

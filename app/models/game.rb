@@ -2,7 +2,7 @@ class Game < ApplicationRecord
   has_many :user_games
   has_many :users, through: :user_games
   has_many :pieces, dependent: :delete_all
-  has_many :moves
+  has_many :moves, dependent: :delete_all
 
   validates_presence_of :challengedName, :challengedEmail, :challengerColor
 

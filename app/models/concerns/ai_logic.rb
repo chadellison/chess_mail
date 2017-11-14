@@ -10,7 +10,6 @@ module AiLogic
     next_move = create_move_from_notation(notation, pieces) if notation.present?
     next_move = non_loss_move if next_move.blank?
     next_move = random_move if next_move.blank?
-
     move(next_move)
   end
 
@@ -24,9 +23,9 @@ module AiLogic
       end
     end.flatten
 
-    best_signature = signatures.max_by do |signature|
+    best_signature = signatures.sort_by do |signature|
       Game.similar_games(signature).winning_games(current_turn).count
-    end
+    end.last(4).sample
 
     if Game.similar_games(best_signature).winning_games(current_turn).count < 1
       best_signature = nil
