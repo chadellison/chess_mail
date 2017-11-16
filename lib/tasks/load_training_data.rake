@@ -3,7 +3,7 @@ task load_all_training_data: :environment do
   101.times do |count|
     puts 'file count: ' + count.to_s
 
-    if count != 40 && count != 39 && count != 41 && count != 43 && count != 60 && count != 68 && count != 85
+    if count != 40 && count != 39 && count != 41 && count != 43 && count != 60 && count != 68 && count != 85 && count != 89
       parse_file(count + 1)
     end
   end
