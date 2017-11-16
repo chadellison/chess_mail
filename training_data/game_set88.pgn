@@ -782,7 +782,7 @@
 [ECO "D15"]
 
 1.d4 Nf6 2.c4 c6 3.Nf3 d5 4.Nc3 dxc4 5.e3 b5 6.a4 b4 7.Na2 e6 8.Bxc4 Nbd7
-9.Qe2 Bb7 10.e4 c5 11.Bg5  *
+9.Qe2 Bb7 10.e4 c5 11.Bg5
 
 [Event "Bradley Beach"]
 [Site "Bradley Beach"]
@@ -54120,7 +54120,7 @@
 1.d4 d5 2.c4 c6 3.Nc3 Nf6 4.Nf3 dxc4 5.a4 e6 6.e3 c5 7.Bxc4 Nc6 8.O-O cxd4
 9.exd4 Be7 10.Bg5 O-O 11.Re1 Nb4 12.Ne5 Bd7 13.Qd2 Bc6 14.Nxc6 bxc6 15.Rad1 a5  1/2-1/2
 
-[Event "4th Marx György Mem"]
+[Event "4th Marx Gyï¿½rgy Mem"]
 [Site "Paks HUN"]
 [Date "2006.08.03"]
 [Round "6"]
@@ -68630,7 +68630,7 @@
 1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 e6 6.e3 c5 7.Bxc4 Nc6 8.O-O cxd4
 9.exd4 Be7 10.Bg5 O-O 11.Re1 Bd7 12.Qd2 Nb4 13.Ne5 Bc6 14.a5 Nfd5 15.Bxe7 Nxe7
 16.Na4 Bxa4 17.Rxa4 Nbc6 18.Nxc6 bxc6 19.Bd3 Rb8 20.Rc4 Qd6 21.Rec1 Rfd8
-22.Be4 g6 23.Qe2 Rb4 24.g3 Rxc4 25.Rxc4 Rb8 26.Qc2 Rb4 27.Qc3  *
+22.Be4 g6 23.Qe2 Rb4 24.g3 Rxc4 25.Rxc4 Rb8 26.Qc2 Rb4 27.Qc3
 
 [Event "29th European Blitz"]
 [Site "Warsaw POL"]
@@ -92495,4 +92495,3 @@
 36.Kxf4 Bf7 37.Ne2 Bg6 38.Ne3 Nb4 39.Nf5+ Ke6 40.Kg5 Nd3 41.Nf4+ Nxf4 42.Kxf4 Bxf5
 43.gxf5+ Kf6 44.a5 h5 45.b4 h4 46.Kg4 h3 47.Kxh3 Kxf5 48.Kh4 Ke4 49.Kg5 Kxd4
 50.Kf6 Kc4 51.Ke6 d4  0-1
-
