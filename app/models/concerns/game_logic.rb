@@ -26,7 +26,7 @@ module GameLogic
     if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
       move_params[:notation] = create_notation(move_params) unless move_params[:notation].present?
-      update(move_signature: "#{move_signature}#{move_params[:notation]}")
+      update_column(:move_signature, "#{move_signature}#{move_params[:notation]}")
       update_board(move_params, piece)
       move_params[:movedTwo] = piece.movedTwo
       move_params[:color] = piece.color
