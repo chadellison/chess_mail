@@ -1571,7 +1571,65 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#handle_castle' do
-    xit 'test' do
+    context 'when the king has castled queen side' do
+      let(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          robot: true,
+          challengerColor: 'black'
+        )
+      }
+
+      it 'updates the rook\'s currentPosition to the f column' do
+        piece = game.pieces.find_by(startIndex: 29)
+
+        game.handle_castle({ currentPosition: 'c1' }, piece)
+
+        expect(game.pieces.find_by(startIndex: 25).currentPosition).to eq 'd1'
+      end
+    end
+
+    context 'when the king has castled king side' do
+      let(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          robot: true,
+          challengerColor: 'black'
+        )
+      }
+
+      it 'updates the rook\'s currentPosition to the f column' do
+        piece = game.pieces.find_by(startIndex: 29)
+
+        game.handle_castle({ currentPosition: 'g1' }, piece)
+
+        expect(game.pieces.find_by(startIndex: 32).currentPosition).to eq 'f1'
+      end
+    end
+
+    context 'when the king has not moved two spaces' do
+      let(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          robot: true,
+          challengerColor: 'black'
+        )
+      }
+
+      it 'does nothing' do
+        piece = game.pieces.find_by(startIndex: 29)
+
+        game.handle_castle({ currentPosition: 'f1' }, piece)
+
+        expect(game.pieces.find_by(startIndex: 25).currentPosition).to eq 'a1'
+        expect(game.pieces.find_by(startIndex: 32).currentPosition).to eq 'h1'
+      end
     end
   end
 

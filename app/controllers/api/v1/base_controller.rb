@@ -4,9 +4,7 @@ module Api
       def authenticate_with_token
         @user = User.find_by(token: params[:token])
 
-        unless @user.present? && @user.approved
-          raise ActiveRecord::RecordNotFound
-        end
+        raise ActiveRecord::RecordNotFound if @user.blank? || @user.approved.blank?
       end
 
       def find_game
