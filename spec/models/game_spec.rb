@@ -1633,11 +1633,6 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#create_move' do
-    xit 'test' do
-    end
-  end
-
   describe '#handle_captured_piece' do
     context 'when there is a piece on the square' do
       let(:game) {
@@ -1667,7 +1662,57 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#crossed_pawn?' do
-    xit 'test' do
+    # def crossed_pawn?(move_params)
+    #   piece = pieces.find_by(startIndex: move_params[:startIndex])
+    #
+    #   piece.pieceType == 'pawn' &&
+    #     piece.color == 'white' && move_params[:currentPosition][1] == '8' ||
+    #     piece.color == 'black' && move_params[:currentPosition][1] == '1'
+    # end
+    context 'when the pawn is on row 8' do
+      let(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          robot: true,
+          challengerColor: 'black'
+        )
+      }
+
+      it 'returns true' do
+        expect(game.crossed_pawn?({ startIndex: 17, currentPosition: 'a8' })).to be true
+      end
+    end
+
+    context 'when the pawn is on row 1' do
+      let(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          robot: true,
+          challengerColor: 'black'
+        )
+      }
+      it 'returns true' do
+        expect(game.crossed_pawn?({ startIndex: 9, currentPosition: 'a1' })).to be true
+      end
+    end
+
+    context 'when the pawn is not on row 1 or 8' do
+      let(:game) {
+        Game.create(
+          pending: false,
+          challengedName: Faker::Name.name,
+          challengedEmail: Faker::Internet.email,
+          robot: true,
+          challengerColor: 'black'
+        )
+      }
+      it 'returns false' do
+        expect(game.crossed_pawn?({ startIndex: 9, currentPosition: 'a6' })).to be false
+      end
     end
   end
 

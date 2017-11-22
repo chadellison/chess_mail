@@ -1195,9 +1195,4 @@ RSpec.describe Piece, type: :model do
     xit 'test' do
     end
   end
-
-  describe '#kings_too_close?' do
-    xit 'test' do
-    end
-  end
 end
