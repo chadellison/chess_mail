@@ -1192,7 +1192,25 @@ RSpec.describe Piece, type: :model do
   end
 
   describe '#forward_two?' do
-    xit 'test' do
+    context 'when the piece has moved down two' do
+      it 'returns true' do
+        piece = Piece.new(currentPosition: 'b7')
+        expect(piece.forward_two?('b5')).to be true
+      end
+    end
+
+    context 'when the piece has moved up two' do
+      it 'returns ture' do
+        piece = Piece.new(currentPosition: 'a2')
+        expect(piece.forward_two?('a4')).to be true
+      end
+    end
+
+    context 'when the piece has not moved down two or up two' do
+      it 'returns false' do
+        piece = Piece.new(currentPosition: 'a2')
+        expect(piece.forward_two?('a3')).to be false
+      end
     end
   end
 end

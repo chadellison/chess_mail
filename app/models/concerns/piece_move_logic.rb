@@ -298,14 +298,14 @@ module PieceMoveLogic
   end
 
   def advance_pawn?(next_move, game_pieces)
-    if forward_two?(next_move, game_pieces)
+    if forward_two?(next_move)
       move_two?(next_move, game_pieces)
     else
       advance_pawn_row(1) == next_move[1] && empty_square?(next_move, game_pieces)
     end
   end
 
-  def forward_two?(next_move, game_pieces)
+  def forward_two?(next_move)
     next_move[1].to_i == currentPosition[1].to_i + 2 ||
       next_move[1].to_i == currentPosition[1].to_i - 2
   end
