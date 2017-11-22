@@ -81,7 +81,7 @@ RSpec.describe Api::V1::GameOverController, type: :controller do
 
         patch :update, params: params, format: :json
 
-        expect(game.reload.outcome).to eq 'white wins'
+        expect(game.reload.outcome).to eq 1
         expect(response.status).to eq 201
         expect(JSON.parse(response.body)['data']['id']).to eq game.id
       end
@@ -131,7 +131,7 @@ RSpec.describe Api::V1::GameOverController, type: :controller do
 
         patch :update, params: params, format: :json
 
-        expect(game.reload.outcome).to eq 'draw'
+        expect(game.reload.outcome).to eq 0
         expect(response.status).to eq 201
         expect(JSON.parse(response.body)['data']['id']).to eq game.id
       end
@@ -175,14 +175,14 @@ RSpec.describe Api::V1::GameOverController, type: :controller do
         )
       end
 
-      it 'sets the game outcome to the opponent color as the winner' do
+      it 'sets the game outcome to the opponent win value' do
         params = { id: game.id, resign: true, token: user.token }
         opponent_color = 'black'
 
         patch :update, params: params, format: :json
 
         expect(response.status).to eq 201
-        expect(game.reload.outcome).to eq opponent_color + ' wins'
+        expect(game.reload.outcome).to eq -1
         expect(JSON.parse(response.body)['data']['id']).to eq game.id
       end
     end

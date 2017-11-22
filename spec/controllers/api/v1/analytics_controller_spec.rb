@@ -11,19 +11,19 @@ RSpec.describe Api::V1::AnalyticsController, type: :controller do
 
       it 'returns a hash with the number of wins, losses, and drawn games' do
         game1 = Game.new(
-          outcome: 'white wins',
+          outcome: 1,
           move_signature: ' 20:d4',
           robot: true
         )
 
         game2 = Game.new(
-          outcome: 'white wins',
+          outcome: 1,
           move_signature: ' 20:d4',
           robot: true
         )
 
         game3 = Game.new(
-          outcome: 'black wins',
+          outcome: -1,
           move_signature: ' 20:d4',
           robot: true
         )

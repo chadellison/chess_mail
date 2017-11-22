@@ -14,10 +14,19 @@ module GameLogic
   end
 
   def find_outcome
-    game_outcome = 'draw' if stalemate?
-    opponent_color = current_turn == 'white' ? 'black' : 'white'
+    game_outcome = 0 if stalemate?
 
-    game_outcome = opponent_color if checkmate?
+    if checkmate?
+      game_outcome = opponent_color == 'white' ? 1 : 0
+    end
+  end
+
+  def current_turn
+    move_signature.to_s.split('.').count.even? ? 'white' : 'black'
+  end
+
+  def win_value
+    current_turn == 'white' ? 1 : -1
   end
 
   def move(move_params)

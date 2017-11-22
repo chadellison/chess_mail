@@ -24,10 +24,10 @@ module AiLogic
     end.flatten
 
     best_signature = signatures.sort_by do |signature|
-      Game.similar_games(signature).winning_games(current_turn).count
+      Game.similar_games(signature).winning_games(win_value, current_turn).count
     end.last(4).sample
 
-    if Game.similar_games(best_signature).winning_games(current_turn).count < 1
+    if Game.similar_games(best_signature).winning_games(win_value, current_turn).count < 1
       best_signature = nil
     end
 
@@ -60,8 +60,8 @@ module AiLogic
   end
 
   def find_bad_moves
-    lost_games = Game.similar_games(move_signature)
-                     .where(outcome: opponent_color + ' wins')
+    opponent_win = opponent_color == 'white' ? 1 : -1
+    lost_games = Game.similar_games(move_signature).where(outcome: opponent_win)
 
     lost_games.map do |lost_game|
       notation = lost_game.move_signature.split('.')[moves.count]

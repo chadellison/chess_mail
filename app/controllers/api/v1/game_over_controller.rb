@@ -11,11 +11,17 @@ module Api
           @game.handle_resign(@user)
         else
           # needs backend validation to match outcome param
-          @game.update(outcome: params[:outcome])
+          @game.update(outcome: handle_outcome(params[:outcome]))
         end
 
         serialized_game = { data: GameSerializer.serialize(@game, @user.email) }
         render json: serialized_game, status: 201
+      end
+
+      private
+
+      def handle_outcome(outcome)
+        { 'white wins' => 1, 'black wins' => -1, 'draw' => 0 }[outcome]
       end
     end
   end

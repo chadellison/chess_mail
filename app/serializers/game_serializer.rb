@@ -13,12 +13,18 @@ class GameSerializer
           opponentName: game.current_opponent_name(user_email),
           opponentGravatar: opponent_gravatar,
           isChallenger: game.challenger?(user_email),
-          outcome: game.outcome,
+          outcome: format_outcome(game),
           human: game.human,
           robot: game.robot
         },
         included: game.moves.order(:updated_at).map { |move| MoveSerializer.serialize(move) }
       }
+    end
+
+    def format_outcome(game)
+      'white wins' if game.outcome == 1
+      'black wins' if game.outcome == -1
+      'draw' if game.outcome == 0
     end
   end
 end

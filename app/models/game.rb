@@ -12,8 +12,8 @@ class Game < ApplicationRecord
   scope :similar_games, (lambda do |move_signature|
     where('move_signature LIKE ?', "#{move_signature}%").where(robot: true)
   end)
-  scope :winning_games, ->(color) { where(outcome: color + ' wins', challengerColor: [nil, color]) }
-  scope :drawn_games, -> { where(outcome: 'draw') }
+  scope :winning_games, ->(win, color) { where(outcome: win, challengerColor: [nil, color]) }
+  scope :drawn_games, -> { where(outcome: 0) }
 
   include NotationLogic
   include AiLogic
@@ -68,9 +68,9 @@ class Game < ApplicationRecord
 
   def handle_resign(user)
     if current_player_color(user.email) == 'white'
-      update(outcome: 'black wins')
+      update(outcome: -1)
     else
-      update(outcome: 'white wins')
+      update(outcome: 1)
     end
   end
 

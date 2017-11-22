@@ -628,7 +628,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         }.to change { user.archives.count }.by(1)
 
         expect(user.archives.last.game_id).to eq game.id
-        expect(game.reload.outcome).to eq 'draw!'
+        expect(game.reload.outcome).to eq 0
         expect(response.status).to eq 204
       end
 

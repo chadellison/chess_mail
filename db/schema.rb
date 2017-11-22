@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171114004011) do
+ActiveRecord::Schema.define(version: 20171121182914) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,10 +30,10 @@ ActiveRecord::Schema.define(version: 20171114004011) do
     t.string "challengedEmail"
     t.boolean "human", default: true
     t.string "challengerColor"
-    t.string "outcome"
     t.string "move_signature"
     t.boolean "robot"
     t.boolean "training_game"
+    t.integer "outcome"
     t.index ["move_signature"], name: "index_games_on_move_signature"
   end
 

@@ -400,14 +400,14 @@ RSpec.describe Game, type: :model do
     context 'when the current player is white' do
       it 'updates the game so that black wins' do
         game.handle_resign(user)
-        expect(game.outcome).to eq 'black wins'
+        expect(game.outcome).to eq -1
       end
     end
 
     context 'when the current player is black' do
       it 'updates the game so that white wins' do
         game.handle_resign(challenged_user)
-        expect(game.outcome).to eq 'white wins'
+        expect(game.outcome).to eq 1
       end
     end
   end
@@ -1808,7 +1808,7 @@ RSpec.describe Game, type: :model do
           challengedEmail: Faker::Internet.email,
           challengedName: Faker::Name.name,
           challengerColor: 'white',
-          outcome: 'white wins',
+          outcome: 1,
           move_signature: 'd4.',
           robot: true
         )
@@ -1863,7 +1863,7 @@ RSpec.describe Game, type: :model do
           challengerColor: 'white',
           move_signature: ' 20:d4',
           robot: true,
-          outcome: 'draw'
+          outcome: 0
         )
       }
 
@@ -1960,7 +1960,7 @@ RSpec.describe Game, type: :model do
   describe '#winning_games' do
     let!(:win) {
       Game.new(
-        outcome: 'white wins',
+        outcome: 1,
         robot: true
       )
     }
@@ -1970,14 +1970,14 @@ RSpec.describe Game, type: :model do
         challengedEmail: Faker::Internet.email,
         challengedName: Faker::Name.name,
         challengerColor: 'white',
-        outcome: 'draw'
+        outcome: 0
       )
     }
 
     it 'returns winning games of the given color' do
       win.save(validate: false)
-      expect(Game.winning_games('white').last).to eq win
-      expect(Game.winning_games('white').count).to eq 1
+      expect(Game.winning_games(1, 'white').last).to eq win
+      expect(Game.winning_games(1, 'white').count).to eq 1
     end
   end
 
@@ -1987,7 +1987,7 @@ RSpec.describe Game, type: :model do
         challengedEmail: Faker::Internet.email,
         challengedName: Faker::Name.name,
         challengerColor: 'white',
-        outcome: 'white wins'
+        outcome: 1
       )
     }
 
@@ -1996,7 +1996,7 @@ RSpec.describe Game, type: :model do
         challengedEmail: Faker::Internet.email,
         challengedName: Faker::Name.name,
         challengerColor: 'white',
-        outcome: 'draw'
+        outcome: 0
       )
     }
 
@@ -2086,7 +2086,7 @@ RSpec.describe Game, type: :model do
         challengedEmail: Faker::Internet.email,
         challengerColor: 'white',
         robot: true,
-        outcome: 'black wins',
+        outcome: -1,
         move_signature: 'd4.'
       )
 

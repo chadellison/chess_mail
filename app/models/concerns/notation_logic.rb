@@ -97,10 +97,6 @@ module NotationLogic
     end
   end
 
-  def current_turn
-    move_signature.to_s.split('.').count.even? ? 'white' : 'black'
-  end
-
   def retrieve_start_index(notation, game_pieces)
     start_position = find_start_position(notation)
     piece_type = piece_type_from_notation(notation)
