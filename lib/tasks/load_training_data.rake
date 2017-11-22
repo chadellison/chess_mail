@@ -48,10 +48,10 @@ end
 def find_outcome(result)
   case result
   when '0-1'
-    'black wins'
+    -1
   when '1-0'
-    'white wins'
+    1
   else
-    'draw'
+    0
   end
 end
