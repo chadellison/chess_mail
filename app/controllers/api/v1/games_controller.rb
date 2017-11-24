@@ -28,9 +28,7 @@ module Api
       end
 
       def destroy
-        @game.destroy if @game.pending
-        # validate that a game has an outcome before archiving
-        @user.archives.create(game_id: @game.id) if @game.outcome.present?
+        @game.handle_archive(@user)
       end
 
       private

@@ -616,7 +616,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
           challengedName: challengedUser.firstName,
           challengerColor: 'white',
           pending: false,
-          outcome: 'draw!'
+          outcome: 0
         )
       end
 
@@ -638,6 +638,57 @@ RSpec.describe Api::V1::GamesController, type: :controller do
         expect {
           delete :destroy, params: params, format: :json
         }.not_to change { challengedUser.archives.count }
+        expect(response.status).to eq 204
+      end
+    end
+
+    context 'when the game outcome is complete and the game has been archived by the other user' do
+      let(:email) { Faker::Internet.email }
+      let(:password) { 'password' }
+      let(:first_name) { Faker::Name.first_name }
+      let(:last_name) { Faker::Name.last_name }
+      let(:token) { 'token' }
+
+      let!(:user) do
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
+      end
+
+      let!(:challengedUser) do
+        User.create(
+          email: 'bob@example.com',
+          password: 'password',
+          firstName: 'bob',
+          lastName: 'jones',
+          approved: true,
+          token: 'other_token'
+        )
+      end
+
+      let(:game) do
+        user.games.create(
+          challengedEmail: challengedUser.email,
+          challengedName: challengedUser.firstName,
+          challengerColor: 'white',
+          pending: false,
+          outcome: 'draw!'
+        )
+      end
+
+      it 'deletes the game and the archive' do
+        challengedUser.archives.create(game_id: game.id)
+        params = { id: game.id, token: user.token }
+
+        expect {
+          delete :destroy, params: params, format: :json
+        }.to change { Archive.count && Game.count }.by(-1)
+        expect(response.status).to eq 204
       end
     end
   end

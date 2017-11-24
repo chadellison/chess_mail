@@ -1,6 +1,7 @@
 class Game < ApplicationRecord
   has_many :user_games
   has_many :users, through: :user_games
+  has_many :archives, dependent: :delete_all
   has_many :pieces, dependent: :delete_all
   has_many :moves, dependent: :delete_all
 
@@ -101,5 +102,10 @@ class Game < ApplicationRecord
         pieces.create(json_piece[:piece])
       end
     end
+  end
+
+  def handle_archive(user)
+    destroy if [pending, archives.count > 0].any?
+    user.archives.create(game_id: id) if outcome.present?
   end
 end

@@ -2246,4 +2246,9 @@ RSpec.describe Game, type: :model do
     xit 'test' do
     end
   end
+
+  describe '#handle_archive' do
+    xit 'test' do
+    end
+  end
 end

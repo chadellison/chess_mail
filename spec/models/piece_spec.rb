@@ -1101,14 +1101,6 @@ RSpec.describe Piece, type: :model do
   end
 
   describe '#advance_pawn?' do
-    # def advance_pawn?(next_move, game_pieces)
-    #   # cannot kill piece
-    #   if forward_two?(next_move, game_pieces)
-    #     move_two?(next_move, game_pieces)
-    #   else
-    #     advance_pawn_row(1) == next_move[1] && empty_square?(next_move, game_pieces)
-    #   end
-    # end
     let(:game) {
       Game.create(
         challengedEmail: Faker::Internet.email,
@@ -1125,8 +1117,6 @@ RSpec.describe Piece, type: :model do
         currentPosition: 'd4'
       )
     }
-
-
 
     context 'when a piece is in the way of the pawn' do
       before do

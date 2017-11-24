@@ -22,9 +22,9 @@ class GameSerializer
     end
 
     def format_outcome(game)
-      'white wins' if game.outcome == 1
-      'black wins' if game.outcome == -1
-      'draw' if game.outcome == 0
+      return 'white wins' if game.outcome == 1
+      return 'black wins' if game.outcome == -1
+      return 'draw' if game.outcome == 0
     end
   end
 end
