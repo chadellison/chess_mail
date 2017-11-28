@@ -22,5 +22,9 @@ task train_ai: :environment do
 
     end_time = Time.now
     puts "game time *************** #{end_time - initial_start_time}"
+    if game.outcome.blank?
+      game.destroy
+      puts "game with #{game.move_signature} destroyed"
+    end
   end
 end

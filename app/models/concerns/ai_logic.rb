@@ -2,10 +2,16 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    best_signature = best_move_signature
-    notation = Game.similar_games(best_signature)
-                   .order('Random()').last
-                   .move_signature.split('.')[moves.count] if best_signature.present?
+    # best_signature = best_move_signature
+    # notation = Game.similar_games(best_signature)
+    #                .order('Random()').last
+    #                .move_signature.split('.')[moves.count] if best_signature.present?
+
+    winning_game = Game.similar_games(move_signature)
+                       .winning_games(win_value, current_turn)
+                       .order('Random()').last
+
+    notation = winning_game.move_signature.split('.')[moves.count] if winning_game.present?
 
     next_move = create_move_from_notation(notation, pieces) if notation.present?
     next_move = non_loss_move if next_move.blank?
@@ -13,26 +19,30 @@ module AiLogic
     move(next_move)
   end
 
-  def best_move_signature
-    signatures = pieces.where(color: current_turn).map do |piece|
-      piece.valid_moves.map do |valid_move|
-        move_data = {
-          pieceType: piece.pieceType, currentPosition: valid_move, startIndex: piece.startIndex
-        }
-        "#{move_signature}#{create_notation(move_data)}"
-      end
-    end.flatten
-
-    best_signature = signatures.sort_by do |signature|
-      Game.similar_games(signature).winning_games(win_value, current_turn).count
-    end.last(4).sample
-
-    if Game.similar_games(best_signature).winning_games(win_value, current_turn).count < 1
-      best_signature = nil
-    end
-
-    best_signature
-  end
+  # def best_move_signature
+  #
+  #   signatures = pieces.where(color: current_turn).map do |piece|
+  #     piece.valid_moves.map do |valid_move|
+  #       move_data = {
+  #         pieceType: piece.pieceType, currentPosition: valid_move, startIndex: piece.startIndex
+  #       }
+  #       "#{move_signature}#{create_notation(move_data)}"
+  #     end
+  #   end.flatten
+  #   start_time = Time.now
+  #
+  #   best_signature = signatures.sort_by do |signature|
+  #     Game.similar_games(signature).winning_games(win_value, current_turn).count
+  #   end.last(4).sample
+  #   end_time = Time.now
+  #   puts "first part ****************************** #{end_time - start_time}"
+  #
+  #   if Game.similar_games(best_signature).winning_games(win_value, current_turn).count < 1
+  #     best_signature = nil
+  #   end
+  #
+  #   best_signature
+  # end
 
   def random_move
     ai_piece = pieces.where(color: current_turn)
