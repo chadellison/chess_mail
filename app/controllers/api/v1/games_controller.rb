@@ -30,9 +30,7 @@ module Api
       def create_ai_game
         game = Game.new(human: false, robot: true)
         game.save(validate: false)
-        game.ai_move
-        serialized_move = { data: MoveSerializer.serialize(game.reload.moves.last) }
-        render json: serialized_move, status: 201
+        render status: 201
       end
 
       def destroy
