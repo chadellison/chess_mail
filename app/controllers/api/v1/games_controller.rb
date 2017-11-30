@@ -3,7 +3,7 @@ module Api
     class GamesController < Api::V1::BaseController
       respond_to :json
 
-      before_action :authenticate_with_token
+      before_action :authenticate_with_token, except: [:create_ai_game]
       before_action :find_game, only: [:show, :destroy]
       before_action :validate_challenged_email, only: :create
 
@@ -25,6 +25,14 @@ module Api
         else
           render json: return_errors(game), status: 400
         end
+      end
+
+      def create_ai_game
+        game = Game.new(human: false, robot: true)
+        game.save(validate: false)
+        game.ai_move
+        serialized_move = { data: MoveSerializer.serialize(game.reload.moves.last) }
+        render json: serialized_move, status: 201
       end
 
       def destroy

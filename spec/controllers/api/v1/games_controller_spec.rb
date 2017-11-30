@@ -692,4 +692,20 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       end
     end
   end
+
+  describe '#create_ai_move' do
+    it 'creates an ai game' do
+      expect { post :create_ai_game }.to change { Game.count }.by(1)
+      expect(response.status).to eq 201
+
+    end
+
+    it 'makes the first move' do
+      expect { post :create_ai_game }.to change { Move.count }.by(1)
+      expect(response.status).to eq 201
+      parsed_response = JSON.parse(response.body).deep_symbolize_keys
+      expect(parsed_response[:data][:type]).to eq 'move'
+      expect(parsed_response[:data][:attributes][:color]).to eq 'white'
+    end
+  end
 end

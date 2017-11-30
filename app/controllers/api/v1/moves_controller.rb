@@ -3,7 +3,7 @@ module Api
     class MovesController < Api::V1::BaseController
       respond_to :json
 
-      before_action :authenticate_with_token, except: :accept
+      before_action :authenticate_with_token, only: [:create]
 
       def create
         game = Game.find(params[:game_id])
@@ -12,11 +12,22 @@ module Api
         render json: serialized_game, status: 201
       end
 
+      def create_ai_move
+        game = Game.find_by(move_signature: ai_move_params[:move_signature], robot: true, human: false)
+        game.ai_move
+        serialized_move = { data: MoveSerializer.serialize(game.reload.moves.last) }
+        render json: serialized_move
+      end
+
       private
 
       def move_params
         params.require(:move).permit(:currentPosition, :startIndex, :pieceType,
                                      :notation)
+      end
+
+      def ai_move_params
+        params.require(:move).permit(:move_signature)
       end
     end
   end

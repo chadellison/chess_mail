@@ -54,7 +54,7 @@ RSpec.describe Api::V1::MovesController, type: :controller do
       it 'calls send_new_move_email' do
         allow_any_instance_of(Game).to receive(:stalemate?).and_return(false)
         allow_any_instance_of(Game).to receive(:checkmate?).and_return(false)
-        
+
         expect_any_instance_of(Game).to receive(:send_new_move_email)
         post :create, params: { game_id: game.id, token: user.token,
                                 move: move_params }, format: :json
@@ -94,6 +94,22 @@ RSpec.describe Api::V1::MovesController, type: :controller do
                                   move: move_params }, format: :json
         }.to raise_exception(ActiveRecord::RecordNotFound)
       end
+    end
+  end
+
+  describe '#create_ai_move' do
+    it 'creates a move on the game' do
+      game = Game.new(human: false, robot: true, move_signature: 'd4.')
+      game.save(validate: false)
+
+      expect {
+        post :create_ai_move, params: { move: { move_signature: 'd4.'} }
+      }.to change { game.moves.count }.by(1)
+
+      expect(response.status).to eq 200
+      parsed_response = JSON.parse(response.body).deep_symbolize_keys
+      expect(parsed_response[:data][:type]).to eq 'move'
+      expect(parsed_response[:data][:attributes][:color]).to eq 'black'
     end
   end
 end
