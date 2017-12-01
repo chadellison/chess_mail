@@ -15,7 +15,8 @@ module Api
       def create_ai_move
         game = Game.find(params[:gameId])
         game.ai_move
-        render json: { data: game.moves.map { |move| MoveSerializer.serialize(move) } }
+        moves = game.moves.reload.order(:updated_at)
+        render json: { data: moves.map { |move| MoveSerializer.serialize(move) } }
       end
 
       private
