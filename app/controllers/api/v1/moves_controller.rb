@@ -15,8 +15,7 @@ module Api
       def create_ai_move
         game = Game.find_by(move_signature: ai_move_params[:move_signature], robot: true, human: false)
         game.ai_move
-        serialized_move = { data: MoveSerializer.serialize(game.reload.moves.last) }
-        render json: serialized_move
+        render json: { data: game.moves.map { |move| MoveSerializer.serialize(move) } }
       end
 
       private

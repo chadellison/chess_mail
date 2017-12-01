@@ -101,6 +101,12 @@ RSpec.describe Api::V1::MovesController, type: :controller do
     it 'creates a move on the game' do
       game = Game.new(human: false, robot: true, move_signature: 'd4.')
       game.save(validate: false)
+      game.moves.create(
+        notation: 'd4.',
+        color: 'white',
+        pieceType: 'pawn',
+        currentPosition: 'd4'
+      )
 
       expect {
         post :create_ai_move, params: { move: { move_signature: 'd4.'} }
@@ -108,8 +114,11 @@ RSpec.describe Api::V1::MovesController, type: :controller do
 
       expect(response.status).to eq 200
       parsed_response = JSON.parse(response.body).deep_symbolize_keys
-      expect(parsed_response[:data][:type]).to eq 'move'
-      expect(parsed_response[:data][:attributes][:color]).to eq 'black'
+      expect(parsed_response[:data].first[:type]).to eq 'move'
+      expect(parsed_response[:data].count).to eq 2
+      expect(parsed_response[:data].first[:attributes][:color]).to eq 'white'
+      expect(parsed_response[:data].first[:attributes][:currentPosition]).to eq 'd4'
+      expect(parsed_response[:data].last[:attributes][:color]).to eq 'black'
     end
   end
 end
