@@ -13,7 +13,7 @@ module Api
       end
 
       def create_ai_move
-        game = Game.find_by(move_signature: ai_move_params[:moveSignature], robot: true, human: false)
+        game = Game.find(params[:gameId])
         game.ai_move
         render json: { data: game.moves.map { |move| MoveSerializer.serialize(move) } }
       end

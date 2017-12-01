@@ -28,9 +28,15 @@ module Api
       end
 
       def create_ai_game
-        game = Game.new(human: false, robot: true)
-        game.save(validate: false)
-        render status: 201
+        game = Game.create(
+          human: false,
+          robot: true,
+          challengedEmail: Faker::Internet.email,
+          challengerColor: 'white',
+          challengedName: Faker::Name.first_name
+        )
+        serialized_game = { data: GameSerializer.serialize(game, 'email') }
+        render json: serialized_game, status: 201
       end
 
       def destroy

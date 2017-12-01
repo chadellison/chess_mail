@@ -693,11 +693,11 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     end
   end
 
-  describe '#create_ai_move' do
+  describe '#create_ai_game' do
     it 'creates an ai game' do
       expect { post :create_ai_game }.to change { Game.count }.by(1)
       expect(response.status).to eq 201
-
+      expect(JSON.parse(response.body).deep_symbolize_keys[:data][:type]).to eq 'game'
     end
   end
 end
