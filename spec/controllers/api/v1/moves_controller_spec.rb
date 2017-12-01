@@ -109,7 +109,7 @@ RSpec.describe Api::V1::MovesController, type: :controller do
       )
 
       expect {
-        post :create_ai_move, params: { move: { move_signature: 'd4.'} }
+        post :create_ai_move, params: { move: { moveSignature: 'd4.'} }
       }.to change { game.moves.count }.by(1)
 
       expect(response.status).to eq 200
