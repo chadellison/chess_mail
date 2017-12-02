@@ -2246,4 +2246,7 @@ RSpec.describe Game, type: :model do
     xit 'test' do
     end
   end
+
+  describe '#update_crossed_pawn' do
+  end
 end

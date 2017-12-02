@@ -16,7 +16,24 @@ module AiLogic
     next_move = create_move_from_notation(notation, pieces) if notation.present?
     next_move = non_loss_move if next_move.blank?
     next_move = random_move if next_move.blank?
+
+    next_move = update_crossed_pawn(next_move)
     move(next_move)
+  end
+
+  def update_crossed_pawn(next_move)
+    if [next_move[:pieceType] == 'pawn',
+        next_move[:color] == 'white',
+        next_move[:currentPosition][1] == '8'].all? ||
+
+       [next_move[:pieceType] == 'pawn',
+        next_move[:color] == 'black',
+        next_move[:currentPosition][1] == '1'].all?
+
+      next_move[:pieceType] == 'queen'
+    end
+    
+    next_move
   end
 
   # def best_move_signature
