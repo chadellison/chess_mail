@@ -30,9 +30,9 @@ module AiLogic
         next_move[:color] == 'black',
         next_move[:currentPosition][1] == '1'].all?
 
-      next_move[:pieceType] == 'queen'
+      next_move[:pieceType] = 'queen'
     end
-    
+
     next_move
   end
 
