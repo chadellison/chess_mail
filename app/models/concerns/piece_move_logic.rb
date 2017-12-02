@@ -306,7 +306,6 @@ module PieceMoveLogic
   end
 
   def forward_two?(next_move)
-    next_move[1].to_i == currentPosition[1].to_i + 2 ||
-      next_move[1].to_i == currentPosition[1].to_i - 2
+    (next_move[1].to_i - currentPosition[1].to_i).abs == 2
   end
 end
