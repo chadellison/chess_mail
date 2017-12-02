@@ -47,7 +47,7 @@ module GameLogic
   end
 
   def update_board(move_params, piece)
-    piece.handle_moved_two(move_params[:currentPosition]) if piece.pieceType == 'pawn'
+    piece.handle_moved_two(move_params[:currentPosition])
     handle_castle(move_params, piece) if piece.pieceType == 'king'
     handle_captured_piece(move_params, piece)
     piece.update(move_params)

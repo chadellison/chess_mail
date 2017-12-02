@@ -36,10 +36,10 @@ class Piece < ApplicationRecord
   end
 
   def handle_moved_two(next_move)
-    if (next_move[1].to_i - currentPosition[1].to_i).abs == 2
+    game.pieces.where(pieceType: 'pawn').update_all(movedTwo: false)
+    
+    if (next_move[1].to_i - currentPosition[1].to_i).abs == 2 && pieceType == 'pawn'
       update(movedTwo: true)
-    else
-      update(movedTwo: false)
     end
   end
 end

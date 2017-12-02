@@ -688,7 +688,41 @@ RSpec.describe Piece, type: :model do
   end
 
   describe '#handle_moved_two' do
-    xit 'test' do
+    context 'when the piece is a pawn and has moved two' do
+      game = Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+
+      it 'updates the movedTwo property to true' do
+        piece = game.pieces.find_by(currentPosition: 'd2')
+
+        piece.handle_moved_two('d4')
+
+        expect(piece.movedTwo).to be true
+      end
+    end
+
+    context 'when the piece has not moved two' do
+      game = Game.create(
+        challengedEmail: Faker::Internet.email,
+        challengedName: Faker::Name.name,
+        challengerColor: 'white'
+      )
+
+      before do
+        game.pieces.where(pieceType: 'pawn').update(movedTwo: true)
+      end
+
+      it 'updates the movedTwo property of all other pawns to false' do
+        piece = game.pieces.find_by(currentPosition: 'd2')
+
+        piece.handle_moved_two('d3')
+
+        movedTwoProperties = game.pieces.where(pieceType: 'pawn').pluck(:movedTwo)
+        expect(movedTwoProperties.all?).to be false
+      end
     end
   end
 
