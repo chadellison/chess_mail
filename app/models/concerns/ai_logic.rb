@@ -22,15 +22,7 @@ module AiLogic
   end
 
   def update_crossed_pawn(next_move)
-
-    if [next_move[:pieceType] == 'pawn',
-        current_turn == 'white',
-        next_move[:currentPosition][1] == '8'].all? ||
-
-       [next_move[:pieceType] == 'pawn',
-        current_turn == 'black',
-        next_move[:currentPosition][1] == '1'].all?
-
+    if next_move[:pieceType] == 'pawn' && '18'.include?(next_move[:currentPosition][1])
       next_move[:pieceType] = 'queen'
     end
 
