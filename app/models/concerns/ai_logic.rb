@@ -22,12 +22,13 @@ module AiLogic
   end
 
   def update_crossed_pawn(next_move)
+
     if [next_move[:pieceType] == 'pawn',
-        next_move[:color] == 'white',
+        current_turn == 'white',
         next_move[:currentPosition][1] == '8'].all? ||
 
        [next_move[:pieceType] == 'pawn',
-        next_move[:color] == 'black',
+        current_turn == 'black',
         next_move[:currentPosition][1] == '1'].all?
 
       next_move[:pieceType] = 'queen'
