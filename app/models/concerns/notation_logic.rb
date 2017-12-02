@@ -2,8 +2,7 @@ module NotationLogic
   extend ActiveSupport::Concern
 
   PIECE_TYPE = {
-    'N' => 'knight', 'B' => 'bishop', 'R' => 'rook', 'Q' => 'queen',
-    'K' => 'king', 'O' => 'king'
+    'N' => 'knight', 'B' => 'bishop', 'R' => 'rook', 'Q' => 'queen', 'K' => 'king'
   }.freeze
 
   def create_move_from_notation(notation, game_pieces)
@@ -92,6 +91,8 @@ module NotationLogic
       'pawn'
     elsif notation.include?('=')
       PIECE_TYPE[notation.sub('#', '')[-1]]
+    elsif notation.include?('O')
+      'king'
     else
       PIECE_TYPE[notation[0]]
     end
