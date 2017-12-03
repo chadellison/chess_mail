@@ -39,14 +39,15 @@ RSpec.describe Api::V1::MovesController, type: :controller do
 
       it 'updates a user\'s game' do
         post :create, params: {
-          game_id: game.id,
+          gameId: game.id,
           token: user.token,
           move: move_params
         }, format: :json
 
         expect(response.status).to eq 201
-        expect(JSON.parse(response.body)['data']['included']
-          .last['attributes']['startIndex']).to eq move_params[:startIndex]
+        parsed_response = JSON.parse(response.body).deep_symbolize_keys
+        expect(parsed_response[:data][:included][:moves].last[:attributes][:startIndex])
+          .to eq move_params[:startIndex]
         expect(game.pieces.find_by(startIndex: 12).currentPosition)
           .to eq move_params[:currentPosition]
       end
@@ -56,7 +57,7 @@ RSpec.describe Api::V1::MovesController, type: :controller do
         allow_any_instance_of(Game).to receive(:checkmate?).and_return(false)
 
         expect_any_instance_of(Game).to receive(:send_new_move_email)
-        post :create, params: { game_id: game.id, token: user.token,
+        post :create, params: { gameId: game.id, token: user.token,
                                 move: move_params }, format: :json
       end
     end
@@ -99,7 +100,12 @@ RSpec.describe Api::V1::MovesController, type: :controller do
 
   describe '#create_ai_move' do
     it 'creates a move on the game' do
-      game = Game.new(human: false, robot: true, move_signature: 'd4.')
+      game = Game.new(
+        human: false,
+        robot: true,
+        move_signature: 'd4.',
+        challengedEmail: Faker::Internet.email
+      )
       game.save(validate: false)
       game.moves.create(
         notation: 'd4.',
@@ -109,16 +115,16 @@ RSpec.describe Api::V1::MovesController, type: :controller do
       )
 
       expect {
-        post :create_ai_move, params: { move: { moveSignature: 'd4.'}, gameId: game.id }
+        post :create_ai_move, params: { gameId: game.id }
       }.to change { game.moves.count }.by(1)
 
-      expect(response.status).to eq 200
+      expect(response.status).to eq 201
       parsed_response = JSON.parse(response.body).deep_symbolize_keys
-      expect(parsed_response[:data].first[:type]).to eq 'move'
-      expect(parsed_response[:data].count).to eq 2
-      expect(parsed_response[:data].first[:attributes][:color]).to eq 'white'
-      expect(parsed_response[:data].first[:attributes][:currentPosition]).to eq 'd4'
-      expect(parsed_response[:data].last[:attributes][:color]).to eq 'black'
+      expect(parsed_response[:data][:included][:moves].first[:type]).to eq 'move'
+      expect(parsed_response[:data][:included][:moves].count).to eq 2
+      expect(parsed_response[:data][:included][:moves].first[:attributes][:color]).to eq 'white'
+      expect(parsed_response[:data][:included][:moves].first[:attributes][:currentPosition]).to eq 'd4'
+      expect(parsed_response[:data][:included][:moves].last[:attributes][:color]).to eq 'black'
     end
   end
 end

@@ -4,30 +4,29 @@ module Api
       respond_to :json
 
       before_action :authenticate_with_token, only: [:create]
+      before_action :find_game
 
       def create
-        game = Game.find(params[:game_id])
-        game.handle_move(move_params, @user) unless game.outcome.present?
-        serialized_game = { data: GameSerializer.serialize(game.reload, @user.email) }
+        @game.handle_move(move_params, @user) unless @game.outcome.present?
+        serialized_game = { data: GameSerializer.serialize(@game.reload, @user.email) }
         render json: serialized_game, status: 201
       end
 
       def create_ai_move
-        game = Game.find(params[:gameId])
-        game.ai_move
-        moves = game.moves.reload.order(:updated_at)
-        render json: { data: moves.map { |move| MoveSerializer.serialize(move) } }
+        @game.ai_move
+        serialized_game = { data: GameSerializer.serialize(@game.reload, 'email') }
+        render json: serialized_game, status: 201
       end
 
       private
 
+      def find_game
+        @game = Game.find(params[:gameId])
+      end
+
       def move_params
         params.require(:move).permit(:currentPosition, :startIndex, :pieceType,
                                      :notation)
-      end
-
-      def ai_move_params
-        params.require(:move).permit(:moveSignature)
       end
     end
   end

@@ -17,7 +17,10 @@ class GameSerializer
           human: game.human,
           robot: game.robot
         },
-        included: game.moves.order(:updated_at).map { |move| MoveSerializer.serialize(move) }
+        included: {
+          moves: game.moves.order(:updated_at).map { |move| MoveSerializer.serialize(move) },
+          pieces: game.pieces.map { |piece| MoveSerializer.serialize(piece) }
+        }
       }
     end
 
