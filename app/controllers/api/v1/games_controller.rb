@@ -19,6 +19,7 @@ module Api
         game = @user.games.create(game_params)
 
         if game.valid?
+          
           game.setup(@user)
           serialized_game = { data: GameSerializer.serialize(game, @user.email) }
           render json: serialized_game, status: 201

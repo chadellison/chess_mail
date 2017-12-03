@@ -21,8 +21,8 @@ class GameSerializer
           robot: game.robot
         },
         included: {
-          moves: game.moves.order(:updated_at).map { |move| MoveSerializer.serialize(move) },
-          pieces: game.pieces.map { |piece| MoveSerializer.serialize(piece) }
+          moves: game.moves.reload.order(:updated_at).map { |move| MoveSerializer.serialize(move) },
+          pieces: game.pieces.reload.map { |piece| PieceSerializer.serialize(piece) }
         }
       }
     end
