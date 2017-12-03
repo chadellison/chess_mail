@@ -14,7 +14,7 @@ module Api
 
       def create_ai_move
         @game.ai_move
-        serialized_game = { data: GameSerializer.serialize(@game.reload, 'email') }
+        serialized_game = { data: GameSerializer.serialize(@game.reload) }
         render json: serialized_game, status: 201
       end
 

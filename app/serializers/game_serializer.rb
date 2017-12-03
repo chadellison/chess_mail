@@ -1,8 +1,11 @@
 class GameSerializer
   class << self
-    def serialize(game, user_email)
-      opponent_email = game.current_opponent_email(user_email).downcase.strip
-      opponent_gravatar = Digest::MD5.hexdigest(opponent_email)
+    def serialize(game, user_email = nil)
+      if user_email.present?
+        opponent_email = game.current_opponent_email(user_email).downcase.strip
+        opponent_gravatar = Digest::MD5.hexdigest(opponent_email)
+        opponent_name = game.current_opponent_name(user_email)
+      end
 
       {
         type: 'game',
@@ -10,7 +13,7 @@ class GameSerializer
         attributes: {
           pending: game.pending,
           playerColor: game.current_player_color(user_email),
-          opponentName: game.current_opponent_name(user_email),
+          opponentName: opponent_name,
           opponentGravatar: opponent_gravatar,
           isChallenger: game.challenger?(user_email),
           outcome: format_outcome(game),
