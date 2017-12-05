@@ -1,5 +1,7 @@
 class Game < ApplicationRecord
   has_many :user_games
+  has_many :move_rank_games
+  has_many :move_ranks, through: :move_rank_games
   has_many :users, through: :user_games
   has_many :archives, dependent: :delete_all
   has_many :pieces, dependent: :delete_all

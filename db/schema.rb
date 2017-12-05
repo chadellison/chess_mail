@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171121182914) do
+ActiveRecord::Schema.define(version: 20171205045803) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,7 +34,23 @@ ActiveRecord::Schema.define(version: 20171121182914) do
     t.boolean "robot"
     t.boolean "training_game"
     t.integer "outcome"
+    t.string "position_signature"
     t.index ["move_signature"], name: "index_games_on_move_signature"
+  end
+
+  create_table "move_rank_games", force: :cascade do |t|
+    t.integer "game_id"
+    t.integer "move_rank_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "move_ranks", force: :cascade do |t|
+    t.string "position_signature"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "value", default: 0
+    t.index ["position_signature"], name: "index_move_ranks_on_position_signature"
   end
 
   create_table "moves", force: :cascade do |t|
@@ -70,6 +86,9 @@ ActiveRecord::Schema.define(version: 20171121182914) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "space_count", default: 0
+  end
+
+  create_table "position_notation_on_games", force: :cascade do |t|
   end
 
   create_table "user_games", force: :cascade do |t|

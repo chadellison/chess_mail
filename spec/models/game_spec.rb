@@ -52,6 +52,16 @@ RSpec.describe Game, type: :model do
     expect(game.moves).to eq [move]
   end
 
+  it 'has many move_rank_games' do
+    game = Game.create
+    expect(game).to respond_to :move_rank_games
+  end
+
+  it 'has many move_ranks' do
+    game = Game.create
+    expect(game).to respond_to :move_ranks
+  end
+
   describe '#setup' do
     context 'when the game_params have challengePlayer equal to true' do
       it 'calls add_challenged_player' do
@@ -2133,11 +2143,6 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#find_outcome' do
-    xit 'returns a move that matches that game\'s next move' do
-    end
-  end
-
   describe '#non_loss_move' do
     context 'when piece_with_valid_moves is not present' do
       it 'returns nil' do
@@ -2248,5 +2253,27 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#update_crossed_pawn' do
+    xit 'test' do
+    end
+  end
+
+  describe '#create_from_move_rank' do
+    xit 'test' do
+    end
+  end
+
+  describe '#update_signatures' do
+    xit 'test' do
+    end
+  end
+
+  describe '#handle_outcome' do
+    xit 'test' do
+    end
+  end
+
+  describe '#random_winning_game' do
+    xit 'test' do
+    end
   end
 end

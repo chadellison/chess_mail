@@ -5,19 +5,13 @@ module GameLogic
     move(move_params)
 
     if checkmate? || stalemate?
-      update(outcome: find_outcome)
+      game_outcome = 'draw' if stalemate?
+      game_outcome = opponent_color + ' wins' if checkmate?
+      handle_outcome(game_outcome)
     elsif robot.blank?
       send_new_move_email(move_params[:currentPosition], move_params[:pieceType], user)
     else
       ai_move
-    end
-  end
-
-  def find_outcome
-    game_outcome = 0 if stalemate?
-
-    if checkmate?
-      game_outcome = opponent_color == 'white' ? 1 : 0
     end
   end
 
@@ -35,15 +29,28 @@ module GameLogic
     if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
       move_params[:notation] = create_notation(move_params) unless move_params[:notation].present?
-      update_column(:move_signature, "#{move_signature}#{move_params[:notation]}")
       update_board(move_params, piece)
+      update_signatures(move_params)
       move_params[:movedTwo] = piece.movedTwo
       move_params[:color] = piece.color
+      move_ranks.find_or_create_by(position_signature: position_signature)
       moves.create(move_params)
       piece
     else
       raise ActiveRecord::RecordInvalid
     end
+  end
+
+  def update_signatures(move_params)
+    position_signature = pieces.where(color: current_turn).order(:startIndex)
+      .map do |piece|
+        "#{piece.startIndex}:#{piece.currentPosition}"
+      end.join('.')
+
+    update_columns(
+      move_signature: "#{move_signature}#{move_params[:notation]}",
+      position_signature: position_signature
+    )
   end
 
   def update_board(move_params, piece)
@@ -129,5 +136,12 @@ module GameLogic
       piece.currentPosition[0] != position[0],
       pieces.find_by(currentPosition: position).blank?
     ].all?
+  end
+
+  def handle_outcome(game_outcome)
+    update(outcome: { 'white wins' => 1, 'black wins' => -1, 'draw' => 0 }[game_outcome])
+    move_ranks.each do |move_rank|
+      move_rank.update(value: move_rank.value + outcome)
+    end
   end
 end
