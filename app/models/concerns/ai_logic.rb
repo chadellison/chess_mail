@@ -2,11 +2,12 @@ module AiLogic
   extend ActiveSupport::Concern
 
   def ai_move
-    next_move = create_from_move_rank(position_signature) if moves.count > 4
-    winning_game = random_winning_game unless next_move.present?
-
+    winning_game = random_winning_game
     notation = winning_game.move_signature.split('.')[moves.count] if winning_game.present?
     next_move = create_move_from_notation(notation, pieces) if notation.present?
+
+    next_move = create_from_move_rank(position_signature) if next_move.blank?
+
     next_move = non_loss_move if next_move.blank?
     next_move = random_move if next_move.blank?
 
