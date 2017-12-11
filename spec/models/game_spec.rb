@@ -679,48 +679,6 @@ RSpec.describe Game, type: :model do
         game.handle_move(move_params, user)
       end
     end
-
-  #   context 'when robot is present' do
-  #     let(:user) {
-  #       User.create(
-  #         email: Faker::Internet.email,
-  #         password: 'password',
-  #         firstName: Faker::Name.first_name,
-  #         lastName: Faker::Name.last_name,
-  #         token: 'token',
-  #         hashed_email: 'hashed_email'
-  #       )
-  #     }
-  #
-  #     let!(:game) do
-  #       user.games.create(
-  #         challengedEmail: Faker::Name.name,
-  #         challengedName: Faker::Internet.email,
-  #         challengerColor: 'white',
-  #         robot: true
-  #       )
-  #     end
-  #
-  #     let(:user_piece) {
-  #       game.pieces.create(
-  #         currentPosition: 'a7',
-  #         pieceType: 'rook',
-  #         color: 'black',
-  #         startIndex: 5
-  #       )
-  #     }
-  #
-  #     it 'calls ai_move' do
-  #       allow_any_instance_of(Game).to receive(:stalemate?).and_return(false)
-  #       allow_any_instance_of(Game).to receive(:checkmate?).and_return(false)
-  #
-  #       move_params = { currentPosition: 'a7', startIndex: 5, pieceType: 'king' }
-  #       allow_any_instance_of(Game).to receive(:move).with(move_params)
-  #       expect_any_instance_of(Game).to receive(:ai_move)
-  #
-  #       game.handle_move(move_params, user)
-  #     end
-  #   end
   end
 
   describe '#move' do
