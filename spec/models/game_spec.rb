@@ -1873,7 +1873,7 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#ai_move' do
-    context 'when best move signature is present' do
+    context 'a move can be created from notation' do
       let(:old_game) {
         Game.create(
           challengedEmail: Faker::Internet.email,
@@ -1912,8 +1912,8 @@ RSpec.describe Game, type: :model do
         game.ai_move
       end
 
-      it 'does not call non loss move on a game with the last game\'s move data' do
-        expect_any_instance_of(Game).not_to receive(:non_loss_move)
+      it 'does not call non create_from_move_rank' do
+        expect_any_instance_of(Game).not_to receive(:create_from_move_rank)
         game.ai_move
       end
 
@@ -1923,7 +1923,7 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'when the best move signature is not present' do
+    context 'when create_move_from_notation is not present' do
       let(:old_game) {
         Game.create(
           challengedEmail: Faker::Internet.email,
@@ -1956,12 +1956,24 @@ RSpec.describe Game, type: :model do
         old_game.moves.create(piece_data)
       end
 
-      it 'calls non_loss_move' do
-        expect_any_instance_of(Game).to receive(:non_loss_move)
+      it 'calls create_from_move_rank' do
+        expect_any_instance_of(Game).to receive(:create_from_move_rank)
         game.ai_move
       end
 
-      it 'calls does not call random_move' do
+      it 'does not call random_move' do
+        move_data = {
+          startIndex: 1,
+          currentPosition: 'a4',
+          pieceType: 'rook'
+        }
+
+        allow_any_instance_of(Game).to receive(:ai_move)
+          .and_return(move_data)
+
+        allow_any_instance_of(Game).to receive(:create_from_move_rank)
+          .and_return(move_data)
+
         expect_any_instance_of(Game).not_to receive(:random_move)
         game.ai_move
       end
@@ -1983,7 +1995,7 @@ RSpec.describe Game, type: :model do
       }
 
       it 'calls move' do
-        allow_any_instance_of(Game).to receive(:non_loss_move).and_return(nil)
+        allow_any_instance_of(Game).to receive(:create_from_move_rank).and_return(nil)
 
         expect_any_instance_of(Game).to receive(:move)
         game.ai_move
@@ -2005,21 +2017,6 @@ RSpec.describe Game, type: :model do
       piece = game.pieces.find_by(startIndex: move[:startIndex])
 
       expect(piece.valid_move?(move[:currentPosition])).to be true
-    end
-  end
-
-  describe '#piece_with_valid_moves' do
-    context 'when the count is greater than 10 and the piece has no valid moves' do
-      it 'returns nil' do
-        game = Game.create(
-          challengedEmail: Faker::Internet.email,
-          challengedName: Faker::Name.name,
-          challengerColor: 'white',
-          robot: true
-        )
-        allow_any_instance_of(Piece).to receive(:valid_moves).and_return([])
-        expect(game.piece_with_valid_moves([], 11)).to be_nil
-      end
     end
   end
 
@@ -2101,67 +2098,6 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#non_loss_move' do
-    context 'when piece_with_valid_moves is not present' do
-      it 'returns nil' do
-        game = Game.create(
-          challengedName: Faker::Name.first_name,
-          challengedEmail: Faker::Internet.email,
-          challengerColor: 'white'
-        )
-
-        allow_any_instance_of(Game).to receive(:piece_with_valid_moves)
-          .and_return(nil)
-
-        expect(game.non_loss_move).to be_nil
-      end
-    end
-
-    context 'when piece_with_valid_moves is present' do
-      it 'returns a move with the correct move properties' do
-        game = Game.create(
-          challengedName: Faker::Name.first_name,
-          challengedEmail: Faker::Internet.email,
-          challengerColor: 'white'
-        )
-
-        piece = game.pieces.find_by(startIndex: 20)
-        piece_with_moves_hash = { piece => ['d4'] }
-
-        allow_any_instance_of(Game).to receive(:piece_with_valid_moves)
-          .and_return(piece_with_moves_hash)
-
-        result = game.non_loss_move
-
-        expect(result[:currentPosition]).to eq 'd4'
-        expect(result[:startIndex]).to eq 20
-        expect(result[:pieceType]).to eq 'pawn'
-      end
-    end
-  end
-
-  describe '#find_bad_moves' do
-    it 'returns an array of each move signature that lead to a lost game' do
-      old_game = Game.create(
-        challengedName: Faker::Name.first_name,
-        challengedEmail: Faker::Internet.email,
-        challengerColor: 'white',
-        robot: true,
-        outcome: -1,
-        move_signature: 'd4.'
-      )
-
-      old_game.moves.create(startIndex: 20, pieceType: 'pawn', currentPosition: 'd4')
-
-      game = Game.create(
-        challengedName: Faker::Name.first_name,
-        challengedEmail: Faker::Internet.email,
-        challengerColor: 'white'
-      )
-      expect(game.find_bad_moves).to eq ['d4']
-    end
-  end
-
   describe '#oppoenent_color' do
     context 'when it is white\'s turn' do
       it 'returns black' do
@@ -2186,17 +2122,6 @@ RSpec.describe Game, type: :model do
 
         expect(game.opponent_color).to eq 'white'
       end
-    end
-  end
-
-  describe '#filter_bad_moves' do
-    it 'filters out all moves that are included in the bad moves array' do
-      piece = Piece.new(startIndex: 20)
-      game = Game.new
-      allow_any_instance_of(Piece).to receive(:valid_moves)
-        .and_return(['20:d4', '20:d3'])
-
-      expect(game.filter_bad_moves(piece, ['20:d3'])).to eq ['20:d4']
     end
   end
 

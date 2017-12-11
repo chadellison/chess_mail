@@ -17,7 +17,7 @@ class MoveRank < ApplicationRecord
     start_index = index_and_move.split(':').first.to_i
     {
       startIndex: start_index,
-      currentPosition:  indext_and_move.split(':').last,
+      currentPosition:  index_and_move.split(':').last,
       pieceType: Piece.find_by(startIndex: start_index).pieceType
     }
   end
