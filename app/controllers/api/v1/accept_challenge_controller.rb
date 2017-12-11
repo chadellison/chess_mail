@@ -7,8 +7,8 @@ module Api
         challenged_user = User.find_by(token: params[:token])
 
         if challenged_user
-          game = Game.where(challengedEmail: challenged_user.email).find(params[:id])
-          game.update(pending: false)
+          game = Game.where(challengedEmail: challenged_user.email).find_by(id: params[:id])
+          game.update(pending: false) if game.present?
         end
 
         handle_response

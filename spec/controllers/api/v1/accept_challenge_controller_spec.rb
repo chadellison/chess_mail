@@ -89,12 +89,10 @@ RSpec.describe Api::V1::AcceptChallengeController, type: :controller do
           )
         end
 
-        it 'raises a not found exception' do
+        it 'does not update the game\'s pending status' do
           params = { id: game.id, token: challengedUser.token }
 
-          expect{
-            get :show, params: params, format: :json
-          }.to raise_exception(ActiveRecord::RecordNotFound)
+          get :show, params: params, format: :json
 
           expect(game.reload.pending).to be true
         end
@@ -199,12 +197,12 @@ RSpec.describe Api::V1::AcceptChallengeController, type: :controller do
             )
           end
 
-          it 'raises a not found exception' do
-            params = { id: game.id, token: challengedUser.token, from_email: true }
+          it 'does not update the pending status' do
+            params = {
+              id: game.id, token: challengedUser.token, from_email: true
+            }
 
-            expect{
-              get :show, params: params, format: :json
-            }.to raise_exception(ActiveRecord::RecordNotFound)
+            get :show, params: params, format: :json
 
             expect(game.reload.pending).to be true
           end
