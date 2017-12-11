@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171205045803) do
+ActiveRecord::Schema.define(version: 20171211051710) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 20171205045803) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "value", default: 0
+    t.integer "next_position_id"
     t.index ["position_signature"], name: "index_move_ranks_on_position_signature"
   end
 

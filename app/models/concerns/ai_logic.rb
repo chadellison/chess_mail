@@ -16,21 +16,16 @@ module AiLogic
   end
 
   def create_from_move_rank(position_signature)
-    similar_ranks = MoveRank.where('position_signature LIKE ?', "#{position_signature}%")
+    move_rank = MoveRank.find_by(position_signature: position_signature)
+    return nil if move_rank.blank?
 
     if current_turn == 'white'
-      move_rank = similar_ranks.where('value > ?', 0).order('value DESC').first
+      setup = move_rank.next_positions.where('value > ?', 0).order('value DESC').first
     else
-      move_rank = similar_ranks.where('value < ?', 0).order('value').first
+      setup = move_rank.next_positions.where('value < ?', 0).order('value').first
     end
 
-    if move_rank.present? && move_rank.position_signature[moves.count].present?
-      {
-        startIndex: find_start_index(moves.count),
-        currentPosition: move_rank.position_signature[moves.count].split(':').last,
-        pieceType: pieces.find_by(startIndex: find_start_index(moves.count)).pieceType
-      }
-    end
+    setup.move_data(move_rank.position_signature) if setup.present?
   end
 
   def update_crossed_pawn(next_move)

@@ -10,8 +10,6 @@ module GameLogic
       handle_outcome(game_outcome)
     elsif robot.blank?
       send_new_move_email(move_params[:currentPosition], move_params[:pieceType], user)
-    else
-      ai_move
     end
   end
 
@@ -26,14 +24,14 @@ module GameLogic
   def move(move_params)
     piece = pieces.find_by(startIndex: move_params[:startIndex])
 
-    if piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
+    if human.blank? || piece.valid_moves.include?(move_params[:currentPosition]) && valid_piece_type?(move_params)
       move_params[:hasMoved] = true
       move_params[:notation] = create_notation(move_params) unless move_params[:notation].present?
       update_board(move_params, piece)
       update_signatures(move_params)
       move_params[:movedTwo] = piece.movedTwo
       move_params[:color] = piece.color
-      move_ranks.find_or_create_by(position_signature: position_signature)
+      handle_move_ranks
       moves.create(move_params)
       piece
     else
@@ -42,8 +40,7 @@ module GameLogic
   end
 
   def update_signatures(move_params)
-    position_signature = pieces.where(color: current_turn).order(:startIndex)
-      .map do |piece|
+    position_signature = pieces.order(:startIndex).map do |piece|
         "#{piece.startIndex}:#{piece.currentPosition}"
       end.join('.')
 
@@ -58,6 +55,12 @@ module GameLogic
     handle_castle(move_params, piece) if piece.pieceType == 'king'
     handle_captured_piece(move_params, piece)
     piece.update(move_params)
+  end
+
+  def handle_move_ranks
+    move_rank = MoveRank.find_or_create_by(position_signature: position_signature)
+    move_rank.add_next_positions(pieces)
+    move_ranks << move_rank
   end
 
   def crossed_pawn?(move_params)
