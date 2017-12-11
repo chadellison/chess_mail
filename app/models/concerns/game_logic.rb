@@ -42,7 +42,7 @@ module GameLogic
   end
 
   def update_signatures(move_params)
-    position_signature = pieces.where(color: current_turn).order(:startIndex)
+    position_signature = pieces.order(:startIndex)
       .map do |piece|
         "#{piece.startIndex}:#{piece.currentPosition}"
       end.join('.')
