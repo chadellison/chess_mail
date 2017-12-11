@@ -59,7 +59,7 @@ module GameLogic
 
   def handle_move_ranks
     move_rank = MoveRank.find_or_create_by(position_signature: position_signature)
-    move_rank.add_next_positions(pieces)
+    move_rank.add_next_positions(pieces.where(color: current_turn))
     move_ranks << move_rank
   end
 

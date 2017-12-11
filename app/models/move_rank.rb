@@ -25,7 +25,7 @@ class MoveRank < ApplicationRecord
   def add_next_positions(pieces)
     signatures = pieces.map do |piece|
       piece.valid_moves.map do |move|
-        position_signature.sub(piece.currentPosition.to_s, move.to_s)
+        position_signature.sub(piece.currentPosition, move)
       end
     end.flatten
 
