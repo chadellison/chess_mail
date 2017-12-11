@@ -43,21 +43,25 @@ RSpec.describe Api::V1::AcceptChallengeController, type: :controller do
       let(:token) { 'token' }
 
       let!(:user) do
-        User.create(email: email,
-                    password: password,
-                    firstName: first_name,
-                    lastName: last_name,
-                    approved: true,
-                    token: token)
+        User.create(
+          email: email,
+          password: password,
+          firstName: first_name,
+          lastName: last_name,
+          approved: true,
+          token: token
+        )
       end
 
       let!(:challengedUser) do
-        User.create(email: 'bob@example.com',
-                    password: 'password',
-                    firstName: 'bob',
-                    lastName: 'jones',
-                    approved: true,
-                    token: 'other_token')
+        User.create(
+          email: 'bob@example.com',
+          password: 'password',
+          firstName: 'bob',
+          lastName: 'jones',
+          approved: true,
+          token: 'other_token'
+        )
       end
 
       context 'when the player\'s email matches the game\'s challengedEmail' do
@@ -108,12 +112,14 @@ RSpec.describe Api::V1::AcceptChallengeController, type: :controller do
         let(:token) { 'token' }
 
         let!(:user) do
-          User.create(email: email,
-                      password: password,
-                      firstName: first_name,
-                      lastName: last_name,
-                      approved: true,
-                      token: token)
+          User.create(
+            email: email,
+            password: password,
+            firstName: first_name,
+            lastName: last_name,
+            approved: true,
+            token: token
+          )
         end
 
         let(:game) do
