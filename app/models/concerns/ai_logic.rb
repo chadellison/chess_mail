@@ -22,8 +22,7 @@ module AiLogic
       setup = move_rank.next_positions.where('value < ?', 0).order('value').first
     end
 
-    count = rand(10)
-    setup = move_rank.next_positions.where(value: 0).order('RANDOM()').first if setup.blank? && count < 8
+    setup = move_rank.next_positions.where(value: 0).order('RANDOM()').first if setup.blank? && rand(10) < 8
     setup.move_data(move_rank.position_signature) if setup.present?
   end
 
