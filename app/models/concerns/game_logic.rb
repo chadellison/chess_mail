@@ -10,6 +10,8 @@ module GameLogic
       handle_outcome(game_outcome)
     elsif robot.blank?
       send_new_move_email(move_params[:currentPosition], move_params[:pieceType], user)
+    else
+      ai_move
     end
   end
 

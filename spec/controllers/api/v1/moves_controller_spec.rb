@@ -39,7 +39,7 @@ RSpec.describe Api::V1::MovesController, type: :controller do
 
       it 'updates a user\'s game' do
         post :create, params: {
-          gameId: game.id,
+          id: game.id,
           token: user.token,
           move: move_params
         }, format: :json
@@ -57,7 +57,7 @@ RSpec.describe Api::V1::MovesController, type: :controller do
         allow_any_instance_of(Game).to receive(:checkmate?).and_return(false)
 
         expect_any_instance_of(Game).to receive(:send_new_move_email)
-        post :create, params: { gameId: game.id, token: user.token,
+        post :create, params: { id: game.id, token: user.token,
                                 move: move_params }, format: :json
       end
     end
@@ -98,8 +98,8 @@ RSpec.describe Api::V1::MovesController, type: :controller do
     end
   end
 
-  describe '#create_ai_move' do
-    it 'creates a move on the game' do
+  describe '#show' do
+    it 'retrieves a created ai move on the game' do
       game = Game.new(
         human: false,
         robot: true,
@@ -115,7 +115,7 @@ RSpec.describe Api::V1::MovesController, type: :controller do
       )
 
       expect {
-        post :create_ai_move, params: { gameId: game.id }
+        get :show, params: { id: game.id }
       }.to change { game.moves.count }.by(1)
 
       expect(response.status).to eq 201

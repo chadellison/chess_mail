@@ -12,7 +12,7 @@ module Api
         render json: serialized_game, status: 201
       end
 
-      def create_ai_move
+      def show
         @game.ai_move
         serialized_game = { data: GameSerializer.serialize(@game.reload) }
         render json: serialized_game, status: 201
@@ -21,7 +21,7 @@ module Api
       private
 
       def find_game
-        @game = Game.find(params[:gameId])
+        @game = Game.find(params[:id])
       end
 
       def move_params
